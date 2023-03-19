@@ -16,7 +16,7 @@ services:
       - "traefik.http.routers.smartsigntools.tls=true"
       - "traefik.http.routers.smartsigntools.tls.certresolver=myresolver"
     volumes:
-      - "./.env:/app/.env"
+      - ".env:/app/.env"
       - "./imagebank:/app/imagebank"
       - "./publishedevents:/app/publishedevents"
     networks:
