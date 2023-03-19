@@ -7,6 +7,8 @@ services:
     depends_on:
       - smartsigntools-db
     restart: "always"
+    env_file:
+      - ./smartsigntools.env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.smartsigntools.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${PATHPREFIX}`)"
@@ -16,9 +18,8 @@ services:
       - "traefik.http.routers.smartsigntools.tls=true"
       - "traefik.http.routers.smartsigntools.tls.certresolver=myresolver"
     volumes:
-      - ".env:/app/.env"
-      - "./imagebank:/app/imagebank"
-      - "./publishedevents:/app/publishedevents"
+      - "/local/docker/smartsigntools/imagebank:/app/imagebank"
+      - "/local/docker/smartsigntools/publishedevents:/app/publishedevents"
     networks:
       - "apps-net"
 
@@ -26,8 +27,6 @@ services:
     container_name: smartsigntools-db
     image: mysql:8.0
     restart: unless-stopped
-    env_file:
-      - .env
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
