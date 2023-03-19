@@ -1,6 +1,7 @@
 node_modules
 *.log
 .env
+*.env
 .DS_Store
 smartsign.html
 smartsign_calendar_slide.html
