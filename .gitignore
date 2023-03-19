@@ -1,0 +1,15 @@
+node_modules
+*.log
+.env
+.DS_Store
+smartsign.html
+smartsign_calendar_slide.html
+smartsign.json
+feed_example.json
+publishedevents/html/*.html
+publishedevents/images/*.jpg
+publishedevents/pdf/*.pdf
+imagebank/*.jpg
+imagebank/*.jpeg
+imagebank/*.png
+*.db

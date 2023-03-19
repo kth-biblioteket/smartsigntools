@@ -1,0 +1,48 @@
+version: "3.6"
+
+services:
+  smartsigntools:
+    container_name: "smartsigntools"
+    image: ghcr.io/kth-biblioteket/mailprint:${REPO_TYPE}
+    depends_on:
+      - smartsigntools-db
+    restart: "always"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.smartsigntools.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${PATHPREFIX}`)"
+      - "traefik.http.routers.smartsigntools.middlewares=smartsigntools-stripprefix"
+      - "traefik.http.middlewares.smartsigntools-stripprefix.stripprefix.prefixes=${PATHPREFIX}"
+      - "traefik.http.routers.smartsigntools.entrypoints=websecure"
+      - "traefik.http.routers.smartsigntools.tls=true"
+      - "traefik.http.routers.smartsigntools.tls.certresolver=myresolver"
+    volumes:
+      - "./.env:/app/.env"
+      - "./imagebank:/app/imagebank"
+      - "./publishedevents:/app/publishedevents"
+    networks:
+      - "apps-net"
+
+  smartsigntools-db:
+    container_name: smartsigntools-db
+    image: mysql:8.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - persistent-smartsigntools-db:/var/lib/mysql
+      - ./dbinit:/docker-entrypoint-initdb.d
+    networks:
+      - "apps-net"
+
+volumes:
+  persistent-smartsigntools-db:
+
+networks:
+  apps-net:
+    external: true

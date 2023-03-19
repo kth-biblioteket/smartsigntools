@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"
+        integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <style>
+        body {
+            margin: 0 auto;
+            font-family: "Open Sans", Arial, "Helvetica Neue", helvetica, sans-serif;
+            padding: 0em 20px 20px 20px;
+        }
+
+        body #gradientBorder {
+            height: 6px;
+            background-image: linear-gradient(to left, #005ea4, #5c98c4);
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        main .navbar-expand-lg .navbar-nav .nav-link {
+            padding-right: 1rem;
+            padding-left: 0rem;
+        }
+
+        .nav-link {
+            font-size: 1.25rem;
+        }
+
+        .nav-link.active {
+            color: red;
+        }
+
+        .navbar {
+            display: block !important;
+            padding-top: 20px;
+        }
+
+        .navbar-nav {
+            flex: 1
+        }
+
+        .navbar-brand {
+            font-family: "Open Sans", Arial, "Helvetica Neue", helvetica, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #000;
+            line-height: 1.375;
+            margin-top: 0;
+            margin-bottom: 0;
+            height: auto;
+            max-width: calc(100% - 136px);
+            position: relative;
+            top: -5px;
+        }
+
+        .navbar-brand img {
+            margin: 0 30px 0 0;
+        }
+
+        .wrap {
+            width: 270px;
+            height: 475px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid #888888;
+        }
+
+        .frame {
+            width: 1080px;
+            height: 1920px;
+            border: 0;
+            -ms-transform: scale(0.25);
+            -moz-transform: scale(0.25);
+            -o-transform: scale(0.25);
+            -webkit-transform: scale(0.25);
+            transform: scale(0.25);
+
+            -ms-transform-origin: 0 0;
+            -moz-transform-origin: 0 0;
+            -o-transform-origin: 0 0;
+            -webkit-transform-origin: 0 0;
+            transform-origin: 0 0;
+        }
+
+        .header {
+            z-index: 10;
+            display: flex;
+            flex-direction: row;
+            background-color: #ffffff;
+            padding: 10px;
+        }
+
+        #content {
+            z-index: 1;
+            padding: 10px;
+            display: flex;
+        }
+
+        h2 {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <% let nrOfPages = Math.ceil(admindata.pagination.total / admindata.pagination.size) %>
+    <% var url = new URL(admindata.url) %>
+    <% if (url.searchParams.has('size') !== true) { %>
+        <% url.searchParams.set('size', admindata.pagination.size) %>
+    <% } %>
+    <% if (url.searchParams.has('page') !== true) { %>
+        <% url.searchParams.set('page', admindata.pagination.page) %>
+    <% } %>
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+            <a class="navbar-brand" href="#">
+                <img alt="" src="https://apps.lib.kth.se/polopoly/KTH_Logotyp.svg" width="75" height="75"
+                    class="d-inline-block align-top"> KTH Bibliotekets Kalender Smartsign
+            </a>
+            <button aria-controls="basic-navbar-nav" type="button" aria-label="Toggle navigation"
+                class="navbar-toggler collapsed"><span class="navbar-toggler-icon"></span></button>
+            <div class="navbar-collapse collapse" id="basic-navbar-nav">
+                <div class="navbar-nav">
+                    <div class="nav-item">
+                        <div style="flex:1;font-size:1.25rem">Kalenderhändelser</div>
+                    </div>
+                </div>
+
+                <form style="flex:2;display:flex;justify-content:flex-end">
+                    <button style="margin-right:10px" type="button" onclick="getQrtracking()" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#qrcodetrackingModal">
+                                Statistik QR-Scans
+                    </button>
+                    <button style="margin-right:10px" type="button" onclick="getQrCodesGeneral()" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#qrcodeGeneralModal">
+                                QR-Koder
+                    </button>
+                    <button type="button" class="btn btn-outline-success" onclick="logout()">Logout</button>
+                </form>
+            </div>
+            <div id="gradientBorder"></div>
+            <ul class="pagination">
+                <% let page %>
+                <% let active %>
+                <% page = parseInt(admindata.pagination.page) - 1 %>
+                <% url.searchParams.set('page', page); %>
+                <li class="page-item <%- admindata.pagination.page > 1 ? "" : "disabled"%>">
+                  <a class="page-link" href="<%= url %>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <% for(i=1; i<nrOfPages +1; i++) { %>
+                    <% url.searchParams.set('page', i); %>
+                <li class="page-item <%- admindata.pagination.page == i ? "active" : "" %>"><a class="page-link" href="<%= url %>"><%= i %></a></li>
+                <% } %>
+                <% page = parseInt(admindata.pagination.page) + 1 %>
+                <% url.searchParams.set('page', page); %>
+                <li class="page-item <%- admindata.pagination.page < nrOfPages ? "" : "disabled" %>">
+                  <a class="page-link" href="<%= url %>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+            </ul>
+        </nav>
+        <div id="content">
+            <div style="flex:2;padding-right:10px">
+                <% let published=false %>
+                <% let published_as_image=false %>
+                <%let eventtime=""%>
+                <%let frameindex=1%>
+
+                <%for (const event_ of admindata.events) { %>
+                    <%eventtime=event_.event.eventtime%>
+                    <%event=event_.event%>
+                    <%let eventfields=event_.eventfields%>
+                    <%let eventimage=event_.eventimage %>
+                    <%if(event.published==1) { published=true } else { published=false } %>
+                    <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
+                    <div class="card" style="margin-bottom:10px">
+                        <div class="card-body" style="display:flex;flex-direction:row;padding-bottom:40px">
+                            <div style="flex:3;padding-right:10px">
+                                <a href="<%= event.guid%>">
+                                    <%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %>
+                                </a>
+                                <div>
+                                    <%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
+                                </div>
+                                <div style="display:flex;padding-top:10px">
+                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'Skärm');" type="button"
+                                        class="btn btn-primary" style="margin-right:10px">
+                                        Ladda ner PDF skärm
+                                    </button>
+                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4');" type="button"
+                                        class="btn btn-primary" style="margin-right:10px">
+                                        Ladda ner PDF A4
+                                    </button>
+                                </div>
+                                <div style="display:flex;padding-top:10px">
+                                    <button id="qrcodebtn_<%=event.id%>"
+                                        onclick="getQrCode('<%=event.id%>', 'qrcodeimage_<%=event.id%>', this);"
+                                        type="button" class="btn btn-primary" style="margin-right:10px">
+                                        QR Kod
+                                    </button>
+                                </div>
+                                <div style="padding:10px" id="qrcodeimage_<%=event.id%>"></div>
+                            </div>
+                            <div style="flex:3;display:flex;flex-direction:row">
+                                <div style="flex:1;display:flex;flex-direction:column">
+                                    <div class="wrap">
+                                        <iframe id="frame_<%=frameindex%>" class="frame"
+                                            src="/smartsign/api/v1/calendar/event/<%=event.id%>"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="flex:2">
+                                <form>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
+                                    </div>
+                                    <!--div class="form-check form-switch">
+                                        <input class="form-check-input" <%-published_as_image ? "checked" : "" %> onclick="publishEventAsImage('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckAsImage<%=frameindex%>">
+                                        <label class="form-check-label" for="flexSwitchCheckAsImage<%=frameindex%>">Publicera som bild<span id="imagespinner_<%=event.id%>"></span></label>
+                                    </div-->
+                                    <div style="padding-top:10px" class="form-check">
+                                        <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
+                                        <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
+                                            Engelska
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" <%-event.lang == "sv" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'sv', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioSwedish<%=frameindex%>">
+                                        <label class="form-check-label" for="flexRadioSwedish<%=frameindex%>">
+                                            Svenska
+                                        </label>
+                                    </div>
+
+                                    <div style="padding-top:10px">
+                                        Fält som ska visas
+                                    </div>
+                                    <%eventfields.forEach(field=> { %>
+                                        <div class="form-check">
+                                            <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
+                                            <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
+                                        </div>
+                                    <%}) %>
+                                        <div style="padding-top:10px">
+                                            Bild från bildbank
+                                        </div>
+                                        <select class="form-select" onChange="updateEventImage('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="imagebankselect<%=event.id%>" title="Välj bild" class="selectpicker">
+                                            <option value="0">Välj...</option>
+                                            <% let selectedimage='' %>
+                                            <% imagebank.forEach(image => {%>
+                                                <% if (eventimage[0]) {%>
+                                                    <% if (eventimage[0].id == image.id) {%>
+                                                        <% selectedimage = 'selected'%>
+                                                    <% } else {%>
+                                                        <% selectedimage = ''%>
+                                                    <% }%>
+                                                <% } %>
+                                                <option <%=selectedimage%> value="<%=image.id%>"><%=image.name%></option>
+                                            <%})%>
+                                        </select>
+                                        <div style="padding-top:10px;" class="form-group">
+                                            <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
+                                            <div class="input-group">
+                                                <input value="<%=event.smartsignlink + event.id%>"
+                                                    type="text" class="form-control"
+                                                    id="smartsignLink_<%=event.id%>" aria-describedby="linkHelp"
+                                                    placeholder="">
+                                                <span style="cursor: pointer"
+                                                    onclick="copytext('smartsignLink_<%=event.id%>')"
+                                                    class="input-group-text" id="copybtn_<%=event.id%>">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </span>
+                                            </div>
+                                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                                        </div>
+                                        <% if(event.published_as_image==1) { %>
+                                        <!--div style="padding-top:10px;" class="form-group">
+                                            <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
+                                            <div class="input-group">
+                                                <input value="<%=event.smartsignlink + 'image/' + event.id%>"
+                                                    type="text" class="form-control"
+                                                    id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
+                                                    placeholder="">
+                                                <span style="cursor: pointer"
+                                                    onclick="copytext('smartsignLinkImage_<%=event.id%>')"
+                                                    class="input-group-text" id="copybtn_Image_<%=event.id%>">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </span>
+                                            </div>
+                                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                                        </div-->
+                                        <% } %>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% frameindex++ %>
+            <%} %>
+            </div>
+            <div style="flex:1">
+                <div class="card" style="margin-bottom:10px">
+                    <div class="card-body">
+                        <h5 class="card-title">Bildbank</h5>
+                        <div style="padding-bottom: 10px">
+                            <button type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                Hantera bilder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div id="slideAlertPlaceholder"></div>
+                        <h5 class="card-title">Slideshows</h5>
+                        <div style="flex:2;display:flex;flex-direction:row">
+                            <div>
+                                <button id="publishbtn" type="button" class="btn btn-primary" style="margin-right:10px">
+                                    Publicera valda
+                                </button>
+                                <div style="visibility:hidden;margin-right:10px" id="pubprogress" class="progress">
+                                    <div id="pubprogress-bar" class="progress-bar" role="progressbar" aria-valuenow="0"
+                                        aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                                        <span class="sr-only">0% Complete</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input class="form-check-input" type="checkbox" id="pubhtml">
+                            <label class="form-check-label" for="pubhtml" style="margin-right:10px">
+                                Html
+                            </label>
+                            <input class="form-check-input" type="checkbox" id="pubimages">
+                            <label class="form-check-label" for="pubimages">
+                                Bilder
+                            </label>
+                        </div>
+                        <h6 class="card-title">Publicerat</h6>
+                        <div class="card-title" style="flex:1;display:flex;flex-direction:column">
+                            <div class="wrap">
+                                <iframe id="slideshow" class="frame"
+                                    src="/smartsign/api/v1/calendar/published/slideshowimages"></iframe>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="smartsignLink_slide">Smartsignlänk</label>
+                            <div class="input-group">
+                                <input value="https://apps.lib.kth.se/smartsign/calendar" type="text"
+                                    class="form-control" id="smartsignLink_slide" aria-describedby="linkHelp"
+                                    placeholder="">
+                                <span style="cursor: pointer" onclick="copytext('smartsignLink_slide')"
+                                    class="input-group-text" id="copybtn_slide}">
+                                    <i class="bi bi-clipboard"></i>
+                                </span>
+                            </div>
+                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Bildbank</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="imagebankmodal-body modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <div style="flex:2;display:flex;flex-direction:column">
+                            <div id="uploadAlertPlaceholder"></div>
+                            <label for="imgFile">Uppdatera bildbank</label>
+                            <input style="display:none" type="text" placeholder="Ge bilden ett namn"
+                                class="form-control" name="imgFileName" id="imgFileName">
+                            <div style="display:flex">
+                                <input onChange="showElement('imgFileName')" type="file" class="form-control"
+                                    name="imgFile" id="imgFile">
+                                <button style="width:50%" class="browse btn btn-primary px-4" type="button"
+                                    onclick="uploadImage()">
+                                    Ladda upp
+                                </button>
+                            </div>
+                            <div style="visibility:hidden;margin-right:10px" id="uploadprogress" class="progress">
+                                <div id="uploadprogress-bar" class="progress-bar" role="progressbar" aria-valuenow="0"
+                                    aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                                    <span class="sr-only">0% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="qrcodeGeneralModal" tabindex="-1" aria-labelledby="qrcodeGeneralModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrcodeGeneralModalLabel">QR-koder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="QRGeneralmodal-body modal-body">
+                    </div>
+                    <div class="QRGeneralmodal-footer modal-footer">
+                        <div style="flex:2;display:flex;flex-direction:column">
+                            <div id="updateQRGeneralAlertPlaceholder"></div>
+                            <form class="row g-3">
+                                <div class="col-sm-10">
+                                  <label for="QRGeneralUrl" class="visually-hidden">Url</label>
+                                  <input type="text" placeholder="Skriv in URL" class="form-control" name="QRGeneralUrl" id="QRGeneralUrl">
+                                </div>
+                                <div class="col-sm">
+                                    <button class="btn btn-primary px-4" type="button" onclick="createQrCodeGeneral()">
+                                        Lägg till
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="qrcodetrackingModal" tabindex="-1" aria-labelledby="qrcodetrackingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrcodetrackingModalLabel">Statistik scannade QR-koder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="QRmodal-body modal-body">
+                    </div>
+                    <div class="QRmodal-footer modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function alert(message, type, placeholder) {
+                var alertPlaceholder = document.getElementById(placeholder)
+                var wrapper = document.createElement('div')
+                wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+                alertPlaceholder.append(wrapper)
+                setTimeout(function () {
+                    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, 2000);
+            }
+
+            function checkjwt() {
+            
+            }
+
+            function updateLang(events_id, lang, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    setTimeout(function () {
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    }, 500);
+                };
+                xhttp.open("PUT", "/smartsign/api/v1/calendar/eventlang/" + events_id, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "lang": lang
+                }));
+            }
+
+            function publishEvent(events_id, cb, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                if (cb.checked) {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/publish", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "publish": 1
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/publish", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "publish": 0
+                    }));
+                }
+            }
+            
+            function publishEventAsImage(events_id, cb, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                if (cb.checked) {
+                    console.log($(this))
+                    $('#imagespinner_' + events_id).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicerar...');
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        location.reload();
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/" + events_id, true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "published_as_image": 1
+                    }));
+                } else {
+                    $('#imagespinner_' + events_id).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Avpublicerar...');
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        location.reload();
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/" + events_id, true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "published_as_image": 0
+                    }));
+                }
+            }
+
+            function updateEvent(events_id, fields_id, frameid, cb) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                if (cb.checked) {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) { 
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/field", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "fields_id": fields_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                        
+                    };
+                    xhttp.open("DELETE", "/smartsign/api/v1/calendar/event/field", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "fields_id": fields_id
+                    }));
+                }
+            }
+
+            function getQrCode(id, imageid, button) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    var image = xhttp.response;
+                    document.getElementById(imageid).innerHTML = '<img style="width:200px;height:200px" src="' + image + '">'
+
+                };
+                xhttp.open("GET", "/smartsign/api/v1/calendar/event/qrcode/" + id, true);
+                xhttp.setRequestHeader('x-access-token', sessionStorage.getItem("token"));
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send();
+            }
+
+            function getQrCodeGeneral(id, imageid, button) {
+                $(button).prop("disabled", true);
+                $(button).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar QR Kod...');
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    var blob = xhttp.response;
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "qrcode.png";
+                    link.click();
+                    $(button).prop("disabled", false);
+                    $(button).html('Hämta QR Kod');
+
+
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcode/general/generate/" + id, true);
+                xhttp.responseType = "blob";
+                xhttp.setRequestHeader('Content-Type', 'image/png');
+                xhttp.send();
+            }
+
+            function getPdf(id, cb, type) {
+                $(cb).prop("disabled", true);
+                $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar pdf...');
+
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    var blob = xhttp.response;
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "smartsign_" + id + ".pdf";
+                    link.click();
+                    $(cb).prop("disabled", false);
+                    $(cb).html('Ladda ner PDF ' + type);
+
+
+                };
+                xhttp.open("GET", "/smartsign/api/v1/calendar/pdf/" + id + "?type=" + type, true);
+                xhttp.responseType = "blob";
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send();
+            }
+
+            function logout() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {  
+                    }
+                    location.href = "/smartsign/api/v1"
+                };
+                xhttp.open("POST", "/smartsign/api/v1/logout", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send();
+            }
+
+            function makeProgress(data) {
+                jsondata = JSON.parse(data)
+                if (jsondata.progress == 0) {
+                    $("#pubprogress").css('visibility', 'visible')
+                }
+                if (jsondata.progress <= jsondata.total) {
+                    percent = (jsondata.progress / jsondata.total) * 100
+                    $("#pubprogress-bar").css("width", percent + "%").text(percent + "%");
+                }
+                if (jsondata.progress == jsondata.total) {
+                    $("#pubprogress").css('visibility', 'hidden')
+                    $("#pubprogress-bar").css("width", "0%").text("0%");
+                }
+            }
+
+            $('#publishbtn').on('click', function () {
+                var parameters = "?"
+                if ($('#pubhtml').prop('checked')) {
+                    parameters += "type=html"
+                } else
+                    if ($('#pubimages').prop('checked')) {
+                        parameters += "type=images"
+                    }
+                if ($('#pubimages').prop('checked') && $('#pubhtml').prop('checked')) {
+                    parameters = "?type=all"
+                }
+                $(this).prop("disabled", true);
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicerar...');
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    alert('Slideshow skapad', 'success', 'slideAlertPlaceholder')
+                    $('#publishbtn').prop("disabled", false);
+                    $('#publishbtn').html('Publicera valda');
+                    document.getElementById('slideshow').src = document.getElementById('slideshow').src
+                };
+                xhttp.open("POST", "/smartsign/api/v1/calendar/published/slideshow" + parameters);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({ "sessionId": thisSessionId }));
+            });
+
+            const thisSessionId = Math.random().toString(36).substr(2, 9);
+            const socket = io('', { path: "/smartsign/api/v1/socket.io" })
+            socket.on("connect", () => {
+
+            });
+            socket.emit('connectInit', thisSessionId);
+            socket.on("uploadProgress", (data) => {
+                makeProgress(data)
+            })
+
+            function uploadImage() {
+                if (document.getElementById('imgFileName').value == "") {
+                    document.getElementById('imgFileName').focus()
+                    document.getElementById('imgFileName').style.color = "red";
+                } else {
+                    $("#uploadprogress").css('visibility', 'visible')
+                    checkjwt()
+                    var formData = new FormData();
+                    imgFile = document.getElementById('imgFile').files[0]
+                    formData.append("imgFile", imgFile);
+                    formData.append("imagename", document.getElementById('imgFileName').value);
+                    var xhttp = new XMLHttpRequest();
+
+                    xhttp.upload.addEventListener("progress", function (e) {
+                        var loaded = e.loaded;
+                        var total = e.total
+                        var percent_complete = (loaded / total) * 100;
+                        if (percent_complete <= 100) {
+
+                            $("#uploadprogress-bar").css("width", percent_complete + "%").text(percent_complete + "%");
+                        }
+                        if (percent_complete == 100) {
+                            alert('Bild uppladdad', 'success', 'uploadAlertPlaceholder')
+                            $("#uploadprogress").css('visibility', 'hidden')
+                            document.getElementById('imgFile').value = ''
+                            document.getElementById('imgFileName').style.display = "none";
+                            getImages()
+                            setTimeout(function () {
+
+                            }, 3000);
+                        }
+                    })
+
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/uploadfile", true);
+                    xhttp.send(formData);
+                }
+            }
+
+            function getImages() {
+                $('.imagebankmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
+                
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                        $('.imagebankmodal-body').html('Fel vid hämtning')
+                    }
+                    $('.imagebankmodal-body').html(xhttp.response)
+                };
+                xhttp.open("GET", "/smartsign/api/v1/calendar/images", true);
+                xhttp.send();
+            }
+
+            function updateImage(id, nameselector) {
+                checkjwt()
+                let name = $("#" + nameselector).val()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getImages()
+                };
+                xhttp.open("PUT", "/smartsign/api/v1/calendar/images/" + id, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "name": name
+                }));
+            }
+
+            function deleteImage(id) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getImages()
+                };
+                xhttp.open("DELETE", "/smartsign/api/v1/calendar/images/" + id, true);
+                xhttp.send();
+            }
+            
+            function createQrCodeGeneral() {
+                checkjwt()
+                url = $("#QRGeneralUrl").val();
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getQrCodesGeneral()
+                    setTimeout(function () {}, 3000);
+                };
+                xhttp.open("POST", "/smartsign/api/v1/qrcode/general", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "url": url
+                }));
+            }
+
+            function deleteQrCodeGeneral(id) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getQrCodesGeneral()
+                    setTimeout(function () {}, 3000);
+                };
+                xhttp.open("DELETE", "/smartsign/api/v1/qrcode/general", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "id": id
+                }));
+            }
+
+            function updateQrCodeGeneral(id, urlselector) {
+                checkjwt()
+                let url = $("#" + urlselector).val();
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    alert('Url uppdaterad', 'success', 'updateQRGeneralAlertPlaceholder')
+                    getQrCodesGeneral()
+                    setTimeout(function () {}, 3000);
+                };
+                xhttp.open("PUT", "/smartsign/api/v1/qrcode/general", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "id": id,
+                    "url": url
+                }));
+            }
+
+            function getQrCodesGeneral() {
+                $('.QRGeneralmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                        $('.QRGeneralmodal-body').html('Fel vid hämtning')
+                    }
+                    $('.QRGeneralmodal-body').html(xhttp.response)
+
+                    //Sortering för input-fält
+                    $.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+                        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+                            return $('input', td).val();
+                        });
+                    }
+
+                    var QRCodeGeneral = $('#QRCodeGeneraltable').DataTable({
+                        "dom": '<Bplfi<t>>',
+                        "columnDefs": [
+                            { 
+                                "orderDataType": "dom-text",
+                                 type: "string",
+                                "width": "60%", 
+                                "targets": 1 
+                            },
+                            {
+                                "targets": 4,
+                                "visible": false
+                            }
+                        ],
+                        "order": [[ 1, 'desc' ]],
+                        buttons: [ {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            filename: 'QRKod_statistik',
+                            sheetName: 'Statistik scannade QR-koder',
+                            exportOptions: {
+                                columns: [ 0, 4]
+                            }
+                        } ]
+                    });
+                    $(function () {
+                        $('[data-toggle="tooltip"]').tooltip()
+                    })
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcodes/general", true);
+                xhttp.send();
+            }
+
+            function getQrtracking() {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    $('.QRmodal-body').html(xhttp.response)
+                    var qrtrackingtable = $('#qrtrackingtable').DataTable({
+                        "dom": '<Bplfi<t>>',
+                        "order": [[ 2, 'desc' ]],
+                        buttons: [ {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            filename: 'QRKod_statistik',
+                            sheetName: 'Statistik scannade QR-koder'
+                        } ]
+                    });
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcodetracking", true);
+                xhttp.send();
+            }
+
+            function copytext(field_id) {
+                var copyText = document.getElementById(field_id);
+                text = $(copyText).val()
+                navigator.clipboard.writeText(text);
+            }
+
+            function showElement(imgFileName) {
+                $('#' + imgFileName).show()
+            }
+
+            function updateEventImage(events_id, frameid, selectlist) {
+                checkjwt()
+                var x = document.getElementById("imagebankselect");
+                images_id = selectlist.value
+                var xhttp = new XMLHttpRequest();
+                if (images_id != "0") {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/image", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "images_id": images_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsign/api/v1/calendar/event/image", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "images_id": images_id
+                    }));
+                }
+            }
+        </script>
+    </div>
+</body>
+
+</html>
