@@ -2,7 +2,7 @@
 Skapa websidor att presentera på smartsign-skärmarna
 
 ## Funktioner
- NodeJS-tjänst
+Startas i en Dockercontainer
  
 ### Hämtar bl a bibliotekets kalender på webben 
 
