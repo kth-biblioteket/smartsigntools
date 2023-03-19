@@ -5,7 +5,7 @@ Skapa websidor att presentera på smartsign-skärmarna
 Startas i en Dockercontainer
 
 ###
-Deploy via github actions.
+Deploy via github actions som anropar en webhook
  
 ### Hämtar bl a bibliotekets kalender på webben 
 
