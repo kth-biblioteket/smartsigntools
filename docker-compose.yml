@@ -3,7 +3,7 @@ version: "3.6"
 services:
   smartsigntools:
     container_name: "smartsigntools"
-    image: ghcr.io/kth-biblioteket/mailprint:${REPO_TYPE}
+    image: ghcr.io/kth-biblioteket/smartsigntools:${REPO_TYPE}
     depends_on:
       - smartsigntools-db
     restart: "always"

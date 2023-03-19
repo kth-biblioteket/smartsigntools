@@ -311,7 +311,7 @@ apiRoutes.post("/calendar/uploadfile", async function (req, res) {
             return res.status(400).send('File type not allowed');
         }
 
-        let imagePath = path.join(__dirname, process.env.IMAGEBANK+ '/' + randomUUID() + path.extname(targetFile.name))
+        let imagePath = path.join(__dirname, process.env.IMAGEBANKPATH+ '/' + randomUUID() + path.extname(targetFile.name))
         targetFile.mv(imagePath, async (err) => {
             if (err)
                 return res.status(500).send(err);
