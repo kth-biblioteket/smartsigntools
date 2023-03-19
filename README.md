@@ -3,6 +3,9 @@ Skapa websidor att presentera på smartsign-skärmarna
 
 ## Funktioner
 Startas i en Dockercontainer
+
+###
+Deploy via github actions.
  
 ### Hämtar bl a bibliotekets kalender på webben 
 
