@@ -56,6 +56,14 @@ CREATE TABLE IF NOT EXISTS qrcodegeneral (
     url VARCHAR(500) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS `dailywifi` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `code` varchar(20) NOT NULL,
+  `daynumber` int NOT NULL,
+  `code_date` date NOT NULL
+)
+
+/*
 INSERT INTO fields(type, name, description)
 VALUES
 ('title','Titel','Rubriken från kalendern'),
@@ -67,3 +75,4 @@ VALUES
 ('image','Bild','Bilden för händelsen(från polopoly)'),
 ('qrcode','QR-Kod','QR-kod med länk till händelsen'),
 ('typeofevent','Typ av event','Vad är det för typ av event');
+*/

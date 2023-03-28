@@ -1019,6 +1019,73 @@ async function generatePdfPage(id, type='A4') {
     }
 };
 
+async function generatePdfPageDailyWifi(type='A4') {
+    try {
+        //Ta bort nuvarande pdf
+        let files = fs.readdirSync( path.join(__dirname, "/publishedevents/pdf") );
+        let pdffiles = files.filter( file => file.match(new RegExp(`.*\.(pdf)`, 'ig')));
+        for await (const file of pdffiles) {
+            fs.unlinkSync(path.join(__dirname, "/publishedevents/pdf", file));
+        }
+
+        //Generera HTML i smartsignformat och spara som PDF
+        let template
+        let pdfpath
+        if(type=='A4'){
+            template = 'templates/smartsign_template_general_pdf_A4.html'
+            pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
+        } else {
+            template = 'templates/smartsign_template_general_pdf.html'
+            pdfpath = 'publishedevents/pdf/smartsign.pdf'
+        }
+        let pdf = await saveWifiPageAsPdf(path.join(__dirname, pdfpath), type, template);
+        return pdf;
+
+    } catch (err) {
+        console.log(err)
+        return "Error creating pdf";
+    }
+};
+
+async function generateDailyWiFiPage(type='A4', lang ='en') {
+    let html_template = 'templates/smartsign_template_general.html'
+    let fontsize = '30px'
+    if (type=='A4') {
+        html_template = 'templates/smartsign_template_general_A4.html';
+        fontsize = '16px'
+    }
+    const files = fs.readFileSync(path.join(__dirname, html_template));
+    const template = cheerio.load(files.toString(), null, false);
+    
+    template('.headertext h4').text("KTH LIBRARY");
+    template('body').css('overflow', 'hidden');
+    try {
+        //Hämta daily code
+        let wificode = await eventModel.readDailyWiFiCode()
+        //MySQL kräver index [0]
+        wificode = wificode[0]
+        
+        let rubriktext='Dagens wifi-lösenord'
+        let description='Är du inte student eller anställd vid KTH kan du använda bibliotekets öppna wifi. Denna ger åtkomst till internt mern inte till bibliotekets elektronsiska resurser'
+        
+        let rubriktext_en=`Today's wifi password`
+        let description_en=`In case you are not a student or an employee at KTH you can use the library's open Wi-Fi. This provides access to the internet, but not to the library's electronic resources`
+        template('#rubrikplatta').html(`<div>${rubriktext}</div>
+                                        <div>${rubriktext_en}</div>`);
+        template('.App-content').html(`<div><b>Wifi:</b> KTHOPEN</div>
+                                        <div><b>User name:</b> kthb-dayguest</div>
+                                        <div><b>Password:</b> ${wificode.code}</div>
+                                        <div style="padding-top:20px;font-size:${fontsize}">
+                                            <p>${description}</p>
+                                            <p>${description_en}</p>
+                                        </div>`);
+        return template.root().html()
+    } catch (error) {
+        console.log(error.message)
+        return error.message
+    }
+};
+
 async function savePageAsImage(events_id, html, imagefullpath, template) {
     try {
         const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] },);
@@ -1058,6 +1125,46 @@ async function savePageAsPdf(events_id, pdffullpath, type, template) {
         });
 
         await page.goto(process.env.SERVERURL + 'api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
+
+        let pdf
+        if (type=='A4') {
+            pdf = await page.pdf({
+                path: pdffullpath,
+                printBackground: true,
+                format: 'A4'
+            });
+        } else {
+            pdf = await page.pdf({
+                path: pdffullpath,
+                printBackground: true,
+                width: '1080px',
+                height: '1920px'
+            });
+        }
+
+        await browser.close();
+        return pdf;
+
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+}
+
+async function saveWifiPageAsPdf(pdffullpath, type, template) {
+    try {
+        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--font-render-hinting=medium'] },);
+        const page = await browser.newPage();
+
+        //Storlek på smartsignskärmarna är 1080x1920
+        await page.setViewport({
+            width: 1080,
+            height: 1920,
+            deviceScaleFactor: 1,
+        });
+
+        await page.goto(process.env.SERVERURL + 'smartsign/api/v1/dailywifi?type=' + type, { waitUntil: 'networkidle0' })
 
         let pdf
         if (type=='A4') {
@@ -1139,9 +1246,12 @@ module.exports = {
     getPublishedPageAsImage,
     generateQrCode,
     generateQrCodeGeneral,
+    generateDailyWiFiPage,
     generatePdfPage,
+    generatePdfPageDailyWifi,
     savePageAsImage,
     savePageAsPdf,
+    saveWifiPageAsPdf,
     substrInBetween,
     truncate
 };

@@ -518,6 +518,20 @@ const deleteQrCodeGeneral = (id) => {
     })
 };
 
+//Hämta daglig wifi-kod
+const readDailyWiFiCode = () => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT * FROM dailywifi 
+                    WHERE code_date = CURDATE()`;
+        database.db.query(database.mysql.format(sql),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
 
 module.exports = {
     readEvents,
@@ -550,5 +564,6 @@ module.exports = {
     readQrCodeGeneral,
     createQrCodeGeneral,
     updateQrCodeGeneral,
-    deleteQrCodeGeneral
+    deleteQrCodeGeneral,
+    readDailyWiFiCode
 };

@@ -535,6 +535,29 @@ apiRoutes.get("/qrcodetracking", async function (req, res) {
     }
 });
 
+apiRoutes.get("/dailywifi", async function (req, res, next) {
+    try {
+        let lang = req.query.lang || 'en'
+        let type = req.query.type || ''
+        let page = await eventController.generateDailyWiFiPage(type, lang);
+        res.send(page)
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
+    try {
+
+        let pdf = await eventController.generatePdfPageDailyWifi(req.query.type);
+        res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
+        res.send(pdf)
+
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
 const server = app.listen(process.env.PORT || 3002, function () {

@@ -12,8 +12,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.smartsigntools.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${PATHPREFIX}`)"
-      - "traefik.http.routers.smartsigntools.middlewares=smartsigntools-stripprefix"
-      - "traefik.http.middlewares.smartsigntools-stripprefix.stripprefix.prefixes=${PATHPREFIX}"
+      #- "traefik.http.routers.smartsigntools.middlewares=smartsigntools-stripprefix"
+      #- "traefik.http.middlewares.smartsigntools-stripprefix.stripprefix.prefixes=${PATHPREFIX}"
       - "traefik.http.routers.smartsigntools.entrypoints=websecure"
       - "traefik.http.routers.smartsigntools.tls=true"
       - "traefik.http.routers.smartsigntools.tls.certresolver=myresolver"
