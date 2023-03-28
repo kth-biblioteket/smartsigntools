@@ -39,7 +39,8 @@ const apiRoutes = express.Router();
 apiRoutes.get("/", async function (req, res, next) {
     try {
         let verify = await VerifyAdmin(req, res, next)
-        res.redirect("/smartsign/api/v1/admin")
+        //res.redirect("/smartsign/api/v1/admin")
+        eventController.readEventsPaginated
     } catch(err) {
         res.render('login', {logindata: {"status":"ok", "message":"login"}})
     }
