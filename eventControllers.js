@@ -1052,8 +1052,8 @@ async function generateDailyWiFiPage(type='A4', lang ='en') {
         //Hämta daily code json
         try {
             let wificode = await eventModel.readDailyWiFiCode()
-            res.json(wificode[0].code)
-        } catch {
+            return(wificode[0].code)
+        } catch(error) {
             console.log(error.message)
             return error.message
         }
