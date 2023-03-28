@@ -1048,41 +1048,52 @@ async function generatePdfPageDailyWifi(type='A4') {
 };
 
 async function generateDailyWiFiPage(type='A4', lang ='en') {
-    let html_template = 'templates/smartsign_template_general.html'
-    let fontsize = '30px'
-    if (type=='A4') {
-        html_template = 'templates/smartsign_template_general_A4.html';
-        fontsize = '16px'
-    }
-    const files = fs.readFileSync(path.join(__dirname, html_template));
-    const template = cheerio.load(files.toString(), null, false);
-    
-    template('.headertext h4').text("KTH LIBRARY");
-    template('body').css('overflow', 'hidden');
-    try {
-        //Hämta daily code
-        let wificode = await eventModel.readDailyWiFiCode()
-        //MySQL kräver index [0]
-        wificode = wificode[0]
+    if(type=='json') {
+        //Hämta daily code json
+        try {
+            let wificode = await eventModel.readDailyWiFiCode()
+            res.json(wificode[0].code)
+        } catch {
+            console.log(error.message)
+            return error.message
+        }
+    } else {
+        let html_template = 'templates/smartsign_template_general.html'
+        let fontsize = '30px'
+        if (type=='A4') {
+            html_template = 'templates/smartsign_template_general_A4.html';
+            fontsize = '16px'
+        }
+        const files = fs.readFileSync(path.join(__dirname, html_template));
+        const template = cheerio.load(files.toString(), null, false);
         
-        let rubriktext='Dagens wifi-lösenord'
-        let description='Är du inte student eller anställd vid KTH kan du använda bibliotekets öppna wifi. Denna ger åtkomst till internt mern inte till bibliotekets elektronsiska resurser'
-        
-        let rubriktext_en=`Today's wifi password`
-        let description_en=`In case you are not a student or an employee at KTH you can use the library's open Wi-Fi. This provides access to the internet, but not to the library's electronic resources`
-        template('#rubrikplatta').html(`<div>${rubriktext}</div>
-                                        <div>${rubriktext_en}</div>`);
-        template('.App-content').html(`<div><b>Wifi:</b> KTHOPEN</div>
-                                        <div><b>User name:</b> kthb-dayguest</div>
-                                        <div><b>Password:</b> ${wificode.code}</div>
-                                        <div style="padding-top:20px;font-size:${fontsize}">
-                                            <p>${description}</p>
-                                            <p>${description_en}</p>
-                                        </div>`);
-        return template.root().html()
-    } catch (error) {
-        console.log(error.message)
-        return error.message
+        template('.headertext h4').text("KTH LIBRARY");
+        template('body').css('overflow', 'hidden');
+        try {
+            //Hämta daily code
+            let wificode = await eventModel.readDailyWiFiCode()
+            //MySQL kräver index [0]
+            wificode = wificode[0]
+            
+            let rubriktext='Dagens wifi-lösenord'
+            let description='Är du inte student eller anställd vid KTH kan du använda bibliotekets öppna wifi. Denna ger åtkomst till internt mern inte till bibliotekets elektronsiska resurser'
+            
+            let rubriktext_en=`Today's wifi password`
+            let description_en=`In case you are not a student or an employee at KTH you can use the library's open Wi-Fi. This provides access to the internet, but not to the library's electronic resources`
+            template('#rubrikplatta').html(`<div>${rubriktext}</div>
+                                            <div>${rubriktext_en}</div>`);
+            template('.App-content').html(`<div><b>Wifi:</b> KTHOPEN</div>
+                                            <div><b>User name:</b> kthb-dayguest</div>
+                                            <div><b>Password:</b> ${wificode.code}</div>
+                                            <div style="padding-top:20px;font-size:${fontsize}">
+                                                <p>${description}</p>
+                                                <p>${description_en}</p>
+                                            </div>`);
+            return template.root().html()
+        } catch (error) {
+            console.log(error.message)
+            return error.message
+        }
     }
 };
 
