@@ -29,7 +29,7 @@ function verifyToken(req, res, next) {
             let response
             console.log(process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD)
             try {
-                response = await axios.get(process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD, req.body)
+                response = await axios.get('http://' + process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD, req.body)
             } catch(err) {
                 res.status(400).send({ auth: false, message: 'General error' + err.message });
             }
