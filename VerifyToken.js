@@ -14,8 +14,6 @@ function verifyToken(req, res, next) {
         return res.render('login',{logindata: {"status":"ok", "message":"No token"}})
 
     if (req.headers['x-access-token'] || req.cookies.jwt) {
-        console.log('token: ' + token)
-        console.log('secret: ' + process.env.SECRET)
         jwt.verify(token, process.env.SECRET, async function (err, decoded) {
             if (err) {
                 res.clearCookie("jwt")
@@ -27,13 +25,11 @@ function verifyToken(req, res, next) {
             req.userprincipalname = decoded.id;
             kthaccount= req.userprincipalname.split('@')[0];
             let response
-            console.log(process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD)
             try {
                 response = await axios.get('http://' + process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD, req.body)
             } catch(err) {
                 res.status(400).send({ auth: false, message: 'General error' + err.message });
             }
-            console.log(response.data)
             if (response.data.ugusers) {
                 if (response.data.ugusers[0].kthPAGroupMembership) {
                     
