@@ -424,6 +424,20 @@ const readQrcodetracking = (id) => {
     })
 };
 
+//Hämta alla qrcodetrackings
+const readAllQrcodetracking = () => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT events_id, url, browser, DATE_FORMAT(scantime, '%Y-%m-%d %H:%i:%s') as scantime FROM qrcodetracking`;
+        database.db.query(database.mysql.format(sql),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
 //Lägg till qrcodetracking
 const createQrcodetracking = (events_id, url, browser) => {
     return new Promise(function (resolve, reject) {

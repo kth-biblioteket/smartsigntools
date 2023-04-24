@@ -919,15 +919,63 @@
                     var qrtrackingtable = $('#qrtrackingtable').DataTable({
                         "dom": '<Bplfi<t>>',
                         "order": [[ 2, 'desc' ]],
-                        buttons: [ {
-                            extend: 'excelHtml5',
-                            autoFilter: true,
-                            filename: 'QRKod_statistik',
-                            sheetName: 'Statistik scannade QR-koder'
-                        } ]
+                        buttons: [
+                            {
+                                text: 'Visa alla skanningar',
+                                action: function ( e, dt, node, config ) {
+                                    getAllQrtrackings() 
+                                }
+                            },
+                            {
+                                extend: 'spacer',
+                                style: 'bar',
+                                text: ''
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                autoFilter: true,
+                                filename: 'QRKod_statistik',
+                                sheetName: 'Statistik scannade QR-koder'
+                            } 
+                        ]
                     });
                 };
                 xhttp.open("GET", "/smartsign/api/v1/qrcodetracking", true);
+                xhttp.send();
+            }
+
+            function getAllQrtrackings() {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    $('.QRmodal-body').html(xhttp.response)
+                    var qrtrackingtable = $('#qrtrackingtable').DataTable({
+                        "dom": '<Bplfi<t>>',
+                        "order": [[ 2, 'desc' ]],
+                        buttons: [
+                            {
+                                text: 'Visa summering',
+                                action: function ( e, dt, node, config ) {
+                                    getQrtracking() 
+                                }
+                            },
+                            {
+                                extend: 'spacer',
+                                style: 'bar',
+                                text: ''
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                autoFilter: true,
+                                filename: 'QRKod_statistik',
+                                sheetName: 'Alla scannade QR-koder'
+                            } 
+                        ]
+                    });
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcodetracking/all", true);
                 xhttp.send();
             }
 

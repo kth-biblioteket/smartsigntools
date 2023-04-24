@@ -9,7 +9,6 @@ const fs = require("fs");
 const path = require('path');
 const puppeteer = require('puppeteer');
 const QRCode = require("qrcode");
-//const { createCanvas, loadImage } = require("canvas");
 const sharp = require("sharp");
 
 
@@ -150,7 +149,7 @@ async function readEventsPaginated(req, res, next) {
 
 async function login(req, res) {
     try {
-        const response = await axios.post('https://lib.kth.se/ldap/api/v1/login', req.body)
+        const response = await axios.post(process.env.LDAP_API_URL + 'login', req.body)
         res
         .cookie("jwt", response.data.token, {
             maxAge: 60 * 60 * 24 * 7 * 1000,
@@ -566,6 +565,16 @@ async function createQrcodetracking(events_id, url, browser) {
     try {
         let result = await eventModel.createQrcodetracking(events_id, url, browser)
         return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readAllQrcodetracking() {
+    try {
+        result = await eventModel.readAllQrcodetracking()
+        return result;
     } catch (err) {
         console.log(err.message)
         return "error: " + err.message
@@ -1076,7 +1085,7 @@ async function generateDailyWiFiPage(type='A4', lang ='en') {
             wificode = wificode[0]
             
             let rubriktext='Dagens wifi-lösenord'
-            let description='Är du inte student eller anställd vid KTH kan du använda bibliotekets öppna wifi. Denna ger åtkomst till internt mern inte till bibliotekets elektronsiska resurser'
+            let description='Är du inte student eller anställd vid KTH kan du använda bibliotekets öppna wifi. Denna ger åtkomst till internet men inte till bibliotekets elektroniska resurser'
             
             let rubriktext_en=`Today's wifi password`
             let description_en=`In case you are not a student or an employee at KTH you can use the library's open Wi-Fi. This provides access to the internet, but not to the library's electronic resources`

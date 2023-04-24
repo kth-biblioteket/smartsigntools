@@ -39,7 +39,6 @@ const apiRoutes = express.Router();
 apiRoutes.get("/", async function (req, res, next) {
     try {
         let verify = await VerifyAdmin(req, res, next)
-        //res.redirect("/smartsign/api/v1/admin")
         eventController.readEventsPaginated
     } catch(err) {
         res.render('login', {logindata: {"status":"ok", "message":"login"}})
@@ -523,6 +522,56 @@ apiRoutes.get("/qrcodetracking", async function (req, res) {
                                         <th>Eventid</th>
                                         <th>Url</th>
                                         <th>Nr of Scans</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>`
+        res.write(html);
+        res.write(`</div>`);
+        res.end();
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+//Hämta alla qrcodetrackings och presentera i modal datatable
+apiRoutes.get("/qrcodetracking/all", async function (req, res) {
+    try {
+        res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="qrtrackingstats">`)
+
+        //Hämta qrtrackingstatistik och presentera i en Data Table
+        let qrtracking = await eventController.readAllQrcodetracking()  
+        let html = `<div style="margin-bottom:10px" class="card">
+                        <div class="card-body">
+                            <table id="qrtrackingtable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Eventid</th>
+                                        <th>Url</th>
+                                        <th>Browser</th>
+                                        <th>Scantime</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`
+                                qrtracking.forEach(row => {
+                                //for(let i=0 ; i < 25 ; i++) {
+                                    html += 
+                                    `<tr>
+                                        <td>${row.events_id}</td>
+                                        <td>${row.url}</td>
+                                        <td>${row.browser}</td>
+                                        <td>${row.scantime}</td>
+                                    </tr>`
+                                });
+                                html +=  
+                                `</tbody>
+                                <tfoot>
+                                    <tr>
+                                    <th>Eventid</th>
+                                    <th>Url</th>
+                                    <th>Browser</th>
+                                    <th>Scantime</th>
                                     </tr>
                                 </tfoot>
                             </table>
