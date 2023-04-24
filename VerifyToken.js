@@ -27,6 +27,7 @@ function verifyToken(req, res, next) {
             req.userprincipalname = decoded.id;
             kthaccount= req.userprincipalname.split('@')[0];
             let response
+            console.log(process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD)
             try {
                 response = await axios.get(process.env.LDAP_API_URL + 'account/' + kthaccount + '?token=' + process.env.LDAPAPIKEYREAD, req.body)
             } catch(err) {
