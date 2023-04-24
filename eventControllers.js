@@ -165,7 +165,7 @@ async function login(req, res) {
     } catch(err) {
         res.status(401)
         res.json({ message: "Error" });
-        console.log(error)
+        console.log(err)
     }
 }
 
