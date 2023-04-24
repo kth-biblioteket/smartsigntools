@@ -35,7 +35,7 @@ function verifyToken(req, res, next) {
             }
             console.log(response.data)
             if (response.data.ugusers) {
-                if (response.data.ugusers.kthPAGroupMembership) {
+                if (response.data.ugusers[0].kthPAGroupMembership) {
                     
                     let authorized = false;
                     let authorizedgroupsarray = process.env.AUTHORIZEDGROUPS.split(';')
