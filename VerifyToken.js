@@ -40,7 +40,7 @@ function verifyToken(req, res, next) {
                     let authorized = false;
                     let authorizedgroupsarray = process.env.AUTHORIZEDGROUPS.split(';')
                     for (i=0 ; i < authorizedgroupsarray.length; i++) {
-                        if (response.data.ugusers.kthPAGroupMembership.indexOf(authorizedgroupsarray[i]) !== -1) {
+                        if (response.data.ugusers[0].kthPAGroupMembership.indexOf(authorizedgroupsarray[i]) !== -1) {
                             authorized = true;
                             break;
                         }
