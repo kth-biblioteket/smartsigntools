@@ -10,6 +10,7 @@ function verifyToken(req, res, next) {
         || req.headers['kth-ug-token']
         || req.cookies.jwt
 
+        console.log('token: ' + token)
     if (!token)
         return res.render('login',{logindata: {"status":"ok", "message":"No token"}})
 
