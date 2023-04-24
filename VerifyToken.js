@@ -19,7 +19,8 @@ function verifyToken(req, res, next) {
         jwt.verify(token, process.env.SECRET, async function (err, decoded) {
             if (err) {
                 res.clearCookie("jwt")
-                res.status(401).send({ auth: false, message: 'Failed to authenticate token, ' + err.message });
+                res.render('login',{logindata: {"status":"error",  message: 'Failed to authenticate token, ' + err.message}})
+                // res.status(401).send({ auth: false, message: 'Failed to authenticate token, ' + err.message });
             }
 
             //Hämta kthuguser-data och kontrollera grupptillhörighet
