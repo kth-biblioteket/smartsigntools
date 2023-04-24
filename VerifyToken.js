@@ -10,11 +10,12 @@ function verifyToken(req, res, next) {
         || req.headers['kth-ug-token']
         || req.cookies.jwt
 
-        console.log('token: ' + token)
     if (!token)
         return res.render('login',{logindata: {"status":"ok", "message":"No token"}})
 
     if (req.headers['x-access-token'] || req.cookies.jwt) {
+        console.log('token: ' + token)
+        console.log('secret: ' + process.env.SECRET)
         jwt.verify(token, process.env.SECRET, async function (err, decoded) {
             if (err) {
                 res.clearCookie("jwt")
