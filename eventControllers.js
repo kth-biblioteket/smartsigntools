@@ -149,7 +149,9 @@ async function readEventsPaginated(req, res, next) {
 
 async function login(req, res) {
     try {
+        console.log(process.env.LDAP_API_URL + 'login')
         const response = await axios.post(process.env.LDAP_API_URL + 'login', req.body)
+        console.log(response)
         res
         .cookie("jwt", response.data.token, {
             maxAge: 60 * 60 * 24 * 7 * 1000,
