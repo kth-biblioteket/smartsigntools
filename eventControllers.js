@@ -150,6 +150,7 @@ async function readEventsPaginated(req, res, next) {
 async function login(req, res) {
     try {
         console.log(process.env.LDAP_API_URL + 'login')
+        console.log(req.body)
         const response = await axios.post(process.env.LDAP_API_URL + 'login', req.body)
         console.log(response)
         res
