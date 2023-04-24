@@ -33,6 +33,7 @@ function verifyToken(req, res, next) {
             } catch(err) {
                 res.status(400).send({ auth: false, message: 'General error' + err.message });
             }
+            console.log(response.data)
             if (response.data.ugusers) {
                 if (response.data.ugusers.kthPAGroupMembership) {
                     
