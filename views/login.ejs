@@ -56,13 +56,13 @@
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     sessionStorage.setItem("token", JSON.parse(this.responseText).token);
-                    location.href = "/smartsign/api/v1/admin"
+                    location.href = "/smartsigntools/api/v1/admin"
                 }
                 if (this.readyState == 4 && this.status !== 200) {
                     document.getElementById("errormessage").innerHTML = "Wrong credentials!";
                 }
             };
-            xhttp.open("POST", "/smartsign/api/v1/login");
+            xhttp.open("POST", "/smartsigntools/api/v1/login");
             xhttp.setRequestHeader("Content-type", "application/json");
             xhttp.send(JSON.stringify(credentials));
         }
