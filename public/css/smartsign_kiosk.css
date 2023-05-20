@@ -1,0 +1,188 @@
+/* Chromium färger PDF */
+html {
+    -webkit-print-color-adjust: exact;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+a {
+    color: #000;
+    text-decoration:none;
+}
+  
+h1 {
+    font-size: 88px;
+}
+  
+h2 {
+    font-size: 60px;
+}
+
+h3 {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 32px;
+    font-weight: bold;
+}
+  
+h6 {
+   font-size: 32px; 
+}
+
+.App {
+    text-align: left;
+    background-color: #fff;
+    color: #000;
+    /* smartsignskärmarnas upplösning */
+    height: 1084px;
+    width: 1024px;
+    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+
+.App-padding {
+    padding: 0px 0px 0px 0px;
+}
+
+.App-padding-top {
+    padding-top:60px;
+}
+  
+.App-logo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 80px;
+}
+  
+.App-header {
+    overflow: hidden;
+}
+
+.App-header .kthlogo {
+    float: left
+}
+
+.App-header .kthlogo img{
+    width:150px
+}
+
+.headertext {
+    float:right;
+    padding-top:0px;
+}
+  
+.App-title {
+    font-size: 1.5em;
+    position: relative;
+}
+
+.App-title .titleimage {
+    max-height: 1000px;
+    overflow: hidden;
+}
+
+.App-title .titleimage img {
+    width: 100%;
+    /*margin: 0px 0 0 0px;*/
+}
+
+.App-title .rubrikplatta {
+    position: absolute;
+    width: 800px;
+    top: 240px;
+    left: 0px;
+    background: #fff;
+    padding: 10px 25px 10px 135px;
+    font-weight: bold;
+    font-size: 46px;
+    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+  
+.App-intro {
+    font-size: large;
+}
+  
+.App-content {
+    font-weight:500;
+    font-size: 40px;
+    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+
+.content-padding {
+    padding:60px 135px 0px 135px;
+}
+
+.content-header {
+    font-size: 40px;
+}
+
+#ingress {
+    padding-top:10px;
+    font-size: 32px;
+    width: 680px;
+}
+
+.smartsign-node #ingress {
+    padding-top: 30px;
+    font-size: 40px;
+    width: 680px;
+}
+
+.gauge-header-small {
+    font-size: 30px;
+}
+
+.gauge-header-medium {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.gauge-header-large {
+    font-size: 46px;
+    font-weight: bold;
+}
+
+.App-footer {
+    margin:5px 5px;
+    font-size: 20px;
+}
+
+.smartsign-node .App-footer {
+    font-family:verdana;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    margin: 0px 54px 10px 0px;
+    font-size: 14px;
+}
+
+.App-footer>span {
+    position: relative;
+    bottom: 6px;
+    font-size: 14px;
+}
+
+#readmore {
+    position: relative;
+    vertical-align: bottom;
+    bottom: 10px;
+    font-size: 14px;
+}
+
+.qrcode {
+    position: relative;
+    vertical-align: bottom;
+    bottom: 0px;
+    margin: 0px 0px 10px 0px;
+    width:150px;
+    height:150px
+}
+
+.float {
+    overflow: hidden;
+}
