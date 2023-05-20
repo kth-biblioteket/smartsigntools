@@ -30,7 +30,8 @@ app.use(cookieParser());
 const socketIo = require("socket.io");
 
 app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
+
+app.use(process.env.APP_PATH, express.static(path.join(__dirname, "public")));
 
 app.use(cors({ origin: '*' }));
 
