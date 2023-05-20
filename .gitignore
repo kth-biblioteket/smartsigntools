@@ -14,3 +14,4 @@ imagebank/*.jpg
 imagebank/*.jpeg
 imagebank/*.png
 *.db
+test.js
