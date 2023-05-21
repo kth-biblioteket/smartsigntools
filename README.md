@@ -28,6 +28,8 @@ services:
     depends_on:
       - smartsigntools-db
     restart: "always"
+    environment:
+      TZ: ${TZ}
     env_file:
       - ./smartsigntools.env
     labels:
@@ -50,6 +52,7 @@ services:
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password
     environment:
+      TZ: ${TZ}
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
@@ -78,6 +81,7 @@ GITHUBTOKEN=xxxxxxxxxxxxxxxxxx
 PATHPREFIX=/smartsign
 DOMAIN_NAME=apps-ref.lib.kth.se
 REPO_TYPE=ref
+TZ=Europe/Stockholm
 ```
 4.  Skapa och anpassa smartsigntools.env (för applikationen) i foldern
 ```
