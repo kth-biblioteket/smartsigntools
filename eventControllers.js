@@ -1108,7 +1108,7 @@ async function generateDailyWiFiPage(type='A4', lang ='en') {
 
 async function savePageAsImage(events_id, html, imagefullpath, template) {
     try {
-        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] },);
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
@@ -1134,7 +1134,7 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
 
 async function savePageAsPdf(events_id, pdffullpath, type, template) {
     try {
-        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--font-render-hinting=medium'] },);
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
@@ -1174,7 +1174,7 @@ async function savePageAsPdf(events_id, pdffullpath, type, template) {
 
 async function saveWifiPageAsPdf(pdffullpath, type, template) {
     try {
-        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--font-render-hinting=medium'] },);
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
