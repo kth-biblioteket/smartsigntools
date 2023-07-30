@@ -1212,7 +1212,7 @@ async function saveWifiPageAsPdf(pdffullpath, type, template) {
 
 }
 
-async function getImas(req, res) {
+async function getImasRealtime(req, res) {
     try {
         token = await axios.post(`https://api.imas.net/account/login`, {
             'UserName' : process.env.IMAS_USER,
@@ -1306,7 +1306,7 @@ module.exports = {
     savePageAsImage,
     savePageAsPdf,
     saveWifiPageAsPdf,
-    getImas,
+    getImasRealtime,
     substrInBetween,
     truncate
 };

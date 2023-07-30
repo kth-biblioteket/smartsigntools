@@ -609,7 +609,7 @@ apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
     }
 });
 
-apiRoutes.get("/imas", eventController.getImas);
+apiRoutes.get("/imas/realtime", eventController.getImasRealtime);
 
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
