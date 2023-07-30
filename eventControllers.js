@@ -1212,6 +1212,40 @@ async function saveWifiPageAsPdf(pdffullpath, type, template) {
 
 }
 
+async function getImas(req, res) {
+    try {
+        token = await axios.post(`https://api.imas.net/account/login`, {
+            'UserName' : process.env.IMAS_USER,
+            'password' : process.env.IMAS_PASSWORD
+        })
+        
+        let todaysdate = new Date()
+        
+        imasopenedhours = await axios.get(`https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${todaysdate.toLocaleDateString()}`,
+        {
+            headers: {
+                'User' : process.env.IMAS_USER,
+                'X-Auth-Token' : token.data
+            }
+        })
+        
+        if((new Date() > new Date(imasopenedhours.data.from) && new Date() < new Date(imasopenedhours.data.until)) || new Date('2000-01-01') > new Date(imasopenedhours.data.from)) {
+            res.send({"location": "closed"})
+        } else {
+            exportrealtimevalues = await axios.get(`https://api.imas.net/export/exportrealtimevalues?id=KTHBIB`,
+            {
+                headers: {
+                    'User' : process.env.IMAS_USER,
+                    'X-Auth-Token' : token.data
+                }
+            })
+            res.send(exportrealtimevalues.data)
+        }
+    } catch (err) {
+        res.send(err.message)
+    }
+}
+
 function substrInBetween(whole_str, str1, str2) {
     if (whole_str.indexOf(str1) === -1 || whole_str.indexOf(str2) === -1) {
         return undefined;
@@ -1272,6 +1306,7 @@ module.exports = {
     savePageAsImage,
     savePageAsPdf,
     saveWifiPageAsPdf,
+    getImas,
     substrInBetween,
     truncate
 };

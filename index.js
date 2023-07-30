@@ -609,39 +609,7 @@ apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
     }
 });
 
-apiRoutes.get("/imas", async function (req, res, next) {
-    try {
-        token = await axios.post(`https://api.imas.net/account/login`, {
-            'UserName' : process.env.IMAS_USER,
-            'password' : process.env.IMAS_PASSWORD
-        })
-        
-        let todaysdate = new Date()
-        
-        imasopenedhours = await axios.get(`https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${todaysdate.toLocaleDateString()}`,
-        {
-            headers: {
-                'User' : process.env.IMAS_USER,
-                'X-Auth-Token' : token.data
-            }
-        })
-        
-        if((new Date() > new Date(imasopenedhours.data.from) && new Date() < new Date(imasopenedhours.data.until)) || new Date('2000-01-01') > new Date(imasopenedhours.data.from)) {
-            res.send({"location": "closed"})
-        } else {
-            exportrealtimevalues = await axios.get(`https://api.imas.net/export/exportrealtimevalues?id=KTHBIB`,
-            {
-                headers: {
-                    'User' : process.env.IMAS_USER,
-                    'X-Auth-Token' : token.data
-                }
-            })
-            res.send(exportrealtimevalues.data)
-        }
-    } catch (err) {
-        res.send(err.message)
-    }
-});
+apiRoutes.get("/imas", eventController.getImas);
 
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
