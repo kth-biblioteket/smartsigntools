@@ -1,0 +1,125 @@
+<style>
+  .wrapper {
+  overflow: hidden;
+  padding-bottom:20px;
+  text-align: center;
+}
+
+#gaugeHBheader{
+  text-align: center;
+  padding-bottom:10px;
+  font-size: 46px;
+}
+#justgaugeHB {
+  text-align: center; 
+  height:300px
+}
+
+.floatleft {
+  float:left
+}
+
+.floatright {
+  float:right
+}
+
+#gaugeSOGheader {
+  text-align: center;
+  padding-bottom:10px;
+}
+
+#justgaugeSOG {
+  text-align: center;
+  height:150px;
+  width:360px
+}
+
+#gaugeNGheader {
+  text-align: center;
+  padding-bottom:10px
+}
+
+#justgaugeNG {
+  text-align: center;
+  height:150px;
+  width:360px
+}
+
+#gaugeSGheader {
+  text-align:center;
+  padding-bottom:10px;
+}
+
+#justgaugeSG {
+  text-align: center;
+  height:150px;
+  width:360px;
+}
+
+#gaugeANGDOMENheader {
+  text-align: center;
+  padding-bottom:10px;
+}
+
+#justgaugeANGDOMEN {
+  text-align: center;
+  height:150px;
+  width:360px;
+}
+
+ #gaugeOMheader {
+   text-align: center;
+   padding-bottom:10px;
+}
+
+.textcenter {
+  text-align: center;
+}
+
+#justgaugeOM {
+  height:150px;
+  width:360px;
+  margin: 0 auto;
+}
+</style>
+<div class="wrapper">
+  <div>
+   <div id="gaugeHBheader" style="text-align: center;padding-bottom:10px;font-size: 46px;"></div>
+   <div id="justgaugeHB" style="text-align: center; height:300px"></div>
+   <div id="HBinfo"></div>
+  </div>
+  <div class="wrapper">
+   <div class="floatleft">
+    <div id="gaugeSOGheader" style="text-align: center;padding-bottom:10px"></div>
+    <div id="justgaugeSOG" style="text-align: center; height:150px;width:360px"></div>
+    <div id="SOGinfo"></div>
+   </div>
+   <div class="floatright">
+    <div id="gaugeNGheader" style="text-align: center;padding-bottom:10px"></div>
+    <div id="justgaugeNG" style="text-align: center; height:150px;width:360px"></div>
+    <div id="NGinfo"></div>
+   </div>
+  </div>
+  <div class="wrapper">
+   <div class="floatleft">
+    <div id="gaugeSGheader" style="text-align: center;padding-bottom:10px"></div>
+    <div id="justgaugeSG" style="text-align: center; height:150px;width:360px"></div>
+    <div id="SGinfo"></div>
+   </div>
+   <div class="floatright">
+    <div id="gaugeANGDOMENheader" style="text-align: center;padding-bottom:10px"></div>
+    <div id="justgaugeANGDOMEN" style="text-align: center; height:150px;width:360px"></div>
+    <div id="ANGDOMENinfo"></div>
+   </div>
+  </div>
+  <div class="wrapper">
+   <div>
+    <div id="gaugeOMheader" style="text-align: center;padding-bottom:10px"></div>
+    <div class="textcenter">
+     <div id="justgaugeOM" style=" height:150px;width:360px;margin: 0 auto"></div>
+    </div>
+    <div id="OMinfo"></div>
+   </div>
+  </div>
+ </div>
+ <%- include('partials/imasscript'); %>
