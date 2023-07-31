@@ -614,7 +614,9 @@ apiRoutes.get("/imas/realtime", eventController.getImasRealtime);
 
 apiRoutes.get("/imas/smartsignpage", async function (req, res) {
     try {
-        res.render('imas');
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        res.render('imas', {config: {"kiosk" : kiosk}});
     } catch(err) {
         res.send(err.message)
     }
@@ -623,7 +625,9 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 
 apiRoutes.get("/grb/smartsignpage", async function (req, res) {
     try {
-        res.render('grb');
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        res.render('grb', {config: {"kiosk" : kiosk}});
     } catch(err) {
         res.send(err.message)
     }
@@ -632,7 +636,9 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
 
 apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
     try {
-        res.render('timeedit');
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        res.render('timeedit', {config: {"kiosk" : kiosk}});
     } catch(err) {
         res.send(err.message)
     }

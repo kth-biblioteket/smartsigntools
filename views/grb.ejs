@@ -5,47 +5,52 @@
 </head>
 
 <body>
-    <div class="App">        
-        <header class="App-header App-padding">
-          <div style="overflow:hidden">
-            <div class="kthlogo">
-              <img src="/smartsigntools/images/kthlogo.jpg">
-            </div>
-            <div class="headertext">
-              <div class="">
-                <h4>KTH LIBRARY</h4>
-              </div>
-            </div>
-          </div>
-        </header>
-        <div class="App-title App-padding">
-          <div class="titleimage">
-            <img src="/smartsigntools/images/grupprum_high_1000_900.jpg" alt="logo"/>
-          </div>
-          <div id="rubrikplatta" class="rubrikplatta">
-              <div>
-                Group study rooms
-              </div>
-          </div>
+  <div class="App">
+    <% if (!config.kiosk) { %>
+    <header class="App-header App-padding">
+      <div style="overflow:hidden">
+        <div class="kthlogo">
+          <img src="/smartsigntools/images/kthlogo.jpg">
         </div>
-        <div id="App-content" class="App-content content-padding">
-        </div>
-        <div id="grouproomentries">
-            <div id="grouprooms" class="grouprooms">
-            </div>
-            <!--div id="readingstudios" class="readingstudios">
-            </div-->
-        </div>
-        <div class="App-footer content-padding">
-            <div class="whitesquare" style="float: left"></div>
-            <div style="float: left;padding: 5px 5px;">Free</div>
-            <div style="float: left;width: 30px;height: 30px;background-color: #dfa539;"></div>
-            <div style="float: left;padding: 5px 5px;">Not confirmed</div>
-            <div style="float: left;width: 30px;height: 30px;background-color: #e24646;"></div>
-            <div style="float: left;padding: 5px 5px;">Busy</div>
+        <div class="headertext">
+          <div class="">
+            <h4>KTH LIBRARY</h4>
+          </div>
         </div>
       </div>
-      <%- include('partials/grbscript'); %>
+    </header>
+    <div class="App-title App-padding">
+      <div class="titleimage">
+        <img src="/smartsigntools/images/grupprum_high_1000_900.jpg" alt="logo"/>
+      </div>
+      <div id="rubrikplatta" class="rubrikplatta">
+        <div>
+          Group study rooms
+        </div>
+      </div>
+    </div>
+    <% } %>
+    <div id="App-content" class="App-content content-padding">
+    </div>
+    <div id="grouproomentries">
+      <div id="grouprooms" class="grouprooms">
+      </div>
+      <!--div id="readingstudios" class="readingstudios">
+      </div-->
+    </div>
+    <div class="App-footer content-padding">
+      <div class="whitesquare" style="float: left"></div>
+      <div style="float: left;padding: 5px 5px;">Free</div>
+      <div style="float: left;width: 30px;height: 30px;background-color: #dfa539;"></div>
+      <div style="float: left;padding: 5px 5px;">Not confirmed</div>
+      <div style="float: left;width: 30px;height: 30px;background-color: #e24646;"></div>
+      <div style="float: left;padding: 5px 5px;">Busy</div>
+    </div>
+    <div class="App-footer">
+
+    </div>
+  </div>
+  <%- include('partials/grbscript'); %>
 </body>
 
 </html>
