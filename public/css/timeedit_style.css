@@ -1,13 +1,17 @@
-body {
-    overflow: hidden;
-}
-
-.grouprooms {
-    padding:0px 135px 20px 135px;
+.lokalbokningar {
+    padding:0px 75px 0px 75px;
     font-size: 28px;
     height: 100%;
-    color: #fff;
-    float:left;
+    color: #000;
+
+}
+
+.bookingheader  {
+    font-size: 40px;
+}
+
+.bookingrow  {
+    font-size: 32px;
 }
   
 .Smartsign-item {
@@ -16,6 +20,22 @@ body {
     border-radius: 10px;
     padding: 5px;
     display: inline-block;
+}
+
+.eventtime {
+    width:210px;
+    float:left;
+}
+
+.eventobject {
+    width:250px;
+    float:left;
+}
+
+.eventtitle {
+    width:340px;
+    float:left;
+    word-wrap: break-word;
 }
 
 .grey {
@@ -38,29 +58,16 @@ body {
     background-color: rgb(54, 165, 54);
 }
 
-.white {
-    background-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-    border: 1px solid rgb(148, 148, 148);
-}
-
 .redsquare {
-	width: 30px;
-	height: 30px;
+	width: 40px;
+	height: 40px;
 	background: rgb(226, 70, 70);
 }
 
 .greensquare {
-	width: 30px;
-	height: 30px;
+	width: 40px;
+	height: 40px;
 	background: rgb(54, 165, 54);
-}
-
-.whitesquare {
-	width: 30px;
-	height: 30px;
-    background: rgb(255, 255, 255);
-    border: 1px solid rgb(148, 148, 148);
 }
 
 .chartcontainer {

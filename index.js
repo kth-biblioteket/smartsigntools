@@ -630,6 +630,15 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
 
 });
 
+apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
+    try {
+        res.render('timeedit');
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
 const server = app.listen(process.env.PORT || 3002, function () {
