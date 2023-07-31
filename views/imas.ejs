@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <%- include('partials/imashead'); %>
+</head>
+
+<body>
+    <div class="App">        
+        <header class="App-header App-padding">
+          <div style="overflow:hidden">
+            <div class="kthlogo">
+              <img src="/smartsigntools/images/kthlogo.jpg">
+            </div>
+            <div class="headertext">
+              <div class="">
+                <h4>KTH LIBRARY</h4>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="App-title App-padding">
+          <div class="titleimage">
+            <img src="/smartsigntools/images/1000_480.jpg" alt="logo"/>
+          </div>
+          <div id="rubrikplatta" class="rubrikplatta">
+              <div>
+                How busy are we right now?
+              </div>
+          </div>
+        </div>
+        <div class="App-content content-padding">
+            <div style="overflow: hidden;padding-bottom:20px">
+              <div>
+                <div id="gaugeHBheader" style="text-align: center;padding-bottom:10px;font-size: 46px;"></div>
+                <div id="justgaugeHB" style="text-align: center; height:300px"></div>
+                <div id="HBinfo"></div>
+              </div>
+            </div>
+            <div style="overflow: hidden;padding-bottom:20px">
+              <div style="float:left">
+                <div id="gaugeSOGheader" style="text-align: center;padding-bottom:10px"></div>
+                <div id="justgaugeSOG" style="text-align: center; height:150px;width:360px"></div>
+                <div id="SOGinfo"></div>
+              </div>
+              <div style="float:right">
+                <div id="gaugeNGheader" style="text-align: center;padding-bottom:10px"></div>
+                <div id="justgaugeNG" style="text-align: center; height:150px;width:360px"></div>
+                <div id="NGinfo"></div>
+              </div>
+            </div>
+            <div style="overflow: hidden;padding-bottom:20px">
+              <div style="float:left">
+                <div id="gaugeSGheader" style="text-align: center;padding-bottom:10px"></div>
+                <div id="justgaugeSG" style="text-align: center; height:150px;width:360px"></div>
+                <div id="SGinfo"></div>
+              </div>
+              <div style="float:right">
+                <div id="gaugeANGDOMENheader" style="text-align: center;padding-bottom:10px"></div>
+                <div id="justgaugeANGDOMEN" style="text-align: center; height:150px;width:360px"></div>
+                <div id="ANGDOMENinfo"></div>
+              </div>
+            </div>
+            <div style="text-align: center;overflow: hidden;padding-bottom:20px">
+              <div>
+                <div id="gaugeOMheader" style="text-align: center;padding-bottom:10px"></div>
+                <div style="text-align: center">
+                  <div id="justgaugeOM" style=" height:150px;width:360px;margin: 0 auto"></div>
+                </div>
+                <div id="OMinfo"></div>
+              </div>
+            </div>
+        </div>
+        <div class="App-footer">
+                             
+        </div>
+      </div>
+      <%- include('partials/imasscript'); %>
+</body>
+
+</html>

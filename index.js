@@ -1,6 +1,7 @@
 'use strict';
 
-require('dotenv').config()
+//require('dotenv').config()
+require('dotenv').config({path:'smartsigntools.env'})
 
 const jwt = require("jsonwebtoken");
 const VerifyToken = require('./VerifyToken');
@@ -610,6 +611,15 @@ apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
 });
 
 apiRoutes.get("/imas/realtime", eventController.getImasRealtime);
+
+apiRoutes.get("/imas/smartsignpage", async function (req, res) {
+    try {
+        res.render('imas');
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
 
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
