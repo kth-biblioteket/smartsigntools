@@ -616,7 +616,7 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
     try {
         let kiosk
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        res.render('imas', {config: {"kiosk" : kiosk, "serverurl" : process.env.SERVERURL, "lang": req.query.lang || 'sv'}});
+        res.render('imas', {config: {"kiosk" : kiosk, "externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv'}});
     } catch(err) {
         res.send(err.message)
     }
@@ -625,7 +625,7 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 
 apiRoutes.get("/imas/polopoly", async function (req, res) {
     try {
-        res.render('imaspolopoly', {config: {"serverurl" : process.env.SERVERURL, "lang": req.query.lang || 'sv'}});
+        res.render('imaspolopoly', {config: {"externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv'}});
     } catch(err) {
         res.send(err.message)
     }

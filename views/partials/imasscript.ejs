@@ -1,6 +1,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="<%= config.serverurl %>smartsigntools/js/cmGauge.js"></script>
-<script src="<%= config.serverurl %>smartsigntools/js/raphaeljustgage.js?ver=2.0"></script>
+<script src="<%= config.externalserverurl %>smartsigntools/js/cmGauge.js"></script>
+<script src="<%= config.externalserverurl %>smartsigntools/js/raphaeljustgage.js?ver=2.0"></script>
 
 <script defer>
     let config = JSON.parse(`<%- JSON.stringify(config) %>`)
@@ -26,7 +26,7 @@
     var html = '';
     $.ajax({
       cache: false,
-      url: `<%= config.serverurl %>smartsigntools/api/v1/imas/realtime`,
+      url: `<%= config.externalserverurl %>smartsigntools/api/v1/imas/realtime`,
       //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
         showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
