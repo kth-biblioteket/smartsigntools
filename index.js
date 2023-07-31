@@ -621,6 +621,15 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 
 });
 
+apiRoutes.get("/grb/smartsignpage", async function (req, res) {
+    try {
+        res.render('grb');
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
 const server = app.listen(process.env.PORT || 3002, function () {
