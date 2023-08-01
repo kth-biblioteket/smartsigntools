@@ -616,7 +616,7 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
     try {
         let kiosk
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        res.render('imas', {config: {"kiosk" : kiosk, "externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv'}});
+        res.render('imas', {smartsignconfig: {"kiosk" : kiosk, "externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv'}});
     } catch(err) {
         res.send(err.message)
     }
@@ -625,7 +625,7 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 
 apiRoutes.get("/imas/polopoly", async function (req, res) {
     try {
-        res.render('imaspolopoly', {config: {"externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv', "nojquery" : req.query.nojquery, "start": req.query.start}});
+        res.render('imaspolopoly', {smartsignconfig: {"externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv', "nojquery" : req.query.nojquery, "start": req.query.start}});
     } catch(err) {
         res.send(err.message)
     }
@@ -636,7 +636,7 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
     try {
         let kiosk
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        res.render('grb', {config: {"kiosk" : kiosk}});
+        res.render('grb', {smartsignconfig: {"kiosk" : kiosk}});
     } catch(err) {
         res.send(err.message)
     }
@@ -647,7 +647,7 @@ apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
     try {
         let kiosk
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        res.render('timeedit', {config: {"kiosk" : kiosk}});
+        res.render('timeedit', {smartsignconfig: {"kiosk" : kiosk}});
     } catch(err) {
         res.send(err.message)
     }
