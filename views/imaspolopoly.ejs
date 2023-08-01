@@ -122,4 +122,8 @@
    </div>
   </div>
  </div>
- <%- include('partials/imasscript'); %>
+<% if (!config.nojquery) { %>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<% } %>
+
+<%- include('partials/imasscript'); %>
