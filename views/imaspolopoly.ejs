@@ -1,129 +1,134 @@
 <style>
   .wrapper {
-  overflow: hidden;
-  padding-bottom:20px;
-  text-align: center;
-}
+    overflow: hidden;
+    padding-bottom: 20px;
+    text-align: center;
+  }
 
-#gaugeHBheader{
-  text-align: center;
-  padding-bottom:10px;
-  font-size: 46px;
-}
-#justgaugeHB {
-  text-align: center; 
-  height:300px
-}
+  #gaugeHBheader {
+    text-align: center;
+    padding-bottom: 10px;
+    font-size: 46px;
+  }
 
-.floatleft {
-  float:left
-}
+  #justgaugeHB {
+    text-align: center;
+    height: 300px
+  }
 
-.floatright {
-  float:right
-}
+  .floatleft {
+    float: left
+  }
 
-#gaugeSOGheader {
-  text-align: center;
-  padding-bottom:10px;
-}
+  .floatright {
+    float: right
+  }
 
-#justgaugeSOG {
-  text-align: center;
-  height:150px;
-  width:360px
-}
+  #gaugeSOGheader {
+    text-align: center;
+    padding-bottom: 10px;
+  }
 
-#gaugeNGheader {
-  text-align: center;
-  padding-bottom:10px
-}
+  #justgaugeSOG {
+    text-align: center;
+    height: 150px;
+    width: 360px
+  }
 
-#justgaugeNG {
-  text-align: center;
-  height:150px;
-  width:360px
-}
+  #gaugeNGheader {
+    text-align: center;
+    padding-bottom: 10px
+  }
 
-#gaugeSGheader {
-  text-align:center;
-  padding-bottom:10px;
-}
+  #justgaugeNG {
+    text-align: center;
+    height: 150px;
+    width: 360px
+  }
 
-#justgaugeSG {
-  text-align: center;
-  height:150px;
-  width:360px;
-}
+  #gaugeSGheader {
+    text-align: center;
+    padding-bottom: 10px;
+  }
 
-#gaugeANGDOMENheader {
-  text-align: center;
-  padding-bottom:10px;
-}
+  #justgaugeSG {
+    text-align: center;
+    height: 150px;
+    width: 360px;
+  }
 
-#justgaugeANGDOMEN {
-  text-align: center;
-  height:150px;
-  width:360px;
-}
+  #gaugeANGDOMENheader {
+    text-align: center;
+    padding-bottom: 10px;
+  }
 
- #gaugeOMheader {
-   text-align: center;
-   padding-bottom:10px;
-}
+  #justgaugeANGDOMEN {
+    text-align: center;
+    height: 150px;
+    width: 360px;
+  }
 
-.textcenter {
-  text-align: center;
-}
+  #gaugeOMheader {
+    text-align: center;
+    padding-bottom: 10px;
+  }
 
-#justgaugeOM {
-  height:150px;
-  width:360px;
-  margin: 0 auto;
-}
+  .textcenter {
+    text-align: center;
+  }
+
+  #justgaugeOM {
+    height: 150px;
+    width: 360px;
+    margin: 0 auto;
+  }
 </style>
+<% if (config.start) { %>
+  <div id="justgaugeHB" style="text-align: center;"></div> 
+<% } else { %>
 <div class="wrapper">
   <div>
-   <div id="gaugeHBheader" style="text-align: center;padding-bottom:10px;font-size: 46px;"></div>
-   <div id="justgaugeHB" style="text-align: center; height:300px"></div>
-   <div id="HBinfo"></div>
+    <div id="gaugeHBheader" style="text-align: center;padding-bottom:10px;font-size: 46px;"></div>
+    <div id="justgaugeHB" style="text-align: center; height:300px"></div>
+    <div id="HBinfo"></div>
   </div>
   <div class="wrapper">
-   <div class="floatleft">
-    <div id="gaugeSOGheader" style="text-align: center;padding-bottom:10px"></div>
-    <div id="justgaugeSOG" style="text-align: center; height:150px;width:360px"></div>
-    <div id="SOGinfo"></div>
-   </div>
-   <div class="floatright">
-    <div id="gaugeNGheader" style="text-align: center;padding-bottom:10px"></div>
-    <div id="justgaugeNG" style="text-align: center; height:150px;width:360px"></div>
-    <div id="NGinfo"></div>
-   </div>
-  </div>
-  <div class="wrapper">
-   <div class="floatleft">
-    <div id="gaugeSGheader" style="text-align: center;padding-bottom:10px"></div>
-    <div id="justgaugeSG" style="text-align: center; height:150px;width:360px"></div>
-    <div id="SGinfo"></div>
-   </div>
-   <div class="floatright">
-    <div id="gaugeANGDOMENheader" style="text-align: center;padding-bottom:10px"></div>
-    <div id="justgaugeANGDOMEN" style="text-align: center; height:150px;width:360px"></div>
-    <div id="ANGDOMENinfo"></div>
-   </div>
-  </div>
-  <div class="wrapper">
-   <div>
-    <div id="gaugeOMheader" style="text-align: center;padding-bottom:10px"></div>
-    <div class="textcenter">
-     <div id="justgaugeOM" style=" height:150px;width:360px;margin: 0 auto"></div>
+    <div class="floatleft">
+      <div id="gaugeSOGheader" style="text-align: center;padding-bottom:10px"></div>
+      <div id="justgaugeSOG" style="text-align: center; height:150px;width:360px"></div>
+      <div id="SOGinfo"></div>
     </div>
-    <div id="OMinfo"></div>
-   </div>
+    <div class="floatright">
+      <div id="gaugeNGheader" style="text-align: center;padding-bottom:10px"></div>
+      <div id="justgaugeNG" style="text-align: center; height:150px;width:360px"></div>
+      <div id="NGinfo"></div>
+    </div>
   </div>
- </div>
+  <div class="wrapper">
+    <div class="floatleft">
+      <div id="gaugeSGheader" style="text-align: center;padding-bottom:10px"></div>
+      <div id="justgaugeSG" style="text-align: center; height:150px;width:360px"></div>
+      <div id="SGinfo"></div>
+    </div>
+    <div class="floatright">
+      <div id="gaugeANGDOMENheader" style="text-align: center;padding-bottom:10px"></div>
+      <div id="justgaugeANGDOMEN" style="text-align: center; height:150px;width:360px"></div>
+      <div id="ANGDOMENinfo"></div>
+    </div>
+  </div>
+  <div class="wrapper">
+    <div>
+      <div id="gaugeOMheader" style="text-align: center;padding-bottom:10px"></div>
+      <div class="textcenter">
+        <div id="justgaugeOM" style=" height:150px;width:360px;margin: 0 auto"></div>
+      </div>
+      <div id="OMinfo"></div>
+    </div>
+  </div>
+</div>
+<% } %>
 <% if (!config.nojquery) { %>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<% } %>
+  <% } %>
 
-<%- include('partials/imasscript'); %>
+    <%- include('partials/imasscript'); %>

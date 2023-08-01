@@ -625,7 +625,7 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 
 apiRoutes.get("/imas/polopoly", async function (req, res) {
     try {
-        res.render('imaspolopoly', {config: {"externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv', "nojquery" : req.query.nojquery}});
+        res.render('imaspolopoly', {config: {"externalserverurl" : process.env.EXTERNALSERVERLURL, "lang": req.query.lang || 'sv', "nojquery" : req.query.nojquery, "start": req.query.start}});
     } catch(err) {
         res.send(err.message)
     }
