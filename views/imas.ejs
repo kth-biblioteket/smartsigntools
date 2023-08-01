@@ -6,7 +6,7 @@
 
 <body>
   <div class="App">
-    <% if (!config.kiosk) { %>
+    <% if (!smartsignconfig.kiosk) { %>
     <header class="App-header App-padding">
       <div style="overflow:hidden">
         <div class="kthlogo">
@@ -75,7 +75,7 @@
     <div class="App-footer">               
     </div>
   </div>
-  <% if (!config.nojquery) { %>
+  <% if (!smartsignconfig.nojquery) { %>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <% } %>
   <%- include('partials/imasscript'); %>

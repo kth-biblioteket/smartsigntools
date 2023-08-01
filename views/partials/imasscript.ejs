@@ -1,8 +1,8 @@
-<script src="<%= config.externalserverurl %>smartsigntools/js/cmGauge.js"></script>
-<script src="<%= config.externalserverurl %>smartsigntools/js/raphaeljustgage.js?ver=2.0"></script>
+<script src="<%= smartsignconfig.externalserverurl %>smartsigntools/js/cmGauge.js"></script>
+<script src="<%= smartsignconfig.externalserverurl %>smartsigntools/js/raphaeljustgage.js?ver=2.0"></script>
 
 <script defer>
-    let config = JSON.parse(`<%- JSON.stringify(config) %>`)
+    let smartsignconfig = JSON.parse(`<%- JSON.stringify(smartsignconfig) %>`)
     function getUrlVars() {
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
@@ -25,7 +25,7 @@
     var html = '';
     $.ajax({
       cache: false,
-      url: `<%= config.externalserverurl %>smartsigntools/api/v1/imas/realtime`,
+      url: `<%= smartsignconfig.externalserverurl %>smartsigntools/api/v1/imas/realtime`,
       //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
         showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
@@ -70,7 +70,7 @@
       response.zones = {}
       response.zones.length = 0
     } 
-    if (config.lang.indexOf('en')!= -1) {
+    if (smartsignconfig.lang.indexOf('en')!= -1) {
       sitenameheader = sitename_en
     } else {
       sitenameheader = sitename_sv
