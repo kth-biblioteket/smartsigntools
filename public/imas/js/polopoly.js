@@ -58,9 +58,6 @@ function getUrlVars() {
   function showVisitors(response, site, sitename, sitename_sv, sitename_en, maxoccupancy, gaugeclass) {
     var sitenameheader
     if(response.location == "closed" ) {
-      //$('.wrapper').html('<div>The Library is closed</div>');
-      //$('.App-content').html('<div>Biblioteket är stängt</div>');
-      //response == null
       response.zones = {}
       response.zones.length = 0
     } 
@@ -130,11 +127,6 @@ function getUrlVars() {
         $("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
         $('#just' + site).html('<div class="content-header">Information unavailable</div>');
       } else {
-        //if(response.location == "closed" ) {
-        //      $('.wrapper').html('<div>The Library is closed</div>');
-        //      //$('.App-content').html('<div>Biblioteket är stängt</div>');
-        //} 
-        //else {
           html = '';
           var occupancyrate = 0;
           var availablerate = 0;
@@ -175,8 +167,7 @@ function getUrlVars() {
             id: "just" + site,
             defaults: defs                      
           });
-          gauge.refresh(occupancyrate);
-        //}
+          gauge.refresh(occupancyrate); 
       }
     }
   }
