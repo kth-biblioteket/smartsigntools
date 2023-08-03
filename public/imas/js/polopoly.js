@@ -21,7 +21,6 @@ function getUrlVars() {
     $.ajax({
       cache: false,
       url: `https://apps.lib.kth.se/smartsigntools/api/v1/imas/realtime`,
-      //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
         showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
         showVisitors(response, 'gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium');
