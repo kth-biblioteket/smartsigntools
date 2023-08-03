@@ -90,7 +90,7 @@ $(document).ready(function () {
             response.zones = {}
             response.zones.length = 0
         }
-        if ($('html').attr('lang').indexOf('en') != -1) {
+        if (lang != 'en') {
             sitenameheader = sitename_en
         } else {
             sitenameheader = sitename_sv
