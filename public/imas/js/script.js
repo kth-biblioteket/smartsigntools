@@ -197,12 +197,11 @@ $(document).ready(function () {
             }
 
         }
-
-        try {
-            getVisitors();
-        }
-        catch (error) {
-            console.log(error);
-        }
+    }
+    try {
+        getVisitors();
+    }
+    catch (error) {
+        console.log(error);
     }
 });
