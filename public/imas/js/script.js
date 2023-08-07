@@ -150,9 +150,11 @@ $(document).ready(function () {
             };
             var html = '';
             if (!response) {
-                $("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
-                $('#just' + site).html('<div class="content-header">Information unavailable</div>');
-            } else {
+                response.zones = {}
+                response.zones.length = 0
+                //$("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
+                //$('#just' + site).html('<div class="content-header">Information unavailable</div>');
+            }
                 html = '';
                 var occupancyrate = 0;
                 var availablerate = 0;
@@ -194,7 +196,6 @@ $(document).ready(function () {
                     defaults: defs
                 });
                 gauge.refresh(occupancyrate);
-            }
 
         }
     }
