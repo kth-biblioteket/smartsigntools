@@ -1229,7 +1229,7 @@ async function getImasRealtime(req, res) {
             }
         })
         
-        if((new Date() > new Date(imasopenedhours.data.from) && new Date() < new Date(imasopenedhours.data.until)) || new Date('2000-01-01') > new Date(imasopenedhours.data.from)) {
+        if ((new Date() < new Date(imasopenedhours.data.from) && new Date() > new Date(imasopenedhours.data.until)) || new Date('2000-01-01') < new Date(imasopenedhours.data.from)) {
             res.send({"location": "closed"})
         } else {
             exportrealtimevalues = await axios.get(`https://api.imas.net/export/exportrealtimevalues?id=KTHBIB`,

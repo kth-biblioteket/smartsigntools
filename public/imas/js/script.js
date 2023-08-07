@@ -86,6 +86,7 @@ $(document).ready(function () {
      */
     function showVisitors(response, site, sitename, sitename_sv, sitename_en, maxoccupancy, gaugeclass) {
         var sitenameheader
+        //Visa mätare med 0 om svar = closed
         if (response.location == "closed") {
             response.zones = {}
             response.zones.length = 0
@@ -149,6 +150,7 @@ $(document).ready(function () {
 
             };
             var html = '';
+            //Visa mätare med 0 om svar från imas är tomt
             if (!response) {
                 response = []
                 response.zones = {}
