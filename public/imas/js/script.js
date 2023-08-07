@@ -150,7 +150,7 @@ $(document).ready(function () {
             };
             var html = '';
             if (!response) {
-                let response = []
+                response = []
                 response.zones = {}
                 response.zones.length = 0
                 //$("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
