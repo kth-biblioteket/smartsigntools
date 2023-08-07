@@ -150,52 +150,53 @@ $(document).ready(function () {
             };
             var html = '';
             if (!response) {
+                let response = []
                 response.zones = {}
                 response.zones.length = 0
                 //$("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
                 //$('#just' + site).html('<div class="content-header">Information unavailable</div>');
             }
-                html = '';
-                var occupancyrate = 0;
-                var availablerate = 0;
-                var circlecolor = 'green';
-                var over50 = '';
-                var currentInside = null;
-                var currentThreshold = null;
-                for (var i = 0; i < response.zones.length; i++) {
-                    if (response.zones[i].name == sitename) {
-                        currentInside = response.zones[i].inside
-                        currentThreshold = response.zones[i].threshold
-                    }
+            html = '';
+            var occupancyrate = 0;
+            var availablerate = 0;
+            var circlecolor = 'green';
+            var over50 = '';
+            var currentInside = null;
+            var currentThreshold = null;
+            for (var i = 0; i < response.zones.length; i++) {
+                if (response.zones[i].name == sitename) {
+                    currentInside = response.zones[i].inside
+                    currentThreshold = response.zones[i].threshold
                 }
+            }
 
-                if (currentInside <= 0) {
-                    occupancyrate = 0;
+            if (currentInside <= 0) {
+                occupancyrate = 0;
 
-                } else {
-                    occupancyrate = Math.round(100 * currentInside / currentThreshold);
-                }
+            } else {
+                occupancyrate = Math.round(100 * currentInside / currentThreshold);
+            }
 
-                if (occupancyrate > 100) {
-                    occupancyrate = 100
-                }
-                //Ändra färg beroende på beläggning
-                if (occupancyrate > 50 && occupancyrate < 85) {
-                    circlecolor = 'orange';
-                    over50 = 'over50'
-                }
-                if (occupancyrate > 85) {
-                    circlecolor = 'red';
-                    over50 = 'over50'
-                }
+            if (occupancyrate > 100) {
+                occupancyrate = 100
+            }
+            //Ändra färg beroende på beläggning
+            if (occupancyrate > 50 && occupancyrate < 85) {
+                circlecolor = 'orange';
+                over50 = 'over50'
+            }
+            if (occupancyrate > 85) {
+                circlecolor = 'red';
+                over50 = 'over50'
+            }
 
-                $("#" + site + ' .gauge-arrow').trigger('updateGauge', occupancyrate);
-                $("#" + site + 'header').html('<div class="'+ gaugeclass + '">'+ sitenameheader + '</div>');
-                var gauge = new JustGage({
-                    id: "just" + site,
-                    defaults: defs
-                });
-                gauge.refresh(occupancyrate);
+            $("#" + site + ' .gauge-arrow').trigger('updateGauge', occupancyrate);
+            $("#" + site + 'header').html('<div class="'+ gaugeclass + '">'+ sitenameheader + '</div>');
+            var gauge = new JustGage({
+                id: "just" + site,
+                defaults: defs
+            });
+            gauge.refresh(occupancyrate);
 
         }
     }
