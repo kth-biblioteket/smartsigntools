@@ -39,7 +39,7 @@ function getUrlVars() {
         showVisitors(null, 'gaugeOM', 'Newton', 'Newton', 'Newton', 15, 'gauge-header-medium');
       },
       complete: function() {
-        setTimeout(getVisitors,120000);
+        //setTimeout(getVisitors,120000);
       }
   
     });
@@ -124,8 +124,11 @@ function getUrlVars() {
       };
       var html = '';
       if(!response) {
-        $("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
-        $('#just' + site).html('<div class="content-header">Information unavailable</div>');
+        response = []
+        response.zones = {}
+        response.zones.length = 0
+        //$("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
+        //$('#just' + site).html('<div class="content-header">Information unavailable</div>');
       } else {
           html = '';
           var occupancyrate = 0;
