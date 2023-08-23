@@ -241,8 +241,7 @@ strong {
     width: 43%;
     /* text-align: right; */
     display: flex;
-    justify-content: end;
-    align-items: end;
+    align-self: flex-end;
     line-height: 1;
 }
 
@@ -255,8 +254,7 @@ strong {
     width: 43%;
     /* text-align: right; */
     display: flex;
-    justify-content: end;
-    align-items: end;
+    align-self: flex-end;
     line-height: 1;
 }
 
