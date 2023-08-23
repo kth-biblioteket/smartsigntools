@@ -1,6 +1,7 @@
 /* Chromium färger PDF */
 html {
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 body {
@@ -11,7 +12,7 @@ body {
 
 a {
     color: #000;
-    text-decoration:none;
+    text-decoration: none;
 }
   
 h1 {
@@ -36,19 +37,30 @@ h6 {
    font-size: 32px; 
 }
 
-.App {
-    text-align: left;
-    background-color: #fff;
-    color: #000;
-    /* smartsignskärmarnas upplösning */
-    height: 1900px;
-    width: 1080px;
-    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+.bottom-padding {
+    padding-bottom: 40px;
 }
 
+.top-padding {
+    padding-top: 40px;
+}
+
+.App {
+    text-align: left;
+    color: #000;
+    /* smartsignskärmarnas upplösning */
+    height: 1920px;
+    width: 1080px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+    overflow: hidden;
+    position: relative;
+}
+
+/*
 .App-padding {
     padding: 60px 54px 0px 54px;
 }
+*/
 
 .App-padding-top {
     padding-top:60px;
@@ -58,7 +70,32 @@ h6 {
     animation: App-logo-spin infinite 20s linear;
     height: 80px;
 }
-  
+
+.kthlogo {
+    position: absolute;
+    top: 50px;
+    z-index: 1000;
+    text-align: center;
+    width: 100%;  
+}
+
+.kthlogo img {
+    width: 180px;
+    padding: 10px;
+}
+
+.kthname {
+    position: absolute;
+    top: 0px;
+    z-index: 1000;
+    text-align: right;
+    width: 100%;
+    color: #fff;
+    padding: 20px 40px 0px 0px;
+    font-size: 30px;
+    font-weight: 700;
+}
+
 .App-header {
     overflow: hidden;
 }
@@ -82,7 +119,7 @@ h6 {
 }
 
 .App-title .titleimage {
-    max-height: 1000px;
+    max-height: 800px;
     overflow: hidden;
 }
 
@@ -91,16 +128,28 @@ h6 {
     /*margin: 0px 0 0 0px;*/
 }
 
-.App-title .rubrikplatta {
+.App-title .rubrik {
     position: absolute;
-    width: 800px;
+    bottom: 20px;
+    font-size: 80px;
+    color: #fff;
+    padding: 0px 40px 0px 40px;
+    font-weight: 700;
+    line-height: 105%;
+}
+
+.rubrikplatta {
+    /*position: absolute;*/
+    width: 100%;
     top: 240px;
     left: 0px;
-    background: #fff;
-    padding: 10px 25px 10px 135px;
-    font-weight: bold;
-    font-size: 46px;
-    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+    /*background: #fff;*/
+    padding: 40px 40px 0px 40px;
+    font-weight: 700;
+    line-height: 105%;
+    font-size: 80px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+    /*color: #ffffff*/
 }
   
 .App-intro {
@@ -110,11 +159,16 @@ h6 {
 .App-content {
     font-weight:500;
     font-size: 40px;
-    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+
+.App-content>div:first-child { 
+    padding-top: 40px;
 }
 
 .content-padding {
-    padding:60px 135px 0px 135px;
+    padding-left: 40px;
+    padding-right: 40px;
 }
 
 .content-header {
@@ -122,15 +176,24 @@ h6 {
 }
 
 #ingress {
-    padding-top:10px;
-    font-size: 32px;
-    width: 680px;
+    /*padding-top:10px;*/
+    font-size: 40px;
+    /*width: 680px;*/
 }
 
 .smartsign-node #ingress {
-    padding-top: 30px;
+    /*padding-top: 30px;*/
+    /*padding-left: 40px;*/
     font-size: 40px;
-    width: 680px;
+    /*width: 680px;*/
+}
+
+#time, #location, #language, #lecturer, #typeofevent {
+    font-weight: 700;
+}
+
+strong {
+    font-weight: 700;
 }
 
 .gauge-header-small {
@@ -153,34 +216,56 @@ h6 {
 }
 
 .smartsign-node .App-footer {
-    font-family:verdana;
-    position:absolute;
-    bottom:0px;
-    right:0px;
-    margin: 0px 54px 10px 0px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    /*margin: 0px 110px 10px 0px;*/
     font-size: 14px;
+    /*text-align: center;*/
+    width: 100%;
+    display: flex;
 }
 
 .App-footer>span {
     position: relative;
     bottom: 6px;
-    font-size: 14px;
+    font-size: 40px;
 }
 
-#readmore {
+.footerleft {
     position: relative;
     vertical-align: bottom;
     bottom: 10px;
-    font-size: 14px;
+    font-size: 40px;
+    font-weight: 700;
+    width: 43%;
+    /* text-align: right; */
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    line-height: 1;
+}
+
+.footerright {
+    position: relative;
+    vertical-align: bottom;
+    bottom: 10px;
+    font-size: 40px;
+    font-weight: 700;
+    width: 43%;
+    /* text-align: right; */
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    line-height: 1;
 }
 
 .qrcode {
     position: relative;
     vertical-align: bottom;
     bottom: 0px;
-    margin: 0px 0px 10px 0px;
-    width:150px;
-    height:150px
+    margin: 10px 10px 14px 10px;
+    width: 14%;
 }
 
 .float {

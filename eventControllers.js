@@ -24,6 +24,7 @@ async function readEventsPaginated(req, res, next) {
     let events
     let eventsbydate
     let imagebank
+    let colors
     let page = 1
     let size = 10
 
@@ -38,6 +39,13 @@ async function readEventsPaginated(req, res, next) {
     try{
         imagebank = await eventModel.readImages()
         data.imagebank = imagebank
+    } catch(err) {
+        res.send("error: " + err.message)
+    }
+
+    try{
+        colors = await eventModel.readColors()
+        data.colors = colors
     } catch(err) {
         res.send("error: " + err.message)
     }
@@ -89,7 +97,7 @@ async function readEventsPaginated(req, res, next) {
             }
             eventtime = eventtime.substr(4, 10) + eventtime.substr(15, 6).replace('.', ':')
 
-            //Har events starttid passerat?
+            //Behandla bara de event med senare datum än dagens
             if (new Date(eventtime) > new Date()) {
                 //finns event?
                 contentid = '1.' + item.guid.split('-1.')[1]
@@ -101,11 +109,11 @@ async function readEventsPaginated(req, res, next) {
                 } else {
                     //uppdatera eventuellt ändrad guid(ny url)
                     if(event[0].guid != item.guid) {
-                        let updateguid = await updateEvent(event[0].id, item.guid, event[0].contentid, event[0].eventtime, event[0].eventtime, event[0].eventtime, event[0].smartsignlink, event[0].published)
+                        let updateguid = await updateEvent(event[0].id, item.guid, event[0].contentid, event[0].eventtime, event[0].eventtime, event[0].eventtime, event[0].smartsignlink, event[0].published, event[0].published_as_image, event[0].lang)
                     }
                     //uppdatera eventuellt ändrad eventtime
-                    if(event[0].eventtime != eventtime) {
-                        let updateeventtime = await updateEvent(event[0].id, item.guid, event[0].contentid, eventtime, eventtime, eventtime, event[0].smartsignlink, event[0].published)
+                    if(new Date(event[0].eventtime) < new Date(eventtime) || new Date(event[0].eventtime) > new Date(eventtime)) {
+                        let updateeventtime = await updateEvent(event[0].id, item.guid, event[0].contentid, eventtime, eventtime, eventtime, event[0].smartsignlink, event[0].published, event[0].published_as_image, event[0].lang)
                     }
                 }
             }
@@ -127,6 +135,11 @@ async function readEventsPaginated(req, res, next) {
                 eventsarray[i].event = events[i];
                 eventsarray[i].eventfields = await eventModel.readEventFields(events[i].id)
                 eventsarray[i].eventimage = await eventModel.readEventImage(events[i].id)
+                eventsarray[i].eventbgcolor = await eventModel.readEventBgColor(events[i].id)
+                eventsarray[i].eventtextcolor = await eventModel.readEventTextColor(events[i].id)
+                eventsarray[i].eventimageoverlay = await eventModel.readEventImageOverlay(events[i].id)
+                eventsarray[i].eventimageheader = await eventModel.readEventImageHeader(events[i].id)
+                eventsarray[i].eventfieldsorder = await eventModel.readEventFieldsOrder(events[i].id)
             }
         }
         //filtrera bort tomma poster
@@ -137,7 +150,9 @@ async function readEventsPaginated(req, res, next) {
             "imagebank":  data.imagebank,
             "events": data.events,
             "feed": data.feed,
-            "feed_sv": data.feed_sv
+            "feed_sv": data.feed_sv,
+            "smartsignlink": process.env.SMARTSIGNLINK,
+            "colors": data.colors
         }
         res.render('admin', admindata);
 
@@ -467,6 +482,68 @@ async function deleteEventField(event_id, field_id) {
     }
 }
 
+async function readEventBgColor(event_id) {
+    try {
+        let result = await eventModel.readEventBgColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventBgColor(event_id, color_id) {
+    try {
+        let result = await eventModel.deleteEventBgColor(event_id)
+        result = await eventModel.createEventBgColor(event_id, color_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventBgColor(event_id) {
+    try {
+        let result = await eventModel.deleteEventBgColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readEventTextColor(event_id) {
+    try {
+        let result = await eventModel.readEventTextColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventTextColor(event_id, color_id) {
+    try {
+        let result = await eventModel.deleteEventTextColor(event_id)
+        result = await eventModel.createEventTextColor(event_id, color_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventTextColor(event_id) {
+    try {
+        let result = await eventModel.deleteEventTextColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
 async function readEventImage(events_id) {
     try {
         let result = await eventModel.readEventImage(events_id)
@@ -491,6 +568,102 @@ async function createEventImage(event_id, image_id) {
 async function deleteEventImage(event_id) {
     try {
         let result = await eventModel.deleteEventImage(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readEventImageOverlay(event_id) {
+    try {
+        let result = await eventModel.readEventImageOverlay(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventImageOverlay(event_id, enabled) {
+    try {
+        let result = await eventModel.deleteEventImageOverlay(event_id)
+        result = await eventModel.createEventImageOverlay(event_id, enabled)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventImageOverlay(event_id) {
+    try {
+        let result = await eventModel.deleteEventImageOverlay(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readEventImageHeader(event_id) {
+    try {
+        let result = await eventModel.readEventImageHeader(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventImageHeader(event_id) {
+    try {
+        let result = await eventModel.deleteEventImageHeader(event_id)
+        result = await eventModel.createEventImageHeader(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventImageHeader(event_id) {
+    try {
+        let result = await eventModel.deleteEventImageHeader(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readEventFieldsOrder(event_id) {
+    try {
+        let result = await eventModel.readEventFieldsOrder(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventFieldsOrder(fieldsOrder) {
+    try {
+        let result = await eventModel.deleteEventFieldsOrder(fieldsOrder[0].event_id)
+        for(let i=0;i<fieldsOrder.length;i++) {
+            result = await eventModel.createEventFieldsOrder(fieldsOrder[i].event_id, fieldsOrder[i].field_id, fieldsOrder[i].sortorder)
+        }
+       
+        return "success"
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventFieldsOrder(event_id) {
+    try {
+        let result = await eventModel.deleteEventFieldsOrder(event_id)
         return result
     } catch (err) {
         console.log(err.message)
@@ -633,12 +806,12 @@ async function deleteQrCodeGeneral(id) {
     }
 }
 
-async function generateCalendarPage(events_id, html_template = 'templates/smartsign_template.html', lang ='sv') {
+async function generateCalendarPage(req, events_id, html_template = 'templates/smartsign_template.html', lang ='sv') {
     const files = fs.readFileSync(path.join(__dirname, html_template));
-    const template = cheerio.load(files.toString(), null, false);
+    const template = cheerio.load(files.toString(), null, true);
+    //template('.headertext h4').text("KTH LIBRARY");
+    //template('body').css('overflow', 'hidden');
 
-    template('.headertext h4').text("KTH LIBRARY");
-    template('body').css('overflow', 'hidden');
     try {
         //Hämta event
         let event = await readEventId(events_id)
@@ -646,14 +819,75 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
         event = event[0]
         let eventfields = await readEventFields(event.id)
 
+        let eventbgcolor = await readEventBgColor(event.id)
+
+        let eventtextcolor = await readEventTextColor(event.id)
+
+        let eventtimageoverlay = await readEventImageOverlay(event.id)
+
+        let eventtimageheader = await readEventImageHeader(event.id)
+
+        let imageoverlaycss = ''
+        let imageheadercss = ''
+
+        if (eventtimageoverlay[0]) {
+            imageoverlaycss = `
+            .App-title .titleimage:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 50%;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+                opacity: 0.5;
+            }
+
+            .App-title .titleimage:after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50%;
+                background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+                opacity: 0.5;
+            }
+            `
+        }
+
+        if (eventtimageheader[0]) {
+            imageheadercss = `
+                .rubrikplatta {
+                    display: none
+                }
+            `
+        }
+        template('head').append(
+            `<style>
+                .App {
+                    background-color: #${eventbgcolor[0] ? eventbgcolor[0].code : 'ffffff'};
+                }
+
+                body, .App, .App-content, a {
+                    color: #${eventtextcolor[0] ? eventtextcolor[0].code : '000000'};
+                }
+
+                ${imageoverlaycss}
+                ${imageheadercss}
+            </style>`);
+
         let parser = new Parser();
         let feed
 
+        let qrcodetext = ''
         if (event.lang == 'en') {
             feed = await parser.parseURL(process.env.RSSFEED);
+            qrcodetext = 'Read more'
         }
         if (event.lang == 'sv') {
             feed = await parser.parseURL(process.env.RSSFEED_SV);
+            qrcodetext = 'Läs mer'
         }
 
         let item = feed.items.filter(item => '1.' + item.guid.split('-1.')[1] == event.contentid)
@@ -663,7 +897,7 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
 
             //Skapa QR-kod med link/guid
             //qrcode = await QRCode.toDataURL(item[0].link)
-            qrcode = await generateQrCode(event.id)
+            qrcode = await generateQrCode(event.id, eventbgcolor)
 
             //Hämta den publicerade kalendersidan i polopoly
             //för att få bild/tid/plats/språk/föreläsare
@@ -677,37 +911,43 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
             let signhtml = "";
             const cheeriocalendar = cheerio.load(response.data, null, false);
             let cheeriodescription = cheerio.load(item[0].content, null, false);
-
+            let numberofrows = eventfields.length
+            let rowcount = 0
             eventfields.forEach(row => {
                 
                 if (row.events_id !== null && row.type == 'title') {
-                    template('#rubrikplatta').text(item[0].title);
+                    if (eventtimageheader[0]) { 
+                        template('.App-title .rubrik').text(item[0].title);
+                    } else {
+                        template('#rubrikplatta').text(item[0].title);
+                    }
+                    
                 }
 
                 if (row.events_id !== null && row.type == 'time') {
                     if (cheeriocalendar("strong:contains(Time)").length) {
-                        template('#time').html(cheeriocalendar("strong:contains(Time)").parent().html());
+                        template('#App-content').append('<div id="time">' + cheeriocalendar("strong:contains(Time)").parent().html() + '</div>');
                     }
                     if (cheeriocalendar("strong:contains(Tid)").length) {
-                        template('#time').html(cheeriocalendar("strong:contains(Tid)").parent().html());
+                        template('#App-content').append('<div id="time">' + cheeriocalendar("strong:contains(Tid)").parent().html() + '</div>');
                     }
                 }
 
                 if (row.events_id !== null && row.type == 'location') {
                     if (cheeriocalendar("strong:contains(Location)").length) {
-                        template('#location').html(cheeriocalendar("strong:contains(Location)").parent().html());
+                        template('#App-content').append('<div id="location">' + cheeriocalendar("strong:contains(Location)").parent().html() + '</div>');
                     }
                     if (cheeriocalendar("strong:contains(Plats)").length) {
-                        template('#location').html(cheeriocalendar("strong:contains(Plats)").parent().html());
+                        template('#App-content').append('<div id="location">' + cheeriocalendar("strong:contains(Plats)").parent().html() + '</div>');
                     }
                 }
 
                 if (row.events_id !== null && row.type == 'language') {
                     if (cheeriocalendar("strong:contains(Language)").length) {
-                        template('#language').html(cheeriocalendar("strong:contains(Language)").parent().html());
+                        template('#App-content').append('<div id="language">' + cheeriocalendar("strong:contains(Language)").parent().html() + '</div>');
                     }
                     if (cheeriocalendar("strong:contains(Språk)").length) {
-                        template('#language').html(cheeriocalendar("strong:contains(Språk)").parent().html());
+                        template('#App-content').append('<div id="language">' + cheeriocalendar("strong:contains(Språk)").parent().html() + '</div>');
                     }
                 }
 
@@ -715,33 +955,31 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
 
                 if (row.events_id !== null && row.type == 'lecturer') {
                     if (cheeriocalendar("strong:contains(Participating)").length) {
-                        template('#lecturer').html(cheeriocalendar("strong:contains(Participating)").parent().html());
+                        template('#App-content').append('<div id="lecturer">' + cheeriocalendar("strong:contains(Participating)").parent().html() + '</div>');
                     }
                     if (cheeriocalendar("strong:contains(Medverkande)").length) {
-                        template('#lecturer').html(cheeriocalendar("strong:contains(Medverkande)").parent().html());
+                        template('#App-content').append('<div id="lecturer">' + cheeriocalendar("strong:contains(Medverkande)").parent().html() + '</div>');
                     }
                 }
-
-                /*
-                if (row.events_id !== null && row.type == 'lecturer') {
-                    if (cheeriocalendar("strong:contains(Lecturer)").length) {
-                        template('#lecturer').html(cheeriocalendar("strong:contains(Lecturer)").parent().html());
-                    }
-                    if (cheeriocalendar("strong:contains(Föreläsare)").length) {
-                        template('#lecturer').html(cheeriocalendar("strong:contains(Föreläsare)").parent().html());
-                    }
-                }
-                */
 
                 if (row.events_id !== null && row.type == 'typeofevent') {
                     if (cheeriodescription(".subject").html().length) {
-                        template('#typeofevent').html(cheeriodescription(".subject").html());
+                        template('#App-content').append('<div id="typeofevent">' + cheeriodescription(".subject").html() + '</div>');
                     }
                 }
 
                 if (row.events_id !== null && row.type == 'ingress') {
+                    //Hantera paddings beroende på placering
+                    let cssclass = 'top-padding bottom-padding'
+                    if(row.sortorder == 0) {
+                        cssclass = 'bottom-padding'
+                    }
+
+                    if(rowcount == numberofrows) {
+                        cssclass = 'top-padding'
+                    }
                     if (cheeriocalendar("#mainContent .lead").length) {
-                        template('#ingress').html(truncate(cheeriocalendar("#mainContent .preArticleParagraphs .lead p").text(), 200, "..."));
+                        template('#App-content').append('<div id="ingress" class="' + cssclass + '">' + truncate(cheeriocalendar("#mainContent .preArticleParagraphs .lead p").text(), 200, "...") + '</div>');
                     }
                 }
 
@@ -761,8 +999,9 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
                 }
 
                 if (row.events_id !== null && row.type == 'qrcode') {
-                    template('.App-footer').html(`<span id="readmore">Read more <i class="bi bi-arrow-right"></i></span><img class="qrcode" src="${qrcode}"/>`);
+                    template('.App-footer').html(`<div class="footerleft">${qrcodetext}&nbsp;<i class="bi bi-arrow-right"></i></div><img class="qrcode" src="${qrcode}"/><div class="footerright"></div>`);
                 }
+                rowcount++;
             })
 
 
@@ -909,7 +1148,7 @@ async function getPublishedPageAsImage(req, res) {
     }
 }
 
-async function generateQrCode(id) {
+async function generateQrCode(id, eventbgcolor) {
     let returnimage;
     try {
         let event = await readEventId(id)
@@ -1212,6 +1451,35 @@ async function saveWifiPageAsPdf(pdffullpath, type, template) {
 
 }
 
+async function getPageAsImage(events_id, html, template) {
+    try {
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
+        const page = await browser.newPage();
+
+        //Storlek på smartsignskärmarna är 1080x1920
+        await page.setViewport({
+            width: 1080,
+            height: 1920,
+            deviceScaleFactor: 1,
+        });
+
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
+
+        let pageimage
+        pageimage = await page.screenshot({ });
+
+        await browser.close();
+
+        return pageimage
+
+    }
+    catch (error) {
+        console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
+        console.log(error)
+    }
+
+}
+
 async function getImasRealtime(req, res) {
     try {
         token = await axios.post(`https://api.imas.net/account/login`, {
@@ -1280,9 +1548,24 @@ module.exports = {
     updateEventPublish,
     createEventField,
     deleteEventField,
+    readEventBgColor,
+    createEventBgColor,
+    deleteEventBgColor,
+    readEventTextColor,
+    createEventTextColor,
+    deleteEventTextColor,
     readEventImage,
     createEventImage,
     deleteEventImage,
+    readEventImageOverlay,
+    createEventImageOverlay,
+    deleteEventImageOverlay,
+    readEventImageHeader,
+    createEventImageHeader,
+    deleteEventImageHeader,
+    readEventFieldsOrder,
+    createEventFieldsOrder,
+    deleteEventFieldsOrder,
     readImages,
     readImage,
     createImage,
@@ -1306,6 +1589,7 @@ module.exports = {
     generatePdfPageDailyWifi,
     savePageAsImage,
     savePageAsPdf,
+    getPageAsImage,
     saveWifiPageAsPdf,
     getImasRealtime,
     substrInBetween,

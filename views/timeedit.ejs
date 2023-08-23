@@ -6,28 +6,16 @@
 
 <body>
   <div class="App">
-    <% if (!smartsignconfig.kiosk) { %>      
-    <header class="App-header App-padding">
-      <div style="overflow:hidden">
-        <div class="kthlogo">
-          <img src="/smartsigntools/images/kthlogo.jpg">
-        </div>
-        <div class="headertext">
-          <div class="">
-            <h4>KTH LIBRARY</h4>
-          </div>
-        </div>
-      </div>
-    </header>
+    <% if (!smartsignconfig.kiosk) { %>
     <div class="App-title App-padding">
       <div class="titleimage">
         <img src="/smartsigntools/images/biblioteket_idag_1000_900.jpg" alt="logo"/>
       </div>
-      <div id="rubrikplatta" class="rubrikplatta">
-        <div>
-          The Library today
-        </div>
+      <div class="kthlogo">
+        <img src="/smartsigntools/images/kthlogo_vit.svg">
       </div>
+      <div class="kthname">KTH LIBRARY</div>
+      <div class="rubrik">The library today</div>
     </div>
     <% } %>
     <div id="App-content" class="App-content App-padding">

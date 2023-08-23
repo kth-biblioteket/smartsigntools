@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Mönster" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1080">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: none;
+      }
+
+      .cls-3 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-2 {
+        stroke: #fff;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 3px;
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" width="1080" height="1080"/>
+    </clipPath>
+  </defs>
+  <g class="cls-3">
+    <g>
+      <polyline class="cls-2" points="-3.13 961 360.5 961 480 841 480 1080.54 239.64 841 -.8 841"/>
+      <path class="cls-2" d="m719.48,1081l-.29-59.46c0-99.67,80.8-180.47,180.47-180.47h181.47"/>
+      <polyline class="cls-2" points="0 120 240 120 -2 483"/>
+      <path class="cls-2" d="m360-2.5v182.5c0,99.41-80.59,180-180,180H-4.5"/>
+      <path class="cls-2" d="m600-3v243c-66.27,0-120-53.73-120-120h602.35"/>
+      <path class="cls-2" d="m720,0c0,198.82,161.18,360,360,360"/>
+    </g>
+  </g>
+</svg>

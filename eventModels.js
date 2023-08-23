@@ -233,10 +233,33 @@ const updateEventPublishAsImage = (id, published_as_image) => {
 const readEventFields = (events_id) => {
     return new Promise(function (resolve, reject) {
 
-        const sql = `SELECT fields.id, eventfields.events_id, fields.type, fields.name, fields.description FROM fields
-        LEFT JOIN eventfields ON eventfields.fields_id = fields.id
-        AND eventfields.events_id = ?`;
-        database.db.query(database.mysql.format(sql,[events_id]),(err, result) => {
+        /*
+        const sql = SELECT 
+                        fields.id, eventfields.events_id, fields.type, fields.name, fields.description, fields.sortable 
+                    FROM fields
+                    LEFT JOIN eventfields ON eventfields.fields_id = fields.id AND eventfields.events_id = 242
+                    ORDER BY sortable`;
+        */
+
+        const sql = `SELECT 
+                        fields.id, 
+                        eventfields.events_id, 
+                        fields.type, 
+                        fields.name, 
+                        fields.description, 
+                        fields.sortable,
+                        COALESCE(eventfieldsorder.sortorder, -1) AS sortorder
+                    FROM 
+                        fields
+                    LEFT JOIN 
+                        eventfields ON eventfields.fields_id = fields.id AND eventfields.events_id = ?
+                    LEFT JOIN 
+                        eventfieldsorder ON eventfieldsorder.event_id = ? AND eventfieldsorder.field_id = fields.id
+                    ORDER BY
+                        fields.sortable,
+                        sortorder,
+                        name`
+        database.db.query(database.mysql.format(sql,[events_id, events_id]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -279,6 +302,44 @@ const deleteEventField = (event_id, field_id) => {
     })
 };
 
+//Hämta bakgrundsfärg för event
+const readEventBgColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT colors.id, eventbgcolor.event_id, colors.name, colors.code, colors.description
+                    FROM eventbgcolor
+                    JOIN colors ON eventbgcolor.color_id = colors.id
+                    AND eventbgcolor.event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
+//Hämta textfärg för event
+const readEventTextColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT colors.id, eventtextcolor.event_id, colors.name, colors.code, colors.description
+                    FROM eventtextcolor
+                    JOIN colors ON eventtextcolor.color_id = colors.id
+                    AND eventtextcolor.event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
 //Hämta bild för event
 const readEventImage = (events_id) => {
     return new Promise(function (resolve, reject) {
@@ -298,6 +359,125 @@ const readEventImage = (events_id) => {
 
 };
 
+//Hämta Eventimageoverlay för event
+const readEventImageOverlay = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT id, event_id, enabled
+                    FROM eventimageoverlay
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
+//Hämta Eventimageoverlay för event
+const readEventImageHeader = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT id, event_id
+                    FROM eventimageheader
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
+//Hämta Eventfieldsorder för event
+const readEventFieldsOrder = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT id, event_id, field_id, sortorder
+                    FROM eventfieldsorder
+                    WHERE event_id = ?
+                    ORDER BY sortorder`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
+//Lägg till ett events bakgrundsfärd
+const createEventBgColor = (event_id, color_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventbgcolor(event_id, color_id)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, color_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events bakgrundsfärg
+const deleteEventBgColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventbgcolor
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events textfärd
+const createEventTextColor = (event_id, color_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventtextcolor(event_id, color_id)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, color_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events textfärg
+const deleteEventTextColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventtextcolor
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
 //Lägg till ett events bild
 const createEventImage = (event_id, image_id) => {
     return new Promise(function (resolve, reject) {
@@ -314,7 +494,7 @@ const createEventImage = (event_id, image_id) => {
     })
 };
 
-//Ta bort ett events fält
+//Ta bort ett events bild
 const deleteEventImage = (event_id) => {
     return new Promise(function (resolve, reject) {
         const sql = `DELETE FROM eventimage
@@ -326,6 +506,116 @@ const deleteEventImage = (event_id) => {
             }
             const successMessage = "The image was successfully deleted."
             resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events imageoverlay
+const createEventImageOverlay = (event_id, enabled) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventimageoverlay(event_id, enabled)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, enabled]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The imageoverlay was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events imageoverlay
+const deleteEventImageOverlay = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventimageoverlay
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The imageoverlay was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events imageheader
+const createEventImageHeader = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventimageheader(event_id)
+                VALUES(?)`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The imageheader was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events imageheader
+const deleteEventImageHeader = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventimageheader
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The imageheader was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events fieldsorder
+const createEventFieldsOrder = (event_id, field_id, sortorder) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventfieldsorder(event_id, field_id, sortorder)
+                VALUES(?, ?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, field_id, sortorder]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The Fieldsorder was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events fieldsorder
+const deleteEventFieldsOrder = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventfieldsorder
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The Fieldsorder was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Hämta färger
+const readColors = () => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT * FROM colors`;
+        database.db.query(database.mysql.format(sql,[]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
         });
     })
 };
@@ -564,9 +854,25 @@ module.exports = {
     readEventFields,
     createEventField,
     deleteEventField,
+    readEventBgColor,
+    createEventBgColor,
+    deleteEventBgColor,
+    readEventTextColor,
+    createEventTextColor,
+    deleteEventTextColor,
     readEventImage,
     createEventImage,
     deleteEventImage,
+    readEventImageOverlay,
+    createEventImageOverlay,
+    deleteEventImageOverlay,
+    readEventImageHeader,
+    createEventImageHeader,
+    deleteEventImageHeader,
+    readEventFieldsOrder,
+    createEventFieldsOrder,
+    deleteEventFieldsOrder,
+    readColors,
     readImages,
     readImage,
     createImage,

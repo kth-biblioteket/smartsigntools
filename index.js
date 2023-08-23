@@ -165,6 +165,46 @@ apiRoutes.delete("/calendar/event/field", VerifyToken, async function (req, res,
     }
 });
 
+apiRoutes.post("/calendar/event/bgcolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.createEventBgColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/bgcolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventBgColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.post("/calendar/event/textcolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.createEventTextColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/textcolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventTextColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.post("/calendar/event/image", VerifyToken, async function (req, res, next) {
     try {
         let images_id = req.body.images_id
@@ -185,11 +225,57 @@ apiRoutes.delete("/calendar/event/image", VerifyToken, async function (req, res,
     }
 });
 
+apiRoutes.post("/calendar/event/imageoverlay", VerifyToken, async function (req, res, next) {
+    try {
+        let enabled = req.body.enabled
+        let events_id = req.body.events_id
+        res.send(eventController.createEventImageOverlay(events_id, enabled))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/imageoverlay", VerifyToken, async function (req, res, next) {
+    try {
+        let enabled = req.body.enabled
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventImageOverlay(events_id, enabled))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.post("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
+    try {
+        let events_id = req.body.events_id
+        res.send(eventController.createEventImageHeader(events_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
+    try {
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventImageHeader(events_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.post("/calendar/event/sortfields", VerifyToken, async function (req, res, next) {
+    try {
+        res.send(await eventController.createEventFieldsOrder(req.body.fieldsOrder))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
         let html_template = req.query.template || 'templates/smartsign_template.html'
         if (req.params.id) {
-            let page = await eventController.generateCalendarPage(req.params.id, html_template);
+            let page = await eventController.generateCalendarPage(req, req.params.id, html_template);
             res.send(page)
         }
     } catch(err) {
@@ -219,6 +305,21 @@ apiRoutes.get("/calendar/pdf/:id", async function (req, res, next) {
             let pdf = await eventController.generatePdfPage(req.params.id, req.query.type);
             res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
             res.send(pdf)
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.get("/calendar/image/:id", async function (req, res, next) {
+    try {
+        if (req.params.id) {
+            let pageimage = await eventController.getPageAsImage(req.params.id, "", 'templates/smartsign_template.html');
+            res.writeHead(200, {
+                'Content-Type': 'image/png',
+                'Content-Length': pageimage.length,
+            });
+            res.end(pageimage);
         }
     } catch(err) {
         res.send(err.message)

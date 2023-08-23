@@ -4,39 +4,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>KTH Biblioteket</title>
     <link rel="shortcut icon" href="../favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/smartsign.css">
     <link rel="stylesheet" href="css/style.css?ver=3.5">
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 <head>
 
 </head>
 
 <body>
   <div class="App">
-    <header class="App-header App-padding">
-      <div style="overflow:hidden">
-        <div class="kthlogo">
-          <img src="images/kthlogo.jpg">
-        </div>
-        <div class="headertext">
-          <div class="">
-            <h4>KTH LIBRARY</h4>
-          </div>
-        </div>
-      </div>
-    </header>
     <div class="App-title App-padding">
       <div class="titleimage">
-        <img src="images/1000_480.jpg" alt="logo"/>
+        <img src="/smartsigntools/images/biblioteket_idag_1000_900.jpg" alt="logo"/>
       </div>
-      <div id="rubrikplatta" class="rubrikplatta">
-        <div>
-          How busy are we right now?
-        </div>
+      <div class="kthlogo">
+        <img src="/smartsigntools/images/kthlogo_vit.svg">
       </div>
+      <div class="kthname">KTH LIBRARY</div>
+      <div class="rubrik">How busy are we right now?</div>
     </div>
     <div class="App-content content-padding">
-      <div style="overflow: hidden;padding-bottom:20px">
+      <div style="overflow: hidden;padding-bottom:20px;padding-top:20px">
         <div>
           <div id="gaugeHBheader" style="text-align: center;padding-bottom:10px;font-size: 46px;"></div>
           <div id="justgaugeHB" style="text-align: center; height:300px"></div>
@@ -81,11 +73,9 @@
     </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script-->
-    <!--script src="../js/cmGauge.js"></script-->
-    <script src="js/raphael.min.js"></script>
-    <script src="js/justgage.js?ver=2.0"></script>
-    <script defer src="js/script.js?ver=3.5"></script>
+  <script src="js/raphael.min.js"></script>
+  <script src="js/justgage.js?ver=2.0"></script>
+  <script defer src="js/script.js?ver=3.5"></script>
 </body>
 
 </html>

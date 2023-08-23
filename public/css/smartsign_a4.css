@@ -1,6 +1,7 @@
 /* Chromium färger PDF */
 html {
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 body {
@@ -36,20 +37,30 @@ h6 {
    font-size: 32px; 
 }
 
+.bottom-padding {
+    padding-bottom: 20px;
+}
+
+.top-padding {
+    padding-top: 20px;
+}
+
 .App {
     text-align: left;
-    background-color: #fff;
     color: #000;
     /* smartsignskärmarnas upplösning */
     height: 29.7cm;
     width: 21cm;
-    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
-    overflow:hidden;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+    overflow: hidden;
+    position: relative;
 }
 
+/*
 .App-padding {
     padding: 60px 54px 0px 54px;
 }
+*/
 
 .App-padding-top {
     padding-top:60px;
@@ -59,7 +70,32 @@ h6 {
     animation: App-logo-spin infinite 20s linear;
     height: 80px;
 }
-  
+
+.kthlogo {
+    position: absolute;
+    top: 25px;
+    z-index: 1000;
+    text-align: center;
+    width: 100%;  
+}
+
+.kthlogo img {
+    width: 140px;
+    padding: 10px;
+}
+
+.kthname {
+    position: absolute;
+    top: 0px;
+    z-index: 1000;
+    text-align: right;
+    width: 100%;
+    color: #fff;
+    padding: 20px 40px 0px 0px;
+    font-size: 30px;
+    font-weight: 700;
+}
+
 .App-header {
     overflow: hidden;
 }
@@ -92,16 +128,27 @@ h6 {
     /*margin: 0px 0 0 0px;*/
 }
 
+.App-title .rubrik {
+    position: absolute;
+    bottom: 20px;
+    font-size: 50px;
+    color: #fff;
+    padding: 0px 40px 0px 40px;
+    font-weight: 700;
+    line-height: 105%;
+}
+
 .App-title .rubrikplatta {
     position: absolute;
     width: 650px;
     top: 150px;
     left: 0px;
-    background: #fff;
+    /*background: #fff;*/
     padding: 10px 25px 10px 100px;
-    font-weight: bold;
-    font-size: 30px;
-    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+    font-weight: 700;
+    line-height: 105%;
+    font-size: 50px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
 }
   
 .App-intro {
@@ -111,11 +158,16 @@ h6 {
 .App-content {
     font-weight:500;
     font-size: 20px;
-    font-family: "Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+
+.App-content div:first-child { 
+    padding-top: 20px;
 }
 
 .content-padding {
-    padding:60px 100px 0px 100px;
+    padding-left: 40px;
+    padding-right: 40px;
 }
 
 .content-header {
@@ -123,15 +175,22 @@ h6 {
 }
 
 #ingress {
-    padding-top: 10px;
-    font-size: 18px;
-    width: 480px;
+    /*padding-top: 10px;*/
+    font-size: 24px;
+    /*width: 480px;*/
 }
 
 .smartsign-node #ingress {
-    padding-top: 15px;
-    font-size: 20px;
-    width: 480px;
+    /*padding: 0px 0px 40px 0px;*/
+    font-size: 24px;
+}
+
+#time, #location, #language, #lecturer, #typeofevent {
+    font-weight: 700;
+}
+
+strong {
+    font-weight: 700;
 }
 
 .gauge-header-small {
@@ -154,12 +213,14 @@ h6 {
 }
 
 .smartsign-node .App-footer {
-    font-family:verdana;
-    position:absolute;
-    bottom:0px;
-    right:0px;
-    margin: 0px 54px 10px 0px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    /*margin: 0px 54px 10px 0px;*/
     font-size: 12px;
+    /*text-align: center;*/
+    width: 100%;
+    display: flex;
 }
 
 .App-footer>span {
@@ -168,20 +229,40 @@ h6 {
     font-size: 14px;
 }
 
-#readmore {
+.footerleft {
     position: relative;
     vertical-align: bottom;
     bottom: 10px;
-    font-size: 14px;
+    font-size: 24px;
+    font-weight: 700;
+    width: 43%;
+    /* text-align: right; */
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    line-height: 1;
+}
+
+.footerright {
+    position: relative;
+    vertical-align: bottom;
+    bottom: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    width: 43%;
+    /* text-align: right; */
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    line-height: 1;
 }
 
 .qrcode {
     position: relative;
     vertical-align: bottom;
     bottom: 0px;
-    margin: 0px 0px 10px 0px;
-    width:110px;
-    height:110px
+    margin: 10px 10px 14px 10px;
+    width: 14%;
 }
 
 .float {

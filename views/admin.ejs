@@ -24,6 +24,9 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
     <style>
         body {
             margin: 0 auto;
@@ -83,7 +86,7 @@
 
         .wrap {
             width: 270px;
-            height: 475px;
+            height: 480px;
             padding: 0;
             overflow: hidden;
             border: 1px solid #888888;
@@ -191,6 +194,8 @@
             <div style="flex:2;padding-right:10px">
                 <% let published=false %>
                 <% let published_as_image=false %>
+                <% let eventimageheader=false %>
+                <% let eventimageoverlay=false %>
                 <%let eventtime=""%>
                 <%let frameindex=1%>
 
@@ -199,7 +204,11 @@
                     <%event=event_.event%>
                     <%let eventfields=event_.eventfields%>
                     <%let eventimage=event_.eventimage %>
+                    <%let eventbgcolor=event_.eventbgcolor %>
+                    <%let eventtextcolor=event_.eventtextcolor %>
                     <%if(event.published==1) { published=true } else { published=false } %>
+                    <%if(event_.eventimageheader[0]) { eventimageheader=true } else { eventimageheader=false } %>
+                    <%if(event_.eventimageoverlay[0]) { eventimageoverlay=true } else { eventimageoverlay=false } %>
                     <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
                     <div class="card" style="margin-bottom:10px">
                         <div class="card-body" style="display:flex;flex-direction:row;padding-bottom:40px">
@@ -263,11 +272,25 @@
                                     <div style="padding-top:10px">
                                         Fält som ska visas
                                     </div>
+                                    <ul id="sortable<%=event.id%>" class="sortable-list list-group">
+                                        <%eventfields.forEach(field=> { %>
+                                            
+                                            <%if(field.sortable==1){%>
+                                                <li class="list-group-item ui-state-default sortable-item" data-frameid="frame_<%=frameindex%>" data-eventid="<%=event.id%>" data-fieldid="<%=field.id%>">
+                                                    <span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
+                                             <%} else {%>
+                                                <li class="list-group-item ui-state-default non-sortable-item">
+                                             <%}%>
+                                                    <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
+                                                    <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
+                                                </li>
+                                        <%}) %>
+                                    </ul>
                                     <%eventfields.forEach(field=> { %>
-                                        <div class="form-check">
+                                        <!--div class="form-check">
                                             <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
                                             <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
-                                        </div>
+                                        </div-->
                                     <%}) %>
                                         <div style="padding-top:10px">
                                             Bild från bildbank
@@ -286,10 +309,52 @@
                                                 <option <%=selectedimage%> value="<%=image.id%>"><%=image.name%></option>
                                             <%})%>
                                         </select>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" <%-eventimageheader ? "checked" : "" %> onclick="updateEventImageHeader('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageHeader<%=frameindex%>">
+                                            <label class="form-check-label" for="flexSwitchCheckImageHeader<%=frameindex%>">Visa rubriken på bilden</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" <%-eventimageoverlay ? "checked" : "" %> onclick="updateEventImageOverlay('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageOverlay<%=frameindex%>">
+                                            <label class="form-check-label" for="flexSwitchCheckImageOverlay<%=frameindex%>">Aktivera Gradient för bilden</label>
+                                        </div>
+                                        <div style="padding-top:10px">
+                                            Bakgrundsfärg
+                                        </div>
+                                        <select class="form-select" onChange="updateEventBgColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="bgcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
+                                            <option value="0">Välj...</option>
+                                            <% let selectedbgcolor='' %>
+                                            <% colors.forEach(bgcolor => {%>
+                                                <% if (eventbgcolor[0]) {%>
+                                                    <% if (eventbgcolor[0].id == bgcolor.id) {%>
+                                                        <% selectedbgcolor= 'selected'%>
+                                                    <% } else {%>
+                                                        <% selectedbgcolor = ''%>
+                                                    <% }%>
+                                                <% } %>
+                                                <option <%=selectedbgcolor%> value="<%=bgcolor.id%>"><%=bgcolor.name%></option>
+                                            <%})%>
+                                        </select>
+                                        <div style="padding-top:10px">
+                                            Textfärg
+                                        </div>
+                                        <select class="form-select" onChange="updateEventTextColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="textcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
+                                            <option value="0">Välj...</option>
+                                            <% let selectedtextcolor='' %>
+                                            <% colors.forEach(textcolor => {%>
+                                                <% if (eventtextcolor[0]) {%>
+                                                    <% if (eventtextcolor[0].id == textcolor.id) {%>
+                                                        <% selectedtextcolor= 'selected'%>
+                                                    <% } else {%>
+                                                        <% selectedtextcolor = ''%>
+                                                    <% }%>
+                                                <% } %>
+                                                <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
+                                            <%})%>
+                                        </select>
                                         <div style="padding-top:10px;" class="form-group">
                                             <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
                                             <div class="input-group">
-                                                <input value="<%=event.smartsignlink + event.id%>"
+                                                <input value="<%=admindata.smartsignlink + event.id%>"
                                                     type="text" class="form-control"
                                                     id="smartsignLink_<%=event.id%>" aria-describedby="linkHelp"
                                                     placeholder="">
@@ -464,6 +529,15 @@
             </div>
         </div>
         <script>
+           $( function() {
+                $(".sortable-list").sortable({
+                    items: ".sortable-item",
+                    update: function(event, ui) {
+                        var listId = $(this).attr("id"); // Get the ID of the current list
+                        updateFieldOrder(listId);
+                    }
+                });
+            } );
             function alert(message, type, placeholder) {
                 var alertPlaceholder = document.getElementById(placeholder)
                 var wrapper = document.createElement('div')
@@ -566,7 +640,8 @@
                         if (xhttp.status == 401) { 
                         }
                         setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                            //document.getElementById(frameid).src = document.getElementById(frameid).src
+                            location.reload()
                         }, 500);
                     };
                     xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/field", true);
@@ -580,7 +655,8 @@
                         if (xhttp.status == 401) {
                         }
                         setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                            //document.getElementById(frameid).src = document.getElementById(frameid).src
+                            location.reload()
                         }, 500);
                         
                     };
@@ -1021,6 +1097,156 @@
                         "images_id": images_id
                     }));
                 }
+            }
+
+            function updateEventBgColor(events_id, frameid, selectlist) {
+                checkjwt()
+                var x = document.getElementById("bgcolorselect");
+                color_id = selectlist.value
+                var xhttp = new XMLHttpRequest();
+                if (color_id != "0") {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/bgcolor", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "color_id": color_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/bgcolor", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "color_id": color_id
+                    }));
+                }
+            }
+
+            function updateEventTextColor(events_id, frameid, selectlist) {
+                checkjwt()
+                var x = document.getElementById("textcolorselect");
+                color_id = selectlist.value
+                var xhttp = new XMLHttpRequest();
+                if (color_id != "0") {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/textcolor", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "color_id": color_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/textcolor", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "color_id": color_id
+                    }));
+                }
+            }
+
+            function updateEventImageOverlay(events_id, cb, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                if (cb.checked) {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageoverlay", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "enabled": 1
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/imageoverlay", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "enabled": 0
+                    }));
+                }
+            }
+
+            function updateEventImageHeader(events_id, cb, frameid) {
+                var xhttp = new XMLHttpRequest();
+                if (cb.checked) {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageheader", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/imageheader", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id
+                    }));
+                }
+            }
+            
+            function updateFieldOrder(listId){
+                var fieldsOrder = [];
+                let frameid
+                $("#" + listId + " .sortable-item").each(function(index) {
+                    frameid = $(this).attr("data-frameid"),
+                    fieldsOrder.push({
+                        "event_id" : $(this).attr("data-eventid"),
+                        "field_id" : $(this).attr("data-fieldid"),
+                        "sortorder" : index
+                    });
+                });
+                
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    document.getElementById(frameid).src = document.getElementById(frameid).src
+                };
+                xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/sortfields", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    fieldsOrder
+              }));              
             }
         </script>
     </div>
