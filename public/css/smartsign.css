@@ -242,6 +242,7 @@ strong {
     /* text-align: right; */
     display: flex;
     align-self: flex-end;
+    justify-content: flex-end;
     line-height: 1;
 }
 
@@ -255,6 +256,7 @@ strong {
     /* text-align: right; */
     display: flex;
     align-self: flex-end;
+    justify-content: flex-end;
     line-height: 1;
 }
 
