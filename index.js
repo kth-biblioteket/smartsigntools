@@ -353,7 +353,7 @@ apiRoutes.get("/calendar/images", async function (req, res) {
         let imagebank = await eventController.readImages()
 
         imagebank.forEach(image => {
-            const content = fs.readFileSync(image.fullpath)
+            const content = fs.readFileSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + image.fullpath))
             res.write(`<div style="margin-bottom:10px" class="card">
                             <div class="card-body">
                                 <div style="display:flex;flex-direction:row;padding-bottom:10px">
@@ -415,10 +415,11 @@ apiRoutes.post("/calendar/uploadfile", async function (req, res) {
         }
 
         let imagePath = path.join(__dirname, process.env.IMAGEBANKPATH+ '/' + randomUUID() + path.extname(targetFile.name))
+        let fullpath = path.join(randomUUID() + path.extname(targetFile.name))
         targetFile.mv(imagePath, async (err) => {
             if (err)
                 return res.status(500).send(err);
-            let create = await eventController.createImage(imagePath, imagename, targetFile.size, targetFile.mimetype)
+            let create = await eventController.createImage(fullpath, imagename, targetFile.size, targetFile.mimetype)
             return res.send({ status: "success", path: imagePath });
         });
     } catch(err) {

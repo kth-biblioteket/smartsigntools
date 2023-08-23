@@ -716,7 +716,7 @@ async function deleteImage(id) {
         let image = await eventModel.readImage(id)
         let result = await eventModel.deleteImage(id)
         //Ta bort bildfilen
-        fs.unlinkSync(image[0].fullpath);
+        fs.unlinkSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + image[0].fullpath))
         return result
     } catch (err) {
         console.log(err.message)
@@ -986,7 +986,7 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 //Bild antingen från bildbank eller kalender(har kalender ingen bild ligger bilden från template kvar)
                 if (row.events_id !== null && row.type == 'image') {
                     if (eventimage[0]) {
-                        const imagebase64 = fs.readFileSync(eventimage[0].fullpath)
+                        const imagebase64 = fs.readFileSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + eventimage[0].fullpath))
                         imagesrc = 'data:image/jpeg;base64,' + Buffer.from(imagebase64).toString('base64');
                     } else {
                         if (cheeriocalendar('article .figure-img').length) {
