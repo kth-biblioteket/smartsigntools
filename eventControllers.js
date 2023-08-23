@@ -284,9 +284,10 @@ async function slideshowimages(req, res) {
             </head>
             <style>
                 body {
-                    height: 1900px;
+                    height: 1920px;
                     width: 1080px;
                     overflow: hidden;
+                    margin: 0;
                 }
                 .mySlides {display:none;}
                 .fadeinKTHB
