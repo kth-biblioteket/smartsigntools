@@ -1481,6 +1481,65 @@ async function getPageAsImage(events_id, html, template) {
 
 }
 
+async function getImasAsImage() {
+    try {
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
+        const page = await browser.newPage();
+
+        //Storlek på smartsignskärmarna är 1080x1920
+        await page.setViewport({
+            width: 1080,
+            height: 1920,
+            deviceScaleFactor: 1,
+        });
+
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage', { waitUntil: 'networkidle0' })
+
+        let pageimage
+        pageimage = await page.screenshot({ });
+
+        await browser.close();
+
+        return pageimage
+
+    }
+    catch (error) {
+        console.log(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage')
+        console.log(error)
+    }
+
+}
+
+async function getGrbAsImage() {
+    try {
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
+        const page = await browser.newPage();
+
+        //Storlek på smartsignskärmarna är 1080x1920
+        await page.setViewport({
+            width: 1080,
+            height: 1920,
+            deviceScaleFactor: 1,
+        });
+
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage', { waitUntil: 'networkidle0' })
+
+        let pageimage
+        pageimage = await page.screenshot({ });
+
+        await browser.close();
+
+        return pageimage
+
+    }
+    catch (error) {
+        console.log(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage')
+        console.log(error)
+    }
+
+}
+
+
 async function getImasRealtime(req, res) {
     try {
         token = await axios.post(`https://api.imas.net/account/login`, {
@@ -1591,6 +1650,8 @@ module.exports = {
     savePageAsImage,
     savePageAsPdf,
     getPageAsImage,
+    getImasAsImage,
+    getGrbAsImage,
     saveWifiPageAsPdf,
     getImasRealtime,
     substrInBetween,

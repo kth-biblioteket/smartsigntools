@@ -734,6 +734,32 @@ apiRoutes.get("/imas/polopoly", async function (req, res) {
 
 });
 
+apiRoutes.get("/imas/image", async function (req, res, next) {
+    try {
+        let pageimage = await eventController.getImasAsImage();
+        res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Length': pageimage.length,
+        });
+        res.end(pageimage);
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.get("/grb/image", async function (req, res, next) {
+    try {
+        let pageimage = await eventController.getGrbAsImage();
+        res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Length': pageimage.length,
+        });
+        res.end(pageimage);
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.get("/grb/smartsignpage", async function (req, res) {
     try {
         let kiosk
