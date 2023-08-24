@@ -222,14 +222,14 @@ h6 {
     width: 800px;
     height: 800px;
     transform-origin: center center;
-    transform: rotate(0deg) scale(100%) translate(-500px, -350px);
+    transform: rotate(0deg) scale(1.0) translate(-500px, -350px);
 }
 
 .linepattern-two {
     width: 800px;
     height: 800px;
     transform-origin: center center;
-    transform: rotate(90deg) scale(100%) translate(-350px, 500px);
+    transform: rotate(90deg) scale(1.0) translate(-350px, 500px);
 }
 
 .linepattern-three {
