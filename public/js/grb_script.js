@@ -19,7 +19,7 @@ $(document).ready(function() {
         d.setHours(d.getHours() + 1 );
         var nextthour = addZero(d.getHours());
         //uppdatera html
-        $("#App-content").html('<div>Status (' + currenthour + '.00 - ' + nextthour + '.00)</div>');
+        $("#App-content").html('<div class="grbstatustext">Status (' + currenthour + '.00 - ' + nextthour + '.00)</div>');
         //$("#App-content").html('<h4>Lässtudio / Reading Studio</h4>');
         var currenttimestamp = Math.floor(Date.now() /1000);
         var nexthourtimestamp = currenttimestamp + 3600;
