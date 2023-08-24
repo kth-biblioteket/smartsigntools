@@ -37,6 +37,7 @@ body {
     border-radius: 10px;
     padding: 20px;
     display: inline-block;
+    text-align: center;
 }
 
 .grey {
