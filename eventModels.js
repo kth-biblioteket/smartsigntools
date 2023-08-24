@@ -609,7 +609,11 @@ const deleteEventFieldsOrder = (event_id) => {
 //Hämta färger
 const readColors = () => {
     return new Promise(function (resolve, reject) {
-        const sql = `SELECT * FROM colors`;
+        const sql = `SELECT * 
+                    FROM 
+                        colors
+                    ORDER BY 
+                        sortorder`;
         database.db.query(database.mysql.format(sql,[]),(err, result) => {
             if(err) {
                 console.error(err);
