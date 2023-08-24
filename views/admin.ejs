@@ -85,8 +85,8 @@
         }
 
         .wrap {
-            width: 270px;
-            height: 480px;
+            width: 380px;
+            height: 674px;
             padding: 0;
             overflow: hidden;
             border: 1px solid #888888;
@@ -96,11 +96,11 @@
             width: 1080px;
             height: 1920px;
             border: 0;
-            -ms-transform: scale(0.25);
-            -moz-transform: scale(0.25);
-            -o-transform: scale(0.25);
-            -webkit-transform: scale(0.25);
-            transform: scale(0.25);
+            -ms-transform: scale(0.35);
+            -moz-transform: scale(0.35);
+            -o-transform: scale(0.35);
+            -webkit-transform: scale(0.35);
+            transform: scale(0.35);
 
             -ms-transform-origin: 0 0;
             -moz-transform-origin: 0 0;
@@ -155,6 +155,10 @@
                 </div>
 
                 <form style="flex:2;display:flex;justify-content:flex-end">
+                    <button style="margin-right:10px" type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                        Hantera bilder
+                    </button>
                     <button style="margin-right:10px" type="button" onclick="getQrtracking()" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#qrcodetrackingModal">
                                 Statistik QR-Scans
@@ -191,7 +195,7 @@
             </ul>
         </nav>
         <div id="content">
-            <div style="flex:2;padding-right:10px">
+            <div style="flex:1;padding-right:10px">
                 <% let published=false %>
                 <% let published_as_image=false %>
                 <% let eventimageheader=false %>
@@ -250,10 +254,6 @@
                             </div>
                             <div style="flex:2">
                                 <form>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
-                                    </div>
                                     <!--div class="form-check form-switch">
                                         <input class="form-check-input" <%-published_as_image ? "checked" : "" %> onclick="publishEventAsImage('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckAsImage<%=frameindex%>">
                                         <label class="form-check-label" for="flexSwitchCheckAsImage<%=frameindex%>">Publicera som bild<span id="imagespinner_<%=event.id%>"></span></label>
@@ -420,25 +420,16 @@
                                             <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
                                         </div-->
                                         <% } %>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
+                                    </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 <% frameindex++ %>
             <%} %>
-            </div>
-            <div style="flex:1">
-                <div class="card" style="margin-bottom:10px">
-                    <div class="card-body">
-                        <h5 class="card-title">Bildbank</h5>
-                        <div style="padding-bottom: 10px">
-                            <button type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal">
-                                Hantera bilder
-                            </button>
-                        </div>
-                    </div>
-                </div>
                 <div class="card">
                     <div class="card-body">
                         <div id="slideAlertPlaceholder"></div>
@@ -487,6 +478,19 @@
                     </div>
                 </div>
             </div>
+            <!--div style="flex:1">
+                <div class="card" style="margin-bottom:10px">
+                    <div class="card-body">
+                        <h5 class="card-title">Bildbank</h5>
+                        <div style="padding-bottom: 10px">
+                            <button type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                Hantera bilder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div-->
         </div>
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable">
