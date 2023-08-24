@@ -271,6 +271,44 @@ apiRoutes.post("/calendar/event/sortfields", VerifyToken, async function (req, r
     }
 });
 
+apiRoutes.post("/calendar/event/linepattern", VerifyToken, async function (req, res, next) {
+    try {
+        let events_id = req.body.events_id
+        let linepattern_id = req.body.linepattern_id
+        res.send(eventController.createEventLinePattern(events_id, linepattern_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/linepattern", VerifyToken, async function (req, res, next) {
+    try {
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventLinePattern(events_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.post("/calendar/event/linepatternplacement", VerifyToken, async function (req, res, next) {
+    try {
+        let events_id = req.body.events_id
+        let linepatternplacement_id = req.body.linepatternplacement_id
+        res.send(eventController.createEventLinePatternPlacement(events_id, linepatternplacement_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/linepatternplacement", VerifyToken, async function (req, res, next) {
+    try {
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventLinePatternPlacement(events_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
         let html_template = req.query.template || 'templates/smartsign_template.html'

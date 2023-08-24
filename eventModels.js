@@ -414,6 +414,52 @@ const readEventFieldsOrder = (event_id) => {
 
 };
 
+//Hämta Linjemönster för event
+const readEventLinePattern = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT 
+                       event_id, linepatterns.id, linepatterns.name, linepatterns.code 
+                    FROM 
+                        eventlinepattern
+                    JOIN 
+                        linepatterns ON linepatterns.id = linepattern_id
+                    WHERE 
+                        event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
+//Hämta Linjemönsters placering för event
+const readEventLinePatternPlacement = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT 
+                        event_id, linepatternplacements.id, linepatternplacements.name, linepatternplacements.code 
+                    FROM 
+                        eventlinepatternplacement
+                    JOIN 
+                        linepatternplacements ON linepatternplacements.id = linepatternplacement_id
+                    WHERE 
+                        event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
 //Lägg till ett events bakgrundsfärd
 const createEventBgColor = (event_id, color_id) => {
     return new Promise(function (resolve, reject) {
@@ -606,6 +652,70 @@ const deleteEventFieldsOrder = (event_id) => {
     })
 };
 
+//Lägg till ett events linjemönster
+const createEventLinePattern = (event_id, linepattern_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventlinepattern(event_id, linepattern_id)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, linepattern_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The linepattern was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events linjemönster
+const deleteEventLinePattern = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventlinepattern
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The linepattern was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events linjemönsters placering
+const createEventLinePatternPlacement = (event_id, linepatternplacement_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventlinepatternplacement(event_id, linepatternplacement_id)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, linepatternplacement_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The linepattern was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events linjemönsters placering
+const deleteEventLinePatternPlacement = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventlinepatternplacement
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The linepattern was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
 //Hämta färger
 const readColors = () => {
     return new Promise(function (resolve, reject) {
@@ -614,6 +724,44 @@ const readColors = () => {
                         colors
                     ORDER BY 
                         sortorder`;
+        database.db.query(database.mysql.format(sql,[]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Hämta linjemönster
+const readLinePatterns = () => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT
+                        id, name, description, code
+                    FROM 
+                        linepatterns 
+                    ORDER BY 
+                        code`;
+        database.db.query(database.mysql.format(sql,[]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Hämta linjemönster
+const readLinePatternPlacements = () => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT
+                        id, name, description, code
+                    FROM 
+                        linepatternplacements 
+                    ORDER BY 
+                        name`;
         database.db.query(database.mysql.format(sql,[]),(err, result) => {
             if(err) {
                 console.error(err);
@@ -876,7 +1024,15 @@ module.exports = {
     readEventFieldsOrder,
     createEventFieldsOrder,
     deleteEventFieldsOrder,
+    readEventLinePattern,
+    createEventLinePattern,
+    deleteEventLinePattern,
+    readEventLinePatternPlacement,
+    createEventLinePatternPlacement,
+    deleteEventLinePatternPlacement,
     readColors,
+    readLinePatterns,
+    readLinePatternPlacements,
     readImages,
     readImage,
     createImage,

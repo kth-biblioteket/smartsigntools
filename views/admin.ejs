@@ -206,6 +206,8 @@
                     <%let eventimage=event_.eventimage %>
                     <%let eventbgcolor=event_.eventbgcolor %>
                     <%let eventtextcolor=event_.eventtextcolor %>
+                    <%let eventlinepattern=event_.eventlinepattern %>
+                    <%let eventlinepatternplacement=event_.eventlinepatternplacement %>
                     <%if(event.published==1) { published=true } else { published=false } %>
                     <%if(event_.eventimageheader[0]) { eventimageheader=true } else { eventimageheader=false } %>
                     <%if(event_.eventimageoverlay[0]) { eventimageoverlay=true } else { eventimageoverlay=false } %>
@@ -351,6 +353,41 @@
                                                 <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
                                             <%})%>
                                         </select>
+                                        <div style="padding-top:10px">
+                                            Linjemönster
+                                        </div>
+                                        <select class="form-select" onChange="updateEventLinePattern('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatternselect<%=event.id%>" title="Välj linjemönster" class="selectpicker">
+                                            <option value="0">Välj...</option>
+                                            <% let selectedlinepattern='' %>
+                                            <% linepatterns.forEach(linepattern => {%>
+                                                <% if (eventlinepattern[0]) {%>
+                                                    <% if (eventlinepattern[0].id == linepattern.id) {%>
+                                                        <% selectedlinepattern= 'selected'%>
+                                                    <% } else {%>
+                                                        <% selectedlinepattern = ''%>
+                                                    <% }%>
+                                                <% } %>
+                                                <option <%=selectedlinepattern%> value="<%=linepattern.id%>"><%=linepattern.name%></option>
+                                            <%})%>
+                                        </select>
+                                        <div style="padding-top:10px">
+                                            Linjemönsters placering
+                                        </div>
+                                        <select class="form-select" onChange="updateEventLinePatternPlacement('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering" class="selectpicker">
+                                            <option value="0">Välj...</option>
+                                            <% let selectedlinepatternplacement='' %>
+                                            <% linepatternplacements.forEach(linepatternplacement => {%>
+                                                <% if (eventlinepatternplacement[0]) {%>
+                                                    <% if (eventlinepatternplacement[0].id == linepatternplacement.id) {%>
+                                                        <% selectedlinepatternplacement= 'selected'%>
+                                                    <% } else {%>
+                                                        <% selectedlinepatternplacement = ''%>
+                                                    <% }%>
+                                                <% } %>
+                                                <option <%=selectedlinepatternplacement%> value="<%=linepatternplacement.id%>"><%=linepatternplacement.name%></option>
+                                            <%})%>
+                                        </select>
+                                        
                                         <div style="padding-top:10px;" class="form-group">
                                             <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
                                             <div class="input-group">
@@ -1247,6 +1284,74 @@
                 xhttp.send(JSON.stringify({
                     fieldsOrder
               }));              
+            }
+
+            function updateEventLinePattern(events_id, frameid, selectlist) {
+                checkjwt()
+                var x = document.getElementById("textcolorselect");
+                linepattern_id = selectlist.value
+                var xhttp = new XMLHttpRequest();
+                if (linepattern_id != "0") {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/linepattern", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "linepattern_id": linepattern_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/linepattern", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "linepattern_id": linepattern_id
+                    }));
+                }
+            }
+
+            function updateEventLinePatternPlacement(events_id, frameid, selectlist) {
+                checkjwt()
+                var x = document.getElementById("textcolorselect");
+                linepatternplacement_id = selectlist.value
+                var xhttp = new XMLHttpRequest();
+                if (linepatternplacement_id != "0") {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/linepatternplacement", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "linepatternplacement_id": linepatternplacement_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/linepatternplacement", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "linepatternplacement_id": linepatternplacement_id
+                    }));
+                }
             }
         </script>
     </div>

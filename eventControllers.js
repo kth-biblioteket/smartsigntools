@@ -50,6 +50,20 @@ async function readEventsPaginated(req, res, next) {
         res.send("error: " + err.message)
     }
 
+    try{
+        linepatterns = await eventModel.readLinePatterns()
+        data.linepatterns = linepatterns
+    } catch(err) {
+        res.send("error: " + err.message)
+    }
+
+    try{
+        linepatternplacements = await eventModel.readLinePatternPlacements()
+        data.linepatternplacements = linepatternplacements
+    } catch(err) {
+        res.send("error: " + err.message)
+    }
+
     try {
         feed = await parser.parseURL(process.env.RSSFEED);
         data.feed = feed
@@ -140,6 +154,8 @@ async function readEventsPaginated(req, res, next) {
                 eventsarray[i].eventimageoverlay = await eventModel.readEventImageOverlay(events[i].id)
                 eventsarray[i].eventimageheader = await eventModel.readEventImageHeader(events[i].id)
                 eventsarray[i].eventfieldsorder = await eventModel.readEventFieldsOrder(events[i].id)
+                eventsarray[i].eventlinepattern = await eventModel.readEventLinePattern(events[i].id)
+                eventsarray[i].eventlinepatternplacement = await eventModel.readEventLinePatternPlacement(events[i].id)
             }
         }
         //filtrera bort tomma poster
@@ -152,7 +168,9 @@ async function readEventsPaginated(req, res, next) {
             "feed": data.feed,
             "feed_sv": data.feed_sv,
             "smartsignlink": process.env.SMARTSIGNLINK,
-            "colors": data.colors
+            "colors": data.colors,
+            "linepatterns": data.linepatterns,
+            "linepatternplacements": data.linepatternplacements
         }
         res.render('admin', admindata);
 
@@ -672,6 +690,68 @@ async function deleteEventFieldsOrder(event_id) {
     }
 }
 
+async function readEventLinePattern(event_id) {
+    try {
+        let result = await eventModel.readEventLinePattern(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventLinePattern(event_id, linepattern_id) {
+    try {
+        let result = await eventModel.deleteEventLinePattern(event_id)
+        result = await eventModel.createEventLinePattern(event_id, linepattern_id)
+        return "success"
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventLinePattern(event_id) {
+    try {
+        let result = await eventModel.deleteEventLinePattern(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readEventLinePatternPlacement(event_id) {
+    try {
+        let result = await eventModel.readEventLinePattern(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventLinePatternPlacement(event_id, linepatternplacement_id) {
+    try {
+        let result = await eventModel.deleteEventLinePatternPlacement(event_id)
+        result = await eventModel.createEventLinePatternPlacement(event_id, linepatternplacement_id)
+        return "success"
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventLinePatternPlacement(event_id) {
+    try {
+        let result = await eventModel.deleteEventLinePatternPlacement(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
 async function readImages() {
     try {
         result = await eventModel.readImages()
@@ -812,6 +892,35 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
     const template = cheerio.load(files.toString(), null, true);
     //template('.headertext h4').text("KTH LIBRARY");
     //template('body').css('overflow', 'hidden');
+    let eventlinepattern = await eventModel.readEventLinePattern(events_id)
+    let eventlinepatternplacement = await eventModel.readEventLinePatternPlacement(events_id)
+
+    if (eventlinepattern[0]) {
+        if(eventlinepattern[0].code=='1') {
+            template('#linepattern svg').addClass("linepattern-one");
+        }
+        if(eventlinepattern[0].code=='2') {
+            template('#linepattern svg').addClass("linepattern-two");
+        }
+        if(eventlinepattern[0].code=='3') {
+            template('#linepattern svg').addClass("linepattern-three");
+        }
+        if(eventlinepattern[0].code=='4') {
+            template('#linepattern svg').addClass("linepattern-four");
+        }
+
+        if (eventlinepatternplacement[0]) {
+            if (eventlinepatternplacement[0].code=='br') {
+                template('#linepattern').addClass("linepattern-bottom-right");
+            }
+            if (eventlinepatternplacement[0].code=='tl') {
+                template('#linepattern').addClass("linepattern-top-left");
+            }
+        }
+    }
+    
+
+    ///console.log(template)
 
     try {
         //Hämta event
@@ -1626,6 +1735,12 @@ module.exports = {
     readEventFieldsOrder,
     createEventFieldsOrder,
     deleteEventFieldsOrder,
+    readEventLinePattern,
+    createEventLinePattern,
+    deleteEventLinePattern,
+    readEventLinePatternPlacement,
+    createEventLinePatternPlacement,
+    deleteEventLinePatternPlacement,
     readImages,
     readImage,
     createImage,
