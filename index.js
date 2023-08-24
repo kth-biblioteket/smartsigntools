@@ -309,6 +309,26 @@ apiRoutes.delete("/calendar/event/linepatternplacement", VerifyToken, async func
     }
 });
 
+apiRoutes.post("/calendar/event/linepatterncolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.createEventLinePatternColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/linepatterncolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventLinePatternColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
         let html_template = req.query.template || 'templates/smartsign_template.html'

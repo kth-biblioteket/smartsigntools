@@ -457,6 +457,25 @@ const readEventLinePatternPlacement = (event_id) => {
             resolve(result);
         });
     })
+createEventTextColor
+};
+
+//Hämta textfärg för event
+const readEventLinePatternColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT colors.id, eventlinepatterncolor.event_id, colors.name, colors.code, colors.description
+                    FROM eventlinepatterncolor
+                    JOIN colors ON eventlinepatterncolor.color_id = colors.id
+                    AND eventlinepatterncolor.event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
 
 };
 
@@ -711,6 +730,38 @@ const deleteEventLinePatternPlacement = (event_id) => {
                 reject(err.message)
             }
             const successMessage = "The linepattern was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events textfärd
+const createEventLinePatternColor = (event_id, color_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventlinepatterncolor(event_id, color_id)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, color_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events textfärg
+const deleteEventLinePatternColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventlinepatterncolor
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully deleted."
             resolve(successMessage);
         });
     })
@@ -1030,6 +1081,9 @@ module.exports = {
     readEventLinePatternPlacement,
     createEventLinePatternPlacement,
     deleteEventLinePatternPlacement,
+    readEventLinePatternColor,
+    createEventLinePatternColor,
+    deleteEventLinePatternColor,
     readColors,
     readLinePatterns,
     readLinePatternPlacements,

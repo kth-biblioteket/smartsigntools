@@ -156,6 +156,7 @@ async function readEventsPaginated(req, res, next) {
                 eventsarray[i].eventfieldsorder = await eventModel.readEventFieldsOrder(events[i].id)
                 eventsarray[i].eventlinepattern = await eventModel.readEventLinePattern(events[i].id)
                 eventsarray[i].eventlinepatternplacement = await eventModel.readEventLinePatternPlacement(events[i].id)
+                eventsarray[i].eventlinepatterncolor = await eventModel.readEventLinePatternColor(events[i].id)
             }
         }
         //filtrera bort tomma poster
@@ -752,6 +753,38 @@ async function deleteEventLinePatternPlacement(event_id) {
     }
 }
 
+async function readEventLinePatternColor(event_id) {
+    try {
+        let result = await eventModel.readEventLinePatternColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventLinePatternColor(event_id, color_id) {
+    try {
+        let result = await eventModel.deleteEventLinePatternColor(event_id)
+        result = await eventModel.createEventLinePatternColor(event_id, color_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventLinePatternColor(event_id) {
+    try {
+        let result = await eventModel.deleteEventLinePatternColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+
 async function readImages() {
     try {
         result = await eventModel.readImages()
@@ -933,6 +966,8 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
 
         let eventtextcolor = await readEventTextColor(event.id)
 
+        let eventlinepatterncolor = await readEventLinePatternColor(event.id)
+
         let eventtimageoverlay = await readEventImageOverlay(event.id)
 
         let eventtimageheader = await readEventImageHeader(event.id)
@@ -981,6 +1016,10 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
 
                 body, .App, .App-content, a {
                     color: #${eventtextcolor[0] ? eventtextcolor[0].code : '000000'};
+                }
+
+                .cls-2 {
+                    stroke: #${eventlinepatterncolor[0] ? eventlinepatterncolor[0].code : '000000'};
                 }
 
                 ${imageoverlaycss}
@@ -1741,6 +1780,9 @@ module.exports = {
     readEventLinePatternPlacement,
     createEventLinePatternPlacement,
     deleteEventLinePatternPlacement,
+    readEventLinePatternColor,
+    createEventLinePatternColor,
+    deleteEventLinePatternColor,
     readImages,
     readImage,
     createImage,
