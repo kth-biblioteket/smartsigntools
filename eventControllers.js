@@ -984,8 +984,8 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 left: 0;
                 width: 100%;
                 height: 50%;
-                background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
-                opacity: 0.5;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                opacity: 1;
             }
 
             .App-title .titleimage:after {
@@ -995,8 +995,8 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 left: 0;
                 width: 100%;
                 height: 50%;
-                background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
-                opacity: 0.5;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                opacity: 1;
             }
             `
         }
