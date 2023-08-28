@@ -1270,11 +1270,11 @@ async function getExchangeCalendarItems(req, res) {
     let json=[]
     for (const appointment of appointments.Items) {
         if(appointment.IsAllDayEvent) {
-            start =new Date(appointment.Start).toLocaleDateString()
-            end = new Date(appointment.End).toLocaleDateString()
+            start =new Date(appointment.Start).toLocaleDateString('sv-SE')
+            end = new Date(appointment.End).toLocaleDateString('sv-SE')
         } else {
-            start =new Date(appointment.Start).toLocaleString()
-            end = new Date(appointment.End).toLocaleString()
+            start =new Date(appointment.Start).toLocaleString('sv-SE')
+            end = new Date(appointment.End).toLocaleString('sv-SE')
         };
         json.push(
             {
