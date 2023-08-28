@@ -138,13 +138,13 @@ h6 {
     line-height: 105%;
 }
 
-.App-title .rubrikplatta {
-    position: absolute;
-    width: 650px;
+.rubrikplatta {
+    /*position: absolute;*/
+    width: 100%;
     top: 150px;
     left: 0px;
     /*background: #fff;*/
-    padding: 10px 25px 10px 100px;
+    padding: 40px 40px 0px 40px;
     font-weight: 700;
     line-height: 105%;
     font-size: 50px;
@@ -292,8 +292,8 @@ strong {
     width: 43%;
     /* text-align: right; */
     display: flex;
-    justify-content: end;
-    align-items: end;
+    align-self: flex-end;
+    justify-content: flex-end;
     line-height: 1;
 }
 
@@ -306,8 +306,8 @@ strong {
     width: 43%;
     /* text-align: right; */
     display: flex;
-    justify-content: end;
-    align-items: end;
+    align-self: flex-end;
+    justify-content: flex-end;
     line-height: 1;
 }
 

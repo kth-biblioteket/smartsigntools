@@ -282,7 +282,7 @@
                                                 <input class="form-check-input" <%-published_as_image ? "checked" : "" %> onclick="publishEventAsImage('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckAsImage<%=frameindex%>">
                                                 <label class="form-check-label" for="flexSwitchCheckAsImage<%=frameindex%>">Publicera som bild<span id="imagespinner_<%=event.id%>"></span></label>
                                             </div-->
-                                            <div style="" class="form-check">
+                                            <div class="form-check">
                                                 <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
                                                 <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
                                                     Engelska
