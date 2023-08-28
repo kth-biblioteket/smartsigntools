@@ -127,6 +127,27 @@
             padding: 0;
             margin: 0;
         }
+
+        .dropdown .form-select::after {
+            display: none;
+        }
+
+        /* Apply border color to button */
+        .dropdown .form-select {
+            border-color: #ced4da; /* Adjust the color as needed */
+            background-color: #ffffff; /* Set background color */
+            text-align: left;
+        }
+
+        /* Remove hover effect */
+        .dropdown .form-select:hover {
+            background-color: #ffffff; /* Set background color */
+        }
+
+        /* Remove active/focus outline */
+        .dropdown .form-select:focus {
+            box-shadow: none;
+        }
     </style>
 </head>
 
@@ -246,201 +267,243 @@
                                 <div style="padding:10px" id="qrcodeimage_<%=event.id%>"></div>
                             </div>
                             <div style="flex:3;display:flex;flex-direction:row">
-                                <div style="flex:1;display:flex;flex-direction:column">
+                                <div style="flex:1;display:flex;flex-direction:column;align-items: center;">
                                     <div class="wrap">
                                         <iframe id="frame_<%=frameindex%>" class="frame"
                                             src="/smartsigntools/api/v1/calendar/event/<%=event.id%>"></iframe>
                                     </div>
                                 </div>
                             </div>
-                            <div style="flex:2">
+                            <div style="flex:3">
                                 <form>
-                                    <!--div class="form-check form-switch">
-                                        <input class="form-check-input" <%-published_as_image ? "checked" : "" %> onclick="publishEventAsImage('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckAsImage<%=frameindex%>">
-                                        <label class="form-check-label" for="flexSwitchCheckAsImage<%=frameindex%>">Publicera som bild<span id="imagespinner_<%=event.id%>"></span></label>
-                                    </div-->
-                                    <div style="padding-top:10px" class="form-check">
-                                        <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
-                                        <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
-                                            Engelska
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" <%-event.lang == "sv" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'sv', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioSwedish<%=frameindex%>">
-                                        <label class="form-check-label" for="flexRadioSwedish<%=frameindex%>">
-                                            Svenska
-                                        </label>
-                                    </div>
+                                    <div style="display:flex;justify-content: stretch;">
+                                        <div style="flex:1;padding:10px">
+                                            <!--div class="form-check form-switch">
+                                                <input class="form-check-input" <%-published_as_image ? "checked" : "" %> onclick="publishEventAsImage('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckAsImage<%=frameindex%>">
+                                                <label class="form-check-label" for="flexSwitchCheckAsImage<%=frameindex%>">Publicera som bild<span id="imagespinner_<%=event.id%>"></span></label>
+                                            </div-->
+                                            <div style="padding-top:10px" class="form-check">
+                                                <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
+                                                <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
+                                                    Engelska
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" <%-event.lang == "sv" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'sv', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioSwedish<%=frameindex%>">
+                                                <label class="form-check-label" for="flexRadioSwedish<%=frameindex%>">
+                                                    Svenska
+                                                </label>
+                                            </div>
 
-                                    <div style="padding-top:10px">
-                                        Fält som ska visas (<span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span> - Välj placering genom att dra fälten upp eller ner i listan)
-                                    </div>
-                                    <ul id="sortable<%=event.id%>" class="sortable-list list-group">
-                                        <%eventfields.forEach(field=> { %>
-                                            
-                                            <%if(field.sortable==1){%>
-                                                <li class="list-group-item ui-state-default sortable-item" data-frameid="frame_<%=frameindex%>" data-eventid="<%=event.id%>" data-fieldid="<%=field.id%>">
-                                                    <span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
-                                             <%} else {%>
-                                                <li class="list-group-item ui-state-default non-sortable-item">
-                                             <%}%>
+                                            <div style="padding-top:10px">
+                                                Fält som ska visas (<span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span> - Välj placering genom att dra fälten upp eller ner i listan)
+                                            </div>
+                                            <ul id="sortable<%=event.id%>" class="sortable-list list-group">
+                                                <%eventfields.forEach(field=> { %>
+                                                    
+                                                    <%if(field.sortable==1){%>
+                                                        <li class="list-group-item ui-state-default sortable-item" data-frameid="frame_<%=frameindex%>" data-eventid="<%=event.id%>" data-fieldid="<%=field.id%>">
+                                                            <span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
+                                                        <%} else {%>
+                                                        <li class="list-group-item ui-state-default non-sortable-item">
+                                                        <%}%>
+                                                            <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
+                                                            <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
+                                                        </li>
+                                                <%}) %>
+                                            </ul>
+                                            <%eventfields.forEach(field=> { %>
+                                                <!--div class="form-check">
                                                     <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
                                                     <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
-                                                </li>
-                                        <%}) %>
-                                    </ul>
-                                    <%eventfields.forEach(field=> { %>
-                                        <!--div class="form-check">
-                                            <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
-                                            <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
-                                        </div-->
-                                    <%}) %>
-                                        <div style="padding-top:10px">
-                                            Bild från bildbank
-                                        </div>
-                                        <select class="form-select" onChange="updateEventImage('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="imagebankselect<%=event.id%>" title="Välj bild" class="selectpicker">
-                                            <option value="0">Välj...</option>
-                                            <% let selectedimage='' %>
-                                            <% imagebank.forEach(image => {%>
-                                                <% if (eventimage[0]) {%>
-                                                    <% if (eventimage[0].id == image.id) {%>
-                                                        <% selectedimage = 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedimage = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                                <option <%=selectedimage%> value="<%=image.id%>"><%=image.name%></option>
-                                            <%})%>
-                                        </select>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" <%-eventimageheader ? "checked" : "" %> onclick="updateEventImageHeader('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageHeader<%=frameindex%>">
-                                            <label class="form-check-label" for="flexSwitchCheckImageHeader<%=frameindex%>">Visa rubriken på bilden</label>
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" <%-eventimageoverlay ? "checked" : "" %> onclick="updateEventImageOverlay('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageOverlay<%=frameindex%>">
-                                            <label class="form-check-label" for="flexSwitchCheckImageOverlay<%=frameindex%>">Aktivera Gradient för bilden</label>
-                                        </div>
-                                        <div style="padding-top:10px">
-                                            Bakgrundsfärg
-                                        </div>
-                                        <select class="form-select" onChange="updateEventBgColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="bgcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
-                                            <option value="0">Välj...</option>
-                                            <% let selectedbgcolor='' %>
-                                            <% colors.forEach(bgcolor => {%>
-                                                <% if (eventbgcolor[0]) {%>
-                                                    <% if (eventbgcolor[0].id == bgcolor.id) {%>
-                                                        <% selectedbgcolor= 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedbgcolor = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                                <option <%=selectedbgcolor%> value="<%=bgcolor.id%>"><%=bgcolor.name%></option>
-                                            <%})%>
-                                        </select>
-                                        <div style="padding-top:10px">
-                                            Textfärg
-                                        </div>
-                                        <select class="form-select" onChange="updateEventTextColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="textcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
-                                            <option value="0">Välj...</option>
-                                            <% let selectedtextcolor='' %>
-                                            <% colors.forEach(textcolor => {%>
-                                                <% if (eventtextcolor[0]) {%>
-                                                    <% if (eventtextcolor[0].id == textcolor.id) {%>
-                                                        <% selectedtextcolor= 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedtextcolor = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                                <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
-                                            <%})%>
-                                        </select>
-                                        <div style="padding-top:10px">
-                                            Linjemönster
-                                        </div>
-                                        <select class="form-select" onChange="updateEventLinePattern('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatternselect<%=event.id%>" title="Välj linjemönster" class="selectpicker">
-                                            <option value="0">Välj...</option>
-                                            <% let selectedlinepattern='' %>
-                                            <% linepatterns.forEach(linepattern => {%>
-                                                <% if (eventlinepattern[0]) {%>
-                                                    <% if (eventlinepattern[0].id == linepattern.id) {%>
-                                                        <% selectedlinepattern= 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedlinepattern = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                                <option <%=selectedlinepattern%> value="<%=linepattern.id%>"><%=linepattern.name%></option>
-                                            <%})%>
-                                        </select>
-                                        <div style="padding-top:10px">
-                                            Linjemönsters placering
-                                        </div>
-                                        <select class="form-select" onChange="updateEventLinePatternPlacement('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering" class="selectpicker">
-                                            <option value="0">Välj...</option>
-                                            <% let selectedlinepatternplacement='' %>
-                                            <% linepatternplacements.forEach(linepatternplacement => {%>
-                                                <% if (eventlinepatternplacement[0]) {%>
-                                                    <% if (eventlinepatternplacement[0].id == linepatternplacement.id) {%>
-                                                        <% selectedlinepatternplacement= 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedlinepatternplacement = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                                <option <%=selectedlinepatternplacement%> value="<%=linepatternplacement.id%>"><%=linepatternplacement.name%></option>
-                                            <%})%>
-                                        </select>
-                                        <div style="padding-top:10px">
-                                            Linjemönsters färg
-                                        </div>
-                                        <select class="form-select" onChange="updateEventLinePatternColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg" class="selectpicker">
-                                            <option value="0">Välj...</option>
-                                            <% let selectedlinepatterncolor='' %>
-                                            <% colors.forEach(linepatterncolor => {%>
-                                                <% if (eventlinepatterncolor[0]) {%>
-                                                    <% if (eventlinepatterncolor[0].id == linepatterncolor.id) {%>
-                                                        <% selectedlinepatterncolor= 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedlinepatterncolor = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                                <option <%=selectedlinepatterncolor%> value="<%=linepatterncolor.id%>"><%=linepatterncolor.name%></option>
-                                            <%})%>
-                                        </select>
-                                        
-                                        <div style="padding-top:10px;" class="form-group">
-                                            <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
-                                            <div class="input-group">
-                                                <input value="<%=admindata.smartsignlink + event.id%>"
-                                                    type="text" class="form-control"
-                                                    id="smartsignLink_<%=event.id%>" aria-describedby="linkHelp"
-                                                    placeholder="">
-                                                <span style="cursor: pointer"
-                                                    onclick="copytext('smartsignLink_<%=event.id%>')"
-                                                    class="input-group-text" id="copybtn_<%=event.id%>">
-                                                    <i class="bi bi-clipboard"></i>
-                                                </span>
+                                                </div-->
+                                            <%}) %>
+                                                <div style="padding-top:10px">
+                                                    Bild från bildbank
+                                                </div>
+                                                <select class="form-select" onChange="updateEventImage('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="imagebankselect<%=event.id%>" title="Välj bild" class="selectpicker">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedimage='' %>
+                                                    <% imagebank.forEach(image => {%>
+                                                        <% if (eventimage[0]) {%>
+                                                            <% if (eventimage[0].id == image.id) {%>
+                                                                <% selectedimage = 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedimage = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedimage%> value="<%=image.id%>"><%=image.name%></option>
+                                                    <%})%>
+                                                </select>
                                             </div>
-                                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
-                                        </div>
-                                        <% if(event.published_as_image==1) { %>
-                                        <!--div style="padding-top:10px;" class="form-group">
-                                            <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
-                                            <div class="input-group">
-                                                <input value="<%=event.smartsignlink + 'image/' + event.id%>"
-                                                    type="text" class="form-control"
-                                                    id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
-                                                    placeholder="">
-                                                <span style="cursor: pointer"
-                                                    onclick="copytext('smartsignLinkImage_<%=event.id%>')"
-                                                    class="input-group-text" id="copybtn_Image_<%=event.id%>">
-                                                    <i class="bi bi-clipboard"></i>
-                                                </span>
+                                            <div style="flex:1;padding:10px">    
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" <%-eventimageheader ? "checked" : "" %> onclick="updateEventImageHeader('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageHeader<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexSwitchCheckImageHeader<%=frameindex%>">Visa rubriken på bilden</label>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" <%-eventimageoverlay ? "checked" : "" %> onclick="updateEventImageOverlay('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageOverlay<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexSwitchCheckImageOverlay<%=frameindex%>">Aktivera Gradient för bilden</label>
+                                                </div>
+                                                <div style="padding-top:10px">
+                                                    Bakgrundsfärg
+                                                </div>
+                                                <select class="form-select" onChange="updateEventBgColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="bgcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedbgcolor='' %>
+                                                    <% colors.forEach(bgcolor => {%>
+                                                        <% if (eventbgcolor[0]) {%>
+                                                            <% if (eventbgcolor[0].id == bgcolor.id) {%>
+                                                                <% selectedbgcolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedbgcolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedbgcolor%> value="<%=bgcolor.id%>"><%=bgcolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Textfärg
+                                                </div>
+                                                <select class="form-select" onChange="updateEventTextColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="textcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedtextcolor='' %>
+                                                    <% colors.forEach(textcolor => {%>
+                                                        <% if (eventtextcolor[0]) {%>
+                                                            <% if (eventtextcolor[0].id == textcolor.id) {%>
+                                                                <% selectedtextcolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedtextcolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Linjemönster
+                                                </div>
+                                                <!--select class="form-select" onChange="updateEventLinePattern('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatternselect<%=event.id%>" title="Välj linjemönster" class="selectpicker">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedlinepattern='' %>
+                                                    <% linepatterns.forEach(linepattern => {%>
+                                                        <% if (eventlinepattern[0]) {%>
+                                                            <% if (eventlinepattern[0].id == linepattern.id) {%>
+                                                                <% selectedlinepattern= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedlinepattern = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedlinepattern%> value="<%=linepattern.id%>"><%=linepattern.name%></option>
+                                                    <%})%>
+                                                </select-->
+                                                <div class="dropdown">
+                                                    <button class="btn btn-default dropdown-toggle form-select selected" type="button" id="linepatternbtn<%=event.id%>" data-bs-toggle="dropdown" aria-expanded="false" style="display:flex">
+                                                        <%- eventlinepattern[0] ? eventlinepattern[0].name + `<img style="width:50px; height:30px" src="/smartsigntools/images/linepattern${eventlinepattern[0].id}.png" />` : 'Välj...'%>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <% linepatterns.forEach(linepattern => {%>
+                                                            <% if (eventlinepattern[0]) {%>
+                                                                <% if (eventlinepattern[0].id == linepattern.id) {%>
+                                                                    <li>
+                                                                        <div onClick="updateEventLinePattern('<%=event.id%>', 'frame_<%=frameindex%>', this)" data-linepatternid="0" class="dropdown-item" style="display:flex">
+                                                                            <div  class="form-select-option" style="width:50px; height:30px">
+                                                                                Inget...
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                <% } else {%>
+                                                                    <li>
+                                                                        <div onClick="updateEventLinePattern('<%=event.id%>', 'frame_<%=frameindex%>', this)" data-linepatternid="<%=linepattern.id%>" class="dropdown-item" style="display:flex">
+                                                                            <div  class="form-select-option" style="width:50px; height:30px">
+                                                                                <%=linepattern.name%>
+                                                                            </div> <img src="/smartsigntools/images/linepattern<%=linepattern.id%>.png" />
+                                                                        </div>
+                                                                    </li>
+                                                                <% }%>
+                                                            <% } else {%>
+                                                                <li>
+                                                                    <div onClick="updateEventLinePattern('<%=event.id%>', 'frame_<%=frameindex%>', this)" data-linepatternid="<%=linepattern.id%>" class="dropdown-item" style="display:flex">
+                                                                        <div  class="form-select-option" style="width:50px; height:30px">
+                                                                            <%=linepattern.name%>
+                                                                        </div> <img src="/smartsigntools/images/linepattern<%=linepattern.id%>.png" />
+                                                                    </div>
+                                                                </li>
+                                                            <% }%>
+                                                        <%})%>
+                                                    </ul>
+                                                </div>
+                                                <div style="padding-top:10px">
+                                                    Linjemönsters placering
+                                                </div>
+                                                <select class="form-select" onChange="updateEventLinePatternPlacement('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering" class="selectpicker">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedlinepatternplacement='' %>
+                                                    <% linepatternplacements.forEach(linepatternplacement => {%>
+                                                        <% if (eventlinepatternplacement[0]) {%>
+                                                            <% if (eventlinepatternplacement[0].id == linepatternplacement.id) {%>
+                                                                <% selectedlinepatternplacement= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedlinepatternplacement = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedlinepatternplacement%> value="<%=linepatternplacement.id%>"><%=linepatternplacement.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Linjemönsters färg
+                                                </div>
+                                                <select class="form-select" onChange="updateEventLinePatternColor('<%=event.id%>', 'frame_<%=frameindex%>', this)" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg" class="selectpicker">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedlinepatterncolor='' %>
+                                                    <% colors.forEach(linepatterncolor => {%>
+                                                        <% if (eventlinepatterncolor[0]) {%>
+                                                            <% if (eventlinepatterncolor[0].id == linepatterncolor.id) {%>
+                                                                <% selectedlinepatterncolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedlinepatterncolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedlinepatterncolor%> value="<%=linepatterncolor.id%>"><%=linepatterncolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                
+                                                <div style="padding-top:10px;" class="form-group">
+                                                    <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
+                                                    <div class="input-group">
+                                                        <input value="<%=admindata.smartsignlink + event.id%>"
+                                                            type="text" class="form-control"
+                                                            id="smartsignLink_<%=event.id%>" aria-describedby="linkHelp"
+                                                            placeholder="">
+                                                        <span style="cursor: pointer"
+                                                            onclick="copytext('smartsignLink_<%=event.id%>')"
+                                                            class="input-group-text" id="copybtn_<%=event.id%>">
+                                                            <i class="bi bi-clipboard"></i>
+                                                        </span>
+                                                    </div>
+                                                    <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                                                </div>
+                                                <% if(event.published_as_image==1) { %>
+                                                <!--div style="padding-top:10px;" class="form-group">
+                                                    <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
+                                                    <div class="input-group">
+                                                        <input value="<%=event.smartsignlink + 'image/' + event.id%>"
+                                                            type="text" class="form-control"
+                                                            id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
+                                                            placeholder="">
+                                                        <span style="cursor: pointer"
+                                                            onclick="copytext('smartsignLinkImage_<%=event.id%>')"
+                                                            class="input-group-text" id="copybtn_Image_<%=event.id%>">
+                                                            <i class="bi bi-clipboard"></i>
+                                                        </span>
+                                                    </div>
+                                                    <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                                                </div-->
+                                                <% } %>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
+                                                <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
                                             </div>
-                                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
-                                        </div-->
-                                        <% } %>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -1310,8 +1373,11 @@
 
             function updateEventLinePattern(events_id, frameid, selectlist) {
                 checkjwt()
-                var x = document.getElementById("textcolorselect");
-                linepattern_id = selectlist.value
+                var value = $(selectlist).html();
+                var buttonHtml = $('#linepatternbtn' + events_id).html();
+                $('#linepatternbtn' + events_id).html(value);
+                $(selectlist).html(buttonHtml);
+                linepattern_id = selectlist.value || selectlist.getAttribute('data-linepatternid')
                 var xhttp = new XMLHttpRequest();
                 if (linepattern_id != "0") {
                     xhttp.onload = function () {
