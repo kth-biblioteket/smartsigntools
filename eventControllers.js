@@ -1250,6 +1250,7 @@ async function getImasRealtime(req, res) {
 
 async function getExchangeCalendarItems(req, res) {
 
+  try {
     const exchangeService = new ews.ExchangeService(ews.ExchangeVersion.Exchange2013);
     exchangeService.Credentials = new ews.ExchangeCredentials(process.env.EWS_USER, process.env.EWS_PASSWORD);
     exchangeService.Url = new ews.Uri(process.env.EWS_HOST + '/ews/exchange.asmx');
@@ -1261,10 +1262,8 @@ async function getExchangeCalendarItems(req, res) {
     StartDate = StartDate.toISOString();
     EndDate = EndDate.toISOString();
 
-
-  const view = new ews.CalendarView(StartDate, EndDate);
-
-  try {
+    const view = new ews.CalendarView(StartDate, EndDate);
+    
     const appointments = await exchangeService.FindAppointments(calendarFolder, view);
     let start
     let end
