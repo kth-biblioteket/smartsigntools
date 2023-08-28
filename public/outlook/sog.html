@@ -1,0 +1,64 @@
+<html lang='en'>
+    <head>
+        <meta charset='utf-8' />
+        <link href='/smartsigntools/outlook/css/style.css' rel='stylesheet'>
+        <script src='/smartsigntools/outlook/js/index.global.min.js'></script>
+        <script defer src="/smartsigntools/outlook/js/popper.min.js"></script>
+        <script defer src="/smartsigntools/outlook/js/tooltip.min.js"></script>
+    </head>
+    <body>
+        <div id='calendar'></div>
+    </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var calendarEl = document.getElementById('calendar');
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    themeSystem: 'bootstrap5',
+                    locale: 'sv',
+                    initialView: 'timeGridWeek',
+                    aspectRatio: 1.5,
+                    firstDay: 1,
+                    hiddenDays: [0],
+
+                    headerToolbar: {
+                            right: 'prev,next today',
+                            center: 'title',
+                            left: 'prevYear,prev,next,nextYear today',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    slotMinTime: "08:00:00",
+                    slotMaxTime: "21:00:00",
+                    slotLabelFormat: { // like '14:30:00'
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                    },
+                    eventDidMount: function(info) {
+                        //if(info.event.title.length > 30) {
+                            var tooltip = new Tooltip(info.el, {
+                                title: info.event.title + ' ' + info.event._def.extendedProps.location,
+                                placement: 'top',
+                                trigger: 'hover',
+                                container: 'body'
+                            });
+                            //Lägg till lokal
+                            
+                            if (info.el.innerText != "") {
+                                info.el.innerText = info.el.outerText + ' \n' + info.event._def.extendedProps.location;
+                            }
+                            
+                        //}
+                    },
+                    events: '/smartsigntools/api/v1/outlook/calendaritems/emailaddress/gvs-kthb-sydostragalleriet@ug.kth.se?&startdate=2023-01-01 00:00:00&enddate=2023-12-31 23:59:00',
+                    
+                    height: 857,
+                    //contentHeight: 509
+                });
+
+                calendar.render();
+            }, 200);
+        });
+    </script>
+</html>
