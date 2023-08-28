@@ -840,6 +840,8 @@ apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
 
 });
 
+apiRoutes.get("/outlook/calendaritems/emailaddress/:emailaddress", eventController.getExchangeCalendarItems);
+
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
 const server = app.listen(process.env.PORT || 3002, function () {

@@ -10,6 +10,7 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const QRCode = require("qrcode");
 const sharp = require("sharp");
+const ews = require('ews-javascript-api');
 
 
 // Funktion som visar som genererar ett 
@@ -1723,6 +1724,51 @@ async function getImasRealtime(req, res) {
     }
 }
 
+async function getExchangeCalendarItems(req, res) {
+
+    const exchangeService = new ews.ExchangeService(ews.ExchangeVersion.Exchange2013);
+    exchangeService.Credentials = new ews.ExchangeCredentials(process.env.EWS_USER, process.env.EWS_PASSWORD);
+    exchangeService.Url = new ews.Uri(process.env.EWS_HOST + '/ews/exchange.asmx');
+
+    const calendarFolder = new ews.FolderId(ews.WellKnownFolderName.Calendar, new ews.Mailbox(req.params.emailaddress));
+   
+    let StartDate = new Date(req.query.startdate);
+    let EndDate = new Date(req.query.enddate);
+    StartDate = StartDate.toISOString();
+    EndDate = EndDate.toISOString();
+
+
+  const view = new ews.CalendarView(StartDate, EndDate);
+
+  try {
+    const appointments = await exchangeService.FindAppointments(calendarFolder, view);
+    let start
+    let end
+    let json=[]
+    for (const appointment of appointments.Items) {
+        if(appointment.IsAllDayEvent) {
+            start =new Date(appointment.Start).toISOString().substring(0,10)
+            end = new Date(appointment.End).toISOString().substring(0,10)
+        } else {
+            start =new Date(appointment.Start).toISOString()
+            end = new Date(appointment.End).toISOString()
+        };
+        json.push(
+            {
+                "location": appointment.Location != null ? appointment.Location : "",
+                "title": appointment.Subject,
+                "start": start,
+                "end": end
+            }
+        )
+    }
+    res.json(json)
+  } catch (error) {
+    console.error('Error:', error);
+  }
+
+}
+
 function substrInBetween(whole_str, str1, str2) {
     if (whole_str.indexOf(str1) === -1 || whole_str.indexOf(str2) === -1) {
         return undefined;
@@ -1811,6 +1857,7 @@ module.exports = {
     getGrbAsImage,
     saveWifiPageAsPdf,
     getImasRealtime,
+    getExchangeCalendarItems,
     substrInBetween,
     truncate
 };
