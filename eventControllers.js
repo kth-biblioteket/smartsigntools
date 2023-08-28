@@ -1263,18 +1263,18 @@ async function getExchangeCalendarItems(req, res) {
     EndDate = EndDate.toISOString();
 
     const view = new ews.CalendarView(StartDate, EndDate);
-    
+
     const appointments = await exchangeService.FindAppointments(calendarFolder, view);
     let start
     let end
     let json=[]
     for (const appointment of appointments.Items) {
         if(appointment.IsAllDayEvent) {
-            start =new Date(appointment.Start).toISOString().substring(0,10)
-            end = new Date(appointment.End).toISOString().substring(0,10)
+            start =new Date(appointment.Start).toLocaleDateString()
+            end = new Date(appointment.End).toLocaleDateString()
         } else {
-            start =new Date(appointment.Start).toISOString()
-            end = new Date(appointment.End).toISOString()
+            start =new Date(appointment.Start).toLocaleString()
+            end = new Date(appointment.End).toLocaleString()
         };
         json.push(
             {
