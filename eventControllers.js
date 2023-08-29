@@ -1726,6 +1726,7 @@ async function getImasRealtime(req, res) {
 
 async function getExchangeCalendarItems(req, res) {
 
+  try {
     const exchangeService = new ews.ExchangeService(ews.ExchangeVersion.Exchange2013);
     exchangeService.Credentials = new ews.ExchangeCredentials(process.env.EWS_USER, process.env.EWS_PASSWORD);
     exchangeService.Url = new ews.Uri(process.env.EWS_HOST + '/ews/exchange.asmx');
@@ -1737,21 +1738,19 @@ async function getExchangeCalendarItems(req, res) {
     StartDate = StartDate.toISOString();
     EndDate = EndDate.toISOString();
 
+    const view = new ews.CalendarView(StartDate, EndDate);
 
-  const view = new ews.CalendarView(StartDate, EndDate);
-
-  try {
     const appointments = await exchangeService.FindAppointments(calendarFolder, view);
     let start
     let end
     let json=[]
     for (const appointment of appointments.Items) {
         if(appointment.IsAllDayEvent) {
-            start =new Date(appointment.Start).toISOString().substring(0,10)
-            end = new Date(appointment.End).toISOString().substring(0,10)
+            start =new Date(appointment.Start).toLocaleDateString('sv-SE')
+            end = new Date(appointment.End).toLocaleDateString('sv-SE')
         } else {
-            start =new Date(appointment.Start).toISOString()
-            end = new Date(appointment.End).toISOString()
+            start =new Date(appointment.Start).toLocaleString('sv-SE')
+            end = new Date(appointment.End).toLocaleString('sv-SE')
         };
         json.push(
             {
