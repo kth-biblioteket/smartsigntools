@@ -735,7 +735,7 @@ const deleteEventLinePatternPlacement = (event_id) => {
     })
 };
 
-//Lägg till ett events textfärd
+//Lägg till ett events linjemönsters färg
 const createEventLinePatternColor = (event_id, color_id) => {
     return new Promise(function (resolve, reject) {
         const sql = `INSERT INTO eventlinepatterncolor(event_id, color_id)
@@ -751,7 +751,7 @@ const createEventLinePatternColor = (event_id, color_id) => {
     })
 };
 
-//Ta bort ett events textfärg
+//Ta bort ett events linjemönsters färg
 const deleteEventLinePatternColor = (event_id) => {
     return new Promise(function (resolve, reject) {
         const sql = `DELETE FROM eventlinepatterncolor
@@ -804,7 +804,7 @@ const readLinePatterns = () => {
     })
 };
 
-//Hämta linjemönster
+//Hämta linjemönsters placering
 const readLinePatternPlacements = () => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT
@@ -1093,6 +1093,7 @@ module.exports = {
     updateImage,
     deleteImage,
     readQrcodetracking,
+    readAllQrcodetracking,
     createQrcodetracking,
     readQrCodesGeneral,
     readQrCodeGeneral,

@@ -184,6 +184,12 @@
                             data-bs-target="#qrcodetrackingModal">
                                 Statistik QR-Scans
                     </button>
+
+                    <button style="margin-right:10px" type="button" onclick="getQrtrackingAll()" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#qrcodetrackingModal">
+                                Statistik QR-Scans
+                    </button>
+                    
                     <button style="margin-right:10px" type="button" onclick="getQrCodesGeneral()" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#qrcodeGeneralModal">
                                 QR-Koder
@@ -573,6 +579,7 @@
                 </div>
             </div-->
         </div>
+        <!-- Bildbanken -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
@@ -608,8 +615,9 @@
                 </div>
             </div>
         </div>
+        <!-- QR-Koder Genrella -->
         <div class="modal fade" id="qrcodeGeneralModal" tabindex="-1" aria-labelledby="qrcodeGeneralModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-dialog modal-dialog-scrollable" style="width:90%;max-width: 90%;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="qrcodeGeneralModalLabel">QR-koder</h5>
@@ -636,8 +644,9 @@
                 </div>
             </div>
         </div>
+        <!-- QR-Koder Statistik -->
         <div class="modal fade" id="qrcodetrackingModal" tabindex="-1" aria-labelledby="qrcodetrackingModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-dialog modal-dialog-scrollable"  style="width:90%;max-width: 90%;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="qrcodetrackingModalLabel">Statistik scannade QR-koder</h5>
@@ -1099,6 +1108,8 @@
                             }
                         } ]
                     });
+                    QRCodeGeneral.columns.adjust().draw();
+
                     $(function () {
                         $('[data-toggle="tooltip"]').tooltip()
                     })
