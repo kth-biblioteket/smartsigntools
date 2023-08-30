@@ -573,6 +573,7 @@ module.exports = {
     updateImage,
     deleteImage,
     readQrcodetracking,
+    readAllQrcodetracking,
     createQrcodetracking,
     readQrCodesGeneral,
     readQrCodeGeneral,
