@@ -878,6 +878,7 @@
 
                     var QRCodeGeneral = $('#QRCodeGeneraltable').DataTable({
                         "dom": '<Bplfi<t>>',
+                        "autoWidth": false,
                         "columnDefs": [
                             { 
                                 "orderDataType": "dom-text",
@@ -901,7 +902,6 @@
                             }
                         } ]
                     });
-                    QRCodeGeneral.columns.adjust().draw();
                     
                     $(function () {
                         $('[data-toggle="tooltip"]').tooltip()
