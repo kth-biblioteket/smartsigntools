@@ -360,7 +360,7 @@
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="imageoverlayopacitySlider<%=frameindex%>" class="form-label">Gradient styrka(0-1)</label>
-                                                    <input data-frameindex='frame_<%=frameindex%>' data-eventid='<%=event.id%>' type="range" class="form-range" id="imageoverlayopacitySlider<%=frameindex%>" min="0" max="100" step="1">
+                                                    <input data-frameindex='frame_<%=frameindex%>' data-eventid='<%=event.id%>' type="range" class="form-range" id="imageoverlayopacitySlider<%=frameindex%>" value="<%-eventimageoverlayopacity ? eventimageoverlayopacity * 100 : 50 %>" min="0" max="100" step="1">
                                                     <span class="slider-value"><%-eventimageoverlayopacity ? eventimageoverlayopacity : 0.50 %></span>
                                                 </div>
                                                 <div style="padding-top:10px">
