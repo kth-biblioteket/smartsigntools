@@ -148,6 +148,16 @@
         .dropdown .form-select:focus {
             box-shadow: none;
         }
+
+        input[type=date] {
+            border: 1px solid #d4d4d4;
+            background-color: #f6f6f6;
+            border-radius: 4px;
+            font-size: .875rem;
+            height: 44px;
+            width: 100%;
+            padding: 6px 10px;
+        }
     </style>
 </head>
 
@@ -1152,6 +1162,18 @@
                     if (xhttp.status == 401) {
                     }
                     $('.QRmodal-body').html(xhttp.response)
+                    var today = new Date();
+                    today.setDate(1);
+                    var firstDayOfMonth = today.toISOString().slice(0, 10);
+                   
+                    today.setMonth(today.getMonth() + 1); // Move to the next month
+                    today.setDate(0);
+                    var lastDayOfMonth = today.toISOString().slice(0, 10);
+                    
+                    $("#start-date").val(firstDayOfMonth);
+                    $("#end-date").val(lastDayOfMonth);
+
+
                     var qrtrackingtable = $('#qrtrackingtable').DataTable({
                         "dom": '<Bplfi<t>>',
                         "order": [[ 2, 'desc' ]],
@@ -1163,9 +1185,18 @@
                                 }
                             },
                             {
+                                extend: 'spacer',
+                                style: 'bar',
+                                text: ''
+                            },
+                            {
                                 text: 'Skanningar för period',
                                 action: function ( e, dt, node, config ) {
-                                    getQrtrackingsPeriod('2023-08-01', '2023-08-31') 
+                                   
+                                    
+                                    var startDate = $('#start-date').val();
+                                    var endDate = $('#end-date').val();
+                                    getQrtrackingsPeriod(startDate, endDate)
                                 }
                             },
                             {
@@ -1192,6 +1223,7 @@
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
                     }
+                    var filterhtml = ``
                     $('.QRmodal-body').html(xhttp.response)
                     var qrtrackingtable = $('#qrtrackingtable').DataTable({
                         "dom": '<Bplfi<t>>',

@@ -674,6 +674,12 @@ apiRoutes.get("/qrcodetracking", async function (req, res) {
         let qrtracking = await eventController.readQrcodetracking()  
         let html = `<div style="margin-bottom:10px" class="card">
                         <div class="card-body">
+                            <div id="date-filter" style="width:300px">
+                                <label for="start-date">Start Date:</label>
+                                <input type="date" id="start-date">
+                                <label for="end-date">End Date:</label>
+                                <input type="date" id="end-date">
+                            </div>
                             <table id="qrtrackingtable" class="table table-striped" style="width:100%">
                                 <thead>
                                     <tr>
