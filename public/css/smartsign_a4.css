@@ -56,6 +56,11 @@ h6 {
     position: relative;
 }
 
+.landscape .App {
+    height: 792px;
+    width: 1122px;
+}
+
 /*
 .App-padding {
     padding: 60px 54px 0px 54px;
@@ -120,6 +125,11 @@ h6 {
 
 .App-title .titleimage {
     max-height: 500px;
+    overflow: hidden;
+}
+
+.landscape .App-title .titleimage {
+    max-height: 300px;
     overflow: hidden;
 }
 
@@ -195,8 +205,19 @@ h6 {
 
 .linepattern-top-left {
     display: block;
-    width: 300px;
-    height: 450px;
+    width: 200px;
+    height: 300px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: rotate(180deg);
+}
+
+.landscape .linepattern-top-left {
+    display: block;
+    width: 200px;
+    height: 300px;
     overflow: hidden;
     position: absolute;
     top: 0px;
@@ -206,8 +227,19 @@ h6 {
 
 .linepattern-bottom-right {
     display: block;
-    width: 300px;
-    height: 450px;
+    width: 200px;
+    height: 300px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    transform: rotate(0deg);
+}
+
+.landscape .linepattern-bottom-right {
+    display: block;
+    width: 200px;
+    height: 300px;
     overflow: hidden;
     position: absolute;
     bottom: 0px;
@@ -216,31 +248,59 @@ h6 {
 }
 
 .linepattern-one {
-    width: 800px;
-    height: 800px;
+    width: 500px;
+    height: 500px;
     transform-origin: center center;
-    transform: rotate(0deg) scale(1.0) translate(-500px, -350px);
+    transform: rotate(0deg) scale(1.0) translate(-300px, -200px);
+}
+
+.landscape .linepattern-one {
+    width: 500px;
+    height: 500px;
+    transform-origin: center center;
+    transform: rotate(0deg) scale(1.0) translate(-300px, -200px);
 }
 
 .linepattern-two {
-    width: 800px;
-    height: 800px;
+    width: 500px;
+    height: 500px;
     transform-origin: center center;
-    transform: rotate(90deg) scale(1.0) translate(-350px, 500px);
+    transform: rotate(90deg) scale(1.0) translate(-200px, 300px);
+}
+
+.landscape .linepattern-two {
+    width: 500px;
+    height: 500px;
+    transform-origin: center center;
+    transform: rotate(90deg) scale(1.0) translate(-200px, 300px);
 }
 
 .linepattern-three {
-    width: 800px;
-    height: 800px;
+    width: 500px;
+    height: 500px;
     transform-origin: center center;
-    transform: rotate(180deg) scale(1.0) translate(500px, 350px);
+    transform: rotate(180deg) scale(1.0) translate(300px, 200px);
+}
+
+.landscape .linepattern-three {
+    width: 500px;
+    height: 500px;
+    transform-origin: center center;
+    transform: rotate(180deg) scale(1.0) translate(300px, 200px);
 }
 
 .linepattern-four {
-    width: 800px;
-    height: 800px;
+    width: 500px;
+    height: 500px;
     transform-origin: center center;
-    transform: rotate(270deg) scale(1.0) translate(350px, -500px);
+    transform: rotate(270deg) scale(1.0) translate(300px, -200px);
+}
+
+.landscape .linepattern-four {
+    width: 500px;
+    height: 500px;
+    transform-origin: center center;
+    transform: rotate(270deg) scale(1.0) translate(300px, -200px);
 }
 
 strong {
@@ -317,6 +377,10 @@ strong {
     bottom: 0px;
     margin: 10px 10px 14px 10px;
     width: 14%;
+}
+
+.landscape .qrcode {
+    width: 10%;
 }
 
 .float {

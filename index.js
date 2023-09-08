@@ -245,6 +245,16 @@ apiRoutes.delete("/calendar/event/imageoverlay", VerifyToken, async function (re
     }
 });
 
+apiRoutes.post("/calendar/event/imageoverlayopacity", VerifyToken, async function (req, res, next) {
+    try {
+        let opacity = req.body.opacity
+        let events_id = req.body.events_id
+        res.send(eventController.createEventImageOverlayOpacity(events_id, opacity))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.post("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -332,8 +342,10 @@ apiRoutes.delete("/calendar/event/linepatterncolor", VerifyToken, async function
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
         let html_template = req.query.template || 'templates/smartsign_template.html'
+        let format = req.query.format || ''
+        let orientation = req.query.orientation || 'portrait'
         if (req.params.id) {
-            let page = await eventController.generateCalendarPage(req, req.params.id, html_template);
+            let page = await eventController.generateCalendarPage(req, req.params.id, html_template, format, orientation );
             res.send(page)
         }
     } catch(err) {
@@ -360,7 +372,7 @@ apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
 apiRoutes.get("/calendar/pdf/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
-            let pdf = await eventController.generatePdfPage(req.params.id, req.query.type);
+            let pdf = await eventController.generatePdfPage(req.params.id, req.query.format, req.query.orientation);
             res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
             res.send(pdf)
         }
@@ -372,7 +384,10 @@ apiRoutes.get("/calendar/pdf/:id", async function (req, res, next) {
 apiRoutes.get("/calendar/image/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
-            let pageimage = await eventController.getPageAsImage(req.params.id, "", 'templates/smartsign_template.html');
+            let template = req.query.template || 'templates/smartsign_template.html'
+            let format = req.query.format || 'screen'
+            let orientation = req.query.orientation || 'portrait'
+            let pageimage = await eventController.getPageAsImage(req.params.id, "", template, format, orientation);
             res.writeHead(200, {
                 'Content-Type': 'image/png',
                 'Content-Length': pageimage.length,
@@ -471,9 +486,9 @@ apiRoutes.post("/calendar/uploadfile", async function (req, res) {
         } else {
             return res.status(400).send('File type not allowed');
         }
-
-        let imagePath = path.join(__dirname, process.env.IMAGEBANKPATH+ '/' + randomUUID() + path.extname(targetFile.name))
-        let fullpath = path.join(randomUUID() + path.extname(targetFile.name))
+        let randomfilename = randomUUID() + path.extname(targetFile.name)
+        let imagePath = path.join(__dirname, process.env.IMAGEBANKPATH+ '/' + randomfilename)
+        let fullpath = path.join(randomfilename)
         targetFile.mv(imagePath, async (err) => {
             if (err)
                 return res.status(500).send(err);
@@ -748,11 +763,61 @@ apiRoutes.get("/qrcodetracking/all", async function (req, res) {
     }
 });
 
+//Hämta qrcodetrackingstatistik för period och presentera i modal datatable
+apiRoutes.get("/qrcodetracking/:fromdate/:todate", async function (req, res) {
+    try {
+        res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="qrtrackingstats">`)
+
+        //Hämta qrtrackingstatistik och presentera i en Data Table
+        let qrtracking = await eventController.readQrcodetrackingByTimePeriod(req.params.fromdate, req.params.todate)
+
+        let html = `<div style="margin-bottom:10px" class="card">
+                        <div class="card-body">
+                            <table id="qrtrackingtable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Url</th>
+                                        <th>First scan</th>
+                                        <th>Last scan</th>
+                                        <th>Nr of Scans</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`
+                                qrtracking.forEach(row => {
+                                    html += 
+                                    `<tr>
+                                        <td>${row.url}</td>
+                                        <td>${row.first_scan.toLocaleDateString()}</td>
+                                        <td>${row.last_scan.toLocaleDateString()}</td>
+                                        <td>${row.nrofscans}</td>
+                                    </tr>`
+                                });
+                                html +=  
+                                `</tbody>
+                                <tfoot>
+                                    <tr>
+                                    <th>Url</th>
+                                    <th>First scan</th>
+                                    <th>Last scan</th>
+                                    <th>Nr of Scans</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>`
+        res.write(html);
+        res.write(`</div>`);
+        res.end();
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.get("/dailywifi", async function (req, res, next) {
     try {
         let lang = req.query.lang || 'en'
-        let type = req.query.type || ''
-        let page = await eventController.generateDailyWiFiPage(type, lang);
+        let format = req.query.format || ''
+        let page = await eventController.generateDailyWiFiPage(format, lang);
         res.send(page)
     } catch(err) {
         res.send(err.message)
@@ -762,7 +827,7 @@ apiRoutes.get("/dailywifi", async function (req, res, next) {
 apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
     try {
 
-        let pdf = await eventController.generatePdfPageDailyWifi(req.query.type);
+        let pdf = await eventController.generatePdfPageDailyWifi(req.query.format);
         res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
         res.send(pdf)
 
@@ -809,6 +874,19 @@ apiRoutes.get("/imas/image", async function (req, res, next) {
 apiRoutes.get("/grb/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getGrbAsImage();
+        res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Length': pageimage.length,
+        });
+        res.end(pageimage);
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.get("/timeedit/image", async function (req, res, next) {
+    try {
+        let pageimage = await eventController.getTimeeditAsImage();
         res.writeHead(200, {
             'Content-Type': 'image/png',
             'Content-Length': pageimage.length,

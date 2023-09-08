@@ -153,6 +153,7 @@ async function readEventsPaginated(req, res, next) {
                 eventsarray[i].eventbgcolor = await eventModel.readEventBgColor(events[i].id)
                 eventsarray[i].eventtextcolor = await eventModel.readEventTextColor(events[i].id)
                 eventsarray[i].eventimageoverlay = await eventModel.readEventImageOverlay(events[i].id)
+                eventsarray[i].eventimageoverlayopacity = await eventModel.readEventImageOverlayOpacity(events[i].id)
                 eventsarray[i].eventimageheader = await eventModel.readEventImageHeader(events[i].id)
                 eventsarray[i].eventfieldsorder = await eventModel.readEventFieldsOrder(events[i].id)
                 eventsarray[i].eventlinepattern = await eventModel.readEventLinePattern(events[i].id)
@@ -627,6 +628,37 @@ async function deleteEventImageOverlay(event_id) {
     }
 }
 
+async function readEventImageOverlayOpacity(event_id) {
+    try {
+        let result = await eventModel.readEventImageOverlayOpacity(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventImageOverlayOpacity(event_id, opacity) {
+    try {
+        let result = await eventModel.deleteEventImageOverlayOpacity(event_id)
+        result = await eventModel.createEventImageOverlayOpacity(event_id, opacity)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventImageOverlayOpacity(event_id) {
+    try {
+        let result = await eventModel.deleteEventImageOverlayOpacity(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
 async function readEventImageHeader(event_id) {
     try {
         let result = await eventModel.readEventImageHeader(event_id)
@@ -839,9 +871,9 @@ async function deleteImage(id) {
     }
 }
 
-async function readQrcodetracking(id) {
+async function readQrcodetracking() {
     try {
-        result = await eventModel.readQrcodetracking(id)
+        result = await eventModel.readQrcodetracking()
         return result;
     } catch (err) {
         console.log(err.message)
@@ -862,6 +894,16 @@ async function createQrcodetracking(events_id, url, browser) {
 async function readAllQrcodetracking() {
     try {
         result = await eventModel.readAllQrcodetracking()
+        return result;
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readQrcodetrackingByTimePeriod(scantime_from, scantime_to) {
+    try {
+        result = await eventModel.readQrcodetrackingByTimePeriod(scantime_from, scantime_to)
         return result;
     } catch (err) {
         console.log(err.message)
@@ -921,13 +963,16 @@ async function deleteQrCodeGeneral(id) {
     }
 }
 
-async function generateCalendarPage(req, events_id, html_template = 'templates/smartsign_template.html', lang ='sv') {
+async function generateCalendarPage(req, events_id, html_template = 'templates/smartsign_template.html', format='', orientation='portrait', lang ='sv') {
     const files = fs.readFileSync(path.join(__dirname, html_template));
     const template = cheerio.load(files.toString(), null, true);
     //template('.headertext h4').text("KTH LIBRARY");
     //template('body').css('overflow', 'hidden');
     let eventlinepattern = await eventModel.readEventLinePattern(events_id)
     let eventlinepatternplacement = await eventModel.readEventLinePatternPlacement(events_id)
+    if(orientation == 'landscape') {
+        template('body').addClass("landscape");
+    }
 
     if (eventlinepattern[0]) {
         if(eventlinepattern[0].code=='1') {
@@ -971,6 +1016,8 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
 
         let eventtimageoverlay = await readEventImageOverlay(event.id)
 
+        let eventtimageoverlayopacity = await readEventImageOverlayOpacity(event.id)
+
         let eventtimageheader = await readEventImageHeader(event.id)
 
         let imageoverlaycss = ''
@@ -985,7 +1032,7 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 left: 0;
                 width: 100%;
                 height: 50%;
-                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                background: linear-gradient(to bottom, rgba(0, 0, 0, ${eventtimageoverlayopacity[0]?eventtimageoverlayopacity[0].opacity : 0.5}), rgba(0, 0, 0, 0) 100%, transparent 0%);
                 opacity: 1;
             }
 
@@ -996,7 +1043,7 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 left: 0;
                 width: 100%;
                 height: 50%;
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                background: linear-gradient(to top, rgba(0, 0, 0, ${eventtimageoverlayopacity[0]?eventtimageoverlayopacity[0].opacity : 0.5}), rgba(0, 0, 0, 0) 100%, transparent 0%);
                 opacity: 1;
             }
             `
@@ -1221,7 +1268,7 @@ async function generatePublishedPages(type, req) {
 
             for (const element of published) {
                 socketInstance.emit('uploadProgress', `{"type": "html", "total": ${total}, "progress": ${progress}}`);
-                calendarpagehtml = await generateCalendarPage(element.id)
+                calendarpagehtml = await generateCalendarPage('', element.id)
                 //Saknas i kalenderfeed
                 if (calendarpagehtml != 'unpublished') {
                     fs.writeFile(path.join(__dirname, "/publishedevents/html/smartsign_calendar_" + index + ".html"), calendarpagehtml, function (err) {
@@ -1388,7 +1435,7 @@ async function generateQrCodeGeneral(id) {
     }
 }
 
-async function generatePdfPage(id, type='A4') {
+async function generatePdfPage(id, format='A4', orientation='portrait') {
     try {
         let calendarpagehtml = "";
         //Ta bort nuvarande pdf
@@ -1401,14 +1448,24 @@ async function generatePdfPage(id, type='A4') {
         //Generera HTML i smartsignformat och spara som PDF
         let template
         let pdfpath
-        if(type=='A4'){
-            template = 'templates/smartsign_template_pdf_A4.html'
-            pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
+        if(format=='A4') {
+            if(orientation == 'portrait'){
+                template = 'templates/smartsign_template_pdf_A4.html'
+                pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
+            } else {
+                template = 'templates/smartsign_template_pdf_A4.html'
+                pdfpath = 'publishedevents/pdf/smartsign_A4_landscape.pdf'
+            }
         } else {
-            template = 'templates/smartsign_template_pdf.html'
-            pdfpath = 'publishedevents/pdf/smartsign.pdf'
+            if(orientation == 'portrait'){
+                template = 'templates/smartsign_template_pdf.html'
+                pdfpath = 'publishedevents/pdf/smartsign.pdf'
+            } else {
+                template = 'templates/smartsign_template_pdf.html'
+                pdfpath = 'publishedevents/pdf/smartsign_landscape.pdf'
+            }
         }
-        let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), type, template);
+        let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), format, template, orientation);
         return pdf;
 
     } catch (err) {
@@ -1417,7 +1474,7 @@ async function generatePdfPage(id, type='A4') {
     }
 };
 
-async function generatePdfPageDailyWifi(type='A4') {
+async function generatePdfPageDailyWifi(format='A4') {
     try {
         //Ta bort nuvarande pdf
         let files = fs.readdirSync( path.join(__dirname, "/publishedevents/pdf") );
@@ -1429,14 +1486,14 @@ async function generatePdfPageDailyWifi(type='A4') {
         //Generera HTML i smartsignformat och spara som PDF
         let template
         let pdfpath
-        if(type=='A4'){
+        if(format=='A4'){
             template = 'templates/smartsign_template_general_pdf_A4.html'
             pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
         } else {
             template = 'templates/smartsign_template_general_pdf.html'
             pdfpath = 'publishedevents/pdf/smartsign.pdf'
         }
-        let pdf = await saveWifiPageAsPdf(path.join(__dirname, pdfpath), type, template);
+        let pdf = await saveWifiPageAsPdf(path.join(__dirname, pdfpath), format, template);
         return pdf;
 
     } catch (err) {
@@ -1445,8 +1502,8 @@ async function generatePdfPageDailyWifi(type='A4') {
     }
 };
 
-async function generateDailyWiFiPage(type='A4', lang ='en') {
-    if(type=='json') {
+async function generateDailyWiFiPage(format='A4', lang ='en') {
+    if(format=='json') {
         //Hämta daily code json
         try {
             let wificode = await eventModel.readDailyWiFiCode()
@@ -1458,7 +1515,7 @@ async function generateDailyWiFiPage(type='A4', lang ='en') {
     } else {
         let html_template = 'templates/smartsign_template_general.html'
         let fontsize = '30px'
-        if (type=='A4') {
+        if (format=='A4') {
             html_template = 'templates/smartsign_template_general_A4.html';
             fontsize = '16px'
         }
@@ -1521,7 +1578,62 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
 
 }
 
-async function savePageAsPdf(events_id, pdffullpath, type, template) {
+async function savePageAsPdf(events_id, pdffullpath, format='screen', template, orientation) {
+    try {
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
+        const page = await browser.newPage();
+
+        let width = 1080;
+        let height = 1920;
+        if (format == 'screen') {
+            width = orientation=='portrait' ? 1080 : 1920
+            height = orientation=='portrait' ? 1920 : 1080
+        }
+        if (format == 'A4') {
+            width = orientation=='portrait' ? 793 : 1122
+            height = orientation=='portrait' ? 1122 : 793
+        }
+        
+        await page.setViewport({
+            width: width,
+            height: height,
+            deviceScaleFactor: 1
+        });
+        
+
+
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
+
+        let pdf
+        if (format=='A4') {
+            pdf = await page.pdf({
+                path: pdffullpath,
+                printBackground: true,
+                format: 'A4',
+                landscape: orientation == 'landscape' ? true : false,
+                margin: { top: 0, right: 0, bottom: 0, left: 0 },
+            });
+        } else {
+            pdf = await page.pdf({
+                path: pdffullpath,
+                printBackground: true,
+                width: width,
+                height: height,
+                margin: { top: 0, right: 0, bottom: 0, left: 0 },
+            });
+        }
+
+        await browser.close();
+        return pdf;
+
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+}
+
+async function saveWifiPageAsPdf(pdffullpath, format, template) {
     try {
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
         const page = await browser.newPage();
@@ -1533,10 +1645,10 @@ async function savePageAsPdf(events_id, pdffullpath, type, template) {
             deviceScaleFactor: 1,
         });
 
-        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/dailywifi?format=' + format, { waitUntil: 'networkidle0' })
 
         let pdf
-        if (type=='A4') {
+        if (format=='A4') {
             pdf = await page.pdf({
                 path: pdffullpath,
                 printBackground: true,
@@ -1561,59 +1673,31 @@ async function savePageAsPdf(events_id, pdffullpath, type, template) {
 
 }
 
-async function saveWifiPageAsPdf(pdffullpath, type, template) {
-    try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
-        const page = await browser.newPage();
-
-        //Storlek på smartsignskärmarna är 1080x1920
-        await page.setViewport({
-            width: 1080,
-            height: 1920,
-            deviceScaleFactor: 1,
-        });
-
-        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/dailywifi?type=' + type, { waitUntil: 'networkidle0' })
-
-        let pdf
-        if (type=='A4') {
-            pdf = await page.pdf({
-                path: pdffullpath,
-                printBackground: true,
-                format: 'A4'
-            });
-        } else {
-            pdf = await page.pdf({
-                path: pdffullpath,
-                printBackground: true,
-                width: '1080px',
-                height: '1920px'
-            });
-        }
-
-        await browser.close();
-        return pdf;
-
-    }
-    catch (error) {
-        console.log(error)
-    }
-
-}
-
-async function getPageAsImage(events_id, html, template) {
+async function getPageAsImage(events_id, html, template = 'templates/smartsign_template.html', format='screen', orientation = 'portrait') {
     try {
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
+        //Storlek A4 är 793X1122
+        let width = 1080;
+        let height = 1920;
+        if (format == 'screen') {
+            width = orientation=='portrait' ? 1080 : 1920
+            height = orientation=='portrait' ? 1920 : 1080
+        }
+        if (format == 'A4') {
+            width = orientation=='portrait' ? 793 : 1122
+            height = orientation=='portrait' ? 1122 : 793
+        }
+
         await page.setViewport({
-            width: 1080,
-            height: 1920,
+            width: width,
+            height: height,
             deviceScaleFactor: 1,
         });
 
-        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
 
         let pageimage
         pageimage = await page.screenshot({ });
@@ -1688,6 +1772,34 @@ async function getGrbAsImage() {
 
 }
 
+async function getTimeeditAsImage() {
+    try {
+        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
+        const page = await browser.newPage();
+
+        //Storlek på smartsignskärmarna är 1080x1920
+        await page.setViewport({
+            width: 1080,
+            height: 1920,
+            deviceScaleFactor: 1,
+        });
+
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage', { waitUntil: 'networkidle0' })
+
+        let pageimage
+        pageimage = await page.screenshot({ });
+
+        await browser.close();
+
+        return pageimage
+
+    }
+    catch (error) {
+        console.log(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage')
+        console.log(error)
+    }
+
+}
 
 async function getImasRealtime(req, res) {
     try {
@@ -1813,6 +1925,9 @@ module.exports = {
     readEventImageOverlay,
     createEventImageOverlay,
     deleteEventImageOverlay,
+    readEventImageOverlayOpacity,
+    createEventImageOverlayOpacity,
+    deleteEventImageOverlayOpacity,
     readEventImageHeader,
     createEventImageHeader,
     deleteEventImageHeader,
@@ -1836,6 +1951,7 @@ module.exports = {
     readQrcodetracking,
     createQrcodetracking,
     readAllQrcodetracking,
+    readQrcodetrackingByTimePeriod,
     readQrCodesGeneral,
     readQrCodeGeneral,
     createQrCodeGeneral,
@@ -1855,6 +1971,7 @@ module.exports = {
     getPageAsImage,
     getImasAsImage,
     getGrbAsImage,
+    getTimeeditAsImage,
     saveWifiPageAsPdf,
     getImasRealtime,
     getExchangeCalendarItems,

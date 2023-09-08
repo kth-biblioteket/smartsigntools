@@ -374,10 +374,27 @@ const readEventImageOverlay = (event_id) => {
             resolve(result);
         });
     })
-
 };
 
-//Hämta Eventimageoverlay för event
+
+//Hämta Eventimageoverlay opacity för event
+const readEventImageOverlayOpacity = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT id, event_id, opacity
+                    FROM eventimageoverlayopacity
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Hämta Eventimage Header för event
 const readEventImageHeader = (event_id) => {
     return new Promise(function (resolve, reject) {
 
@@ -602,6 +619,38 @@ const deleteEventImageOverlay = (event_id) => {
                 reject(err.message)
             }
             const successMessage = "The imageoverlay was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events imageoverlay opacity
+const createEventImageOverlayOpacity = (event_id, opacity) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventimageoverlayopacity(event_id, opacity)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, opacity]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The imageoverlay opacity was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events imageoverlay
+const deleteEventImageOverlayOpacity = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventimageoverlayopacity
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The imageoverlay opacity was successfully deleted."
             resolve(successMessage);
         });
     })
@@ -902,12 +951,37 @@ const deleteImage = (id) => {
 };
 
 //Hämta qrcodetracking statistik
-const readQrcodetracking = (id) => {
+const readQrcodetracking = () => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT events_id, url, count(*) as nrofscans FROM qrcodetracking 
                     GROUP BY events_id, url
                     ORDER BY nrofscans DESC`;
         database.db.query(database.mysql.format(sql),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Hämta qrcodetracking statistik
+const readQrcodetrackingByTimePeriod = (scantime_from, scantime_to) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT
+                        url,
+                        MIN(scantime) AS first_scan,
+                        MAX(scantime) AS last_scan,
+                        COUNT(*) AS nrofscans
+                    FROM
+                        qrcodetracking
+                    WHERE
+                        scantime >= ? AND scantime <= ?
+                    GROUP BY
+                        url  
+                    ORDER BY nrofscans DESC;`;
+        database.db.query(database.mysql.format(sql,[scantime_from, scantime_to]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -1069,6 +1143,9 @@ module.exports = {
     readEventImageOverlay,
     createEventImageOverlay,
     deleteEventImageOverlay,
+    readEventImageOverlayOpacity,
+    createEventImageOverlayOpacity,
+    deleteEventImageOverlayOpacity,
     readEventImageHeader,
     createEventImageHeader,
     deleteEventImageHeader,
@@ -1093,6 +1170,7 @@ module.exports = {
     updateImage,
     deleteImage,
     readQrcodetracking,
+    readQrcodetrackingByTimePeriod,
     readAllQrcodetracking,
     createQrcodetracking,
     readQrCodesGeneral,

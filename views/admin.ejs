@@ -184,11 +184,6 @@
                             data-bs-target="#qrcodetrackingModal">
                                 Statistik QR-Scans
                     </button>
-
-                    <button style="margin-right:10px" type="button" onclick="getQrtrackingAll()" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#qrcodetrackingModal">
-                                Statistik QR-Scans
-                    </button>
                     
                     <button style="margin-right:10px" type="button" onclick="getQrCodesGeneral()" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#qrcodeGeneralModal">
@@ -227,6 +222,7 @@
                 <% let published_as_image=false %>
                 <% let eventimageheader=false %>
                 <% let eventimageoverlay=false %>
+                <% let eventimageoverlayopacity=0.5 %>
                 <%let eventtime=""%>
                 <%let frameindex=1%>
 
@@ -243,6 +239,7 @@
                     <%if(event.published==1) { published=true } else { published=false } %>
                     <%if(event_.eventimageheader[0]) { eventimageheader=true } else { eventimageheader=false } %>
                     <%if(event_.eventimageoverlay[0]) { eventimageoverlay=true } else { eventimageoverlay=false } %>
+                    <%if(event_.eventimageoverlayopacity[0]) { eventimageoverlayopacity=event_.eventimageoverlayopacity[0].opacity } else { eventimageoverlayopacity=0.5 } %>
                     <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
                     <div class="card" style="margin-bottom:10px">
                         <div class="card-body" style="display:flex;flex-direction:row;padding-bottom:40px">
@@ -254,13 +251,23 @@
                                     <%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
                                 </div>
                                 <div style="display:flex;padding-top:10px">
-                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'Skärm');" type="button"
+                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'portrait');" type="button"
                                         class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF skärm
+                                        Ladda ner PDF skärm(stående)
                                     </button>
-                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4');" type="button"
+                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'portrait');" type="button"
                                         class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF A4
+                                        Ladda ner PDF A4(stående)
+                                    </button>
+                                </div>
+                                <div style="display:flex;padding-top:10px">
+                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'landscape');" type="button"
+                                        class="btn btn-primary" style="margin-right:10px">
+                                        Ladda ner PDF skärm(liggande)
+                                    </button>
+                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'landscape');" type="button"
+                                        class="btn btn-primary" style="margin-right:10px">
+                                        Ladda ner PDF A4(liggande)
                                     </button>
                                 </div>
                                 <div style="display:flex;padding-top:10px">
@@ -351,6 +358,11 @@
                                                     <input class="form-check-input" <%-eventimageoverlay ? "checked" : "" %> onclick="updateEventImageOverlay('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckImageOverlay<%=frameindex%>">
                                                     <label class="form-check-label" for="flexSwitchCheckImageOverlay<%=frameindex%>">Aktivera Gradient för bilden</label>
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label for="imageoverlayopacitySlider<%=frameindex%>" class="form-label">Gradient styrka(0-1)</label>
+                                                    <input data-frameindex='frame_<%=frameindex%>' data-eventid='<%=event.id%>' type="range" class="form-range" id="imageoverlayopacitySlider<%=frameindex%>" min="0" max="100" step="1">
+                                                    <span class="slider-value"><%-eventimageoverlayopacity ? eventimageoverlayopacity : 0.50 %></span>
+                                                </div>
                                                 <div style="padding-top:10px">
                                                     Bakgrundsfärg
                                                 </div>
@@ -403,7 +415,7 @@
                                                     <%})%>
                                                 </select-->
                                                 <div class="dropdown">
-                                                    <button class="btn btn-default dropdown-toggle form-select selected" type="button" id="linepatternbtn<%=event.id%>" data-bs-toggle="dropdown" aria-expanded="false" style="display:flex">
+                                                    <button class="btn btn-default dropdown-toggle form-select selected" type="button" id="linepatternbtn<%=event.id%>" data-linepatternid="<%- eventlinepattern[0] ? eventlinepattern[0].id : 0%>" data-bs-toggle="dropdown" aria-expanded="false" style="display:flex">
                                                         <%- eventlinepattern[0] ? eventlinepattern[0].name + `<img style="width:50px; height:30px" src="/smartsigntools/images/linepattern${eventlinepattern[0].id}.png" />` : 'Välj...'%>
                                                     </button>
                                                     <ul class="dropdown-menu">
@@ -660,6 +672,20 @@
             </div>
         </div>
         <script>
+            $(document).ready(function () {
+                $("input[type='range']").on('input', function () {
+                    const opacity = (this.value / 100).toFixed(2);
+                    $(this).siblings('.slider-value').text(opacity);
+                });
+
+                $("input[type='range']").on('change', function () {
+                    const opacity = (this.value / 100).toFixed(2);
+                    var event_id= $(this).attr("data-eventid");
+                    var frameid= $(this).attr("data-frameindex");
+                    //updateFieldOrder(listId);
+                    updateEventImageOverlayOpacity(event_id, opacity, frameid)
+                });
+            });
            $( function() {
                 $(".sortable-list").sortable({
                     items: ".sortable-item",
@@ -840,7 +866,8 @@
                 xhttp.send();
             }
 
-            function getPdf(id, cb, type) {
+            function getPdf(id, cb, format, orientation) {
+                var restorehtml = $(cb).html()
                 $(cb).prop("disabled", true);
                 $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar pdf...');
 
@@ -855,11 +882,11 @@
                     link.download = "smartsign_" + id + ".pdf";
                     link.click();
                     $(cb).prop("disabled", false);
-                    $(cb).html('Ladda ner PDF ' + type);
+                    $(cb).html(restorehtml);
 
 
                 };
-                xhttp.open("GET", "/smartsigntools/api/v1/calendar/pdf/" + id + "?type=" + type, true);
+                xhttp.open("GET", "/smartsigntools/api/v1/calendar/pdf/" + id + "?format=" + format + "&orientation=" + orientation, true);
                 xhttp.responseType = "blob";
                 xhttp.setRequestHeader('Content-Type', 'application/json');
                 xhttp.send();
@@ -1136,6 +1163,12 @@
                                 }
                             },
                             {
+                                text: 'Skanningar för period',
+                                action: function ( e, dt, node, config ) {
+                                    getQrtrackingsPeriod('2023-08-01', '2023-08-31') 
+                                }
+                            },
+                            {
                                 extend: 'spacer',
                                 style: 'bar',
                                 text: ''
@@ -1188,6 +1221,40 @@
                 xhttp.send();
             }
 
+            function getQrtrackingsPeriod(from_date, to_date) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    $('.QRmodal-body').html(xhttp.response)
+                    var qrtrackingtable = $('#qrtrackingtable').DataTable({
+                        "dom": '<Bplfi<t>>',
+                        "order": [[ 3, 'desc' ]],
+                        buttons: [
+                            {
+                                text: 'Visa summering',
+                                action: function ( e, dt, node, config ) {
+                                    getQrtracking() 
+                                }
+                            },
+                            {
+                                extend: 'spacer',
+                                style: 'bar',
+                                text: ''
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                autoFilter: true,
+                                filename: 'QRKod_statistik',
+                                sheetName: 'Skannade QR-koder för period'
+                            } 
+                        ]
+                    });
+                };
+                xhttp.open("GET", `/smartsigntools/api/v1/qrcodetracking/${from_date}/${to_date}`, true);
+                xhttp.send();
+            }
             function copytext(field_id) {
                 var copyText = document.getElementById(field_id);
                 text = $(copyText).val()
@@ -1330,6 +1397,22 @@
                 }
             }
 
+            function updateEventImageOverlayOpacity(events_id, opacity, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    document.getElementById(frameid).src = document.getElementById(frameid).src
+                };
+                xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageoverlayopacity", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "events_id": events_id,
+                    "opacity": opacity
+                }));
+            }
+
             function updateEventImageHeader(events_id, cb, frameid) {
                 var xhttp = new XMLHttpRequest();
                 if (cb.checked) {
@@ -1386,11 +1469,22 @@
                 checkjwt()
                 var value = $(selectlist).html();
                 var buttonHtml = $('#linepatternbtn' + events_id).html();
+
+                var button_data_linepatternid = document.getElementById('linepatternbtn' + events_id).getAttribute('data-linepatternid')
+                var selected_data_linepatternid = selectlist.getAttribute('data-linepatternid')
+
+                //Sätt knappens html lika med det val som gjorts
                 $('#linepatternbtn' + events_id).html(value);
+                //Sätt knappens data-attribut lika med det val som gjorts
+                document.getElementById('linepatternbtn' + events_id).setAttribute('data-linepatternid', selected_data_linepatternid);
+
+                //Sätt det valda alternativets html lika med knappens
                 $(selectlist).html(buttonHtml);
-                linepattern_id = selectlist.value || selectlist.getAttribute('data-linepatternid')
+                //Sätt det valda alternativets data-attribut lika med knappens
+                selectlist.setAttribute('data-linepatternid', button_data_linepatternid);
+
                 var xhttp = new XMLHttpRequest();
-                if (linepattern_id != "0") {
+                if (selected_data_linepatternid != "0") {
                     xhttp.onload = function () {
                         if (xhttp.status == 401) {
                         }
@@ -1402,7 +1496,7 @@
                     xhttp.setRequestHeader('Content-Type', 'application/json');
                     xhttp.send(JSON.stringify({
                         "events_id": events_id,
-                        "linepattern_id": linepattern_id
+                        "linepattern_id": selected_data_linepatternid
                     }));
                 } else {
                     xhttp.onload = function () {
@@ -1414,7 +1508,7 @@
                     xhttp.setRequestHeader('Content-Type', 'application/json');
                     xhttp.send(JSON.stringify({
                         "events_id": events_id,
-                        "linepattern_id": linepattern_id
+                        "linepattern_id": selected_data_linepatternid
                     }));
                 }
             }

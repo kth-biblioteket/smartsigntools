@@ -325,3 +325,17 @@ strong {
 .float {
     overflow: hidden;
 }
+
+.landscape .App {
+    height: 1080px;
+    width: 1920px;
+}
+
+.landscape .App-title .titleimage {
+    max-height: 450px;
+    overflow: hidden;
+}
+
+.landscape .qrcode {
+    width: 10%;
+}

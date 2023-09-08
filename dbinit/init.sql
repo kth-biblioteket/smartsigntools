@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS events (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     guid VARCHAR(200) NOT NULL,
     contentid VARCHAR(20) NOT NULL,
     eventtime DATETIME NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 CREATE TABLE IF NOT EXISTS fields (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(30) NOT NULL,
     description VARCHAR(200) NULL,
@@ -22,14 +22,14 @@ CREATE TABLE IF NOT EXISTS fields (
 );
 
 CREATE TABLE IF NOT EXISTS eventfields (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    events_id INT(6) NOT NULL,
-    fields_id INT(6) NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    events_id INT NOT NULL,
+    fields_id INT NOT NULL,
     CONSTRAINT constraint_fields UNIQUE (events_id, fields_id)
 );
 
 CREATE TABLE IF NOT EXISTS images(
-    id INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     fullpath VARCHAR(300),
     name CHAR(50),
     size CHAR(50),
@@ -37,22 +37,93 @@ CREATE TABLE IF NOT EXISTS images(
 );
 
 CREATE TABLE IF NOT EXISTS eventimage (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    events_id INT(6) NOT NULL,
-    images_id INT(6) NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    events_id INT NOT NULL,
+    images_id INT NOT NULL,
     CONSTRAINT constraint_fields UNIQUE (events_id)
 );
 
+CREATE TABLE IF NOT EXISTS colors (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name varchar(25) NOT NULL,
+  description varchar(100) NOT NULL,
+  code varchar(50) NOT NULL,
+  sortorder int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventbgcolor (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  color_id int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventfieldsorder (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  field_id int NOT NULL,
+  sortorder int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventimageheader (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventimageoverlay (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  enabled tinyint(1) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventlinepattern (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  linepattern_id int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventlinepatterncolor (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  color_id int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventlinepatternplacement (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  linepatternplacement_id int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS linepatternplacements (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name varchar(50) NOT NULL,
+  description varchar(200) NOT NULL,
+  code varchar(10) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS linepatterns (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name varchar(50) NOT NULL,
+  description varchar(200) NOT NULL,
+  code varchar(10) NOT NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS eventtextcolor (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  color_id int NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS qrcodetracking (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    events_id int(6) NOT NULL,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    events_id INT NOT NULL,
     url VARCHAR(500) NOT NULL,
     browser VARCHAR(500) NOT NULL,
     scantime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS qrcodegeneral (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     url VARCHAR(500) NOT NULL
 );
 
