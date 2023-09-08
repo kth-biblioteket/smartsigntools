@@ -1522,7 +1522,7 @@ async function generateDailyWiFiPage(format='A4', lang ='en') {
         const files = fs.readFileSync(path.join(__dirname, html_template));
         const template = cheerio.load(files.toString(), null, false);
         
-        template('.headertext h4').text("KTH LIBRARY");
+        template('.headertext h4').text("KTH Library");
         template('body').css('overflow', 'hidden');
         try {
             //Hämta daily code
