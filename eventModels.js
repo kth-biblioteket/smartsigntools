@@ -135,6 +135,7 @@ const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smart
                     await createEventField(result.insertId, 6)
                     await createEventField(result.insertId, 7)
                     await createEventField(result.insertId, 8)
+                    await createEventField(result.insertId, 9)
                 }
 
                 const successMessage = "The event was entered successfully."
