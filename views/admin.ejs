@@ -1418,7 +1418,9 @@
                     xhttp.onload = function () {
                         if (xhttp.status == 401) {
                         }
-                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
                     };
                     xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/imageoverlay", true);
                     xhttp.setRequestHeader('Content-Type', 'application/json');
@@ -1435,7 +1437,9 @@
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
                     }
-                    document.getElementById(frameid).src = document.getElementById(frameid).src
+                    setTimeout(function () {
+                        document.getElementById(frameid).src = document.getElementById(frameid).src
+                    }, 500);
                 };
                 xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageoverlayopacity", true);
                 xhttp.setRequestHeader('Content-Type', 'application/json');
