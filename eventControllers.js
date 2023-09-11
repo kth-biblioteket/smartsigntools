@@ -1734,7 +1734,7 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
         await page.setViewport({
             width: width,
             height: height,
-            deviceScaleFactor: 2,
+            deviceScaleFactor: 1,
         });
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
