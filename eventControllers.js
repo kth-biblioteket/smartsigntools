@@ -1119,12 +1119,12 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
         if (event.lang == 'en') {
             feed = await parser.parseURL(process.env.RSSFEED);
             qrcodetext = 'Read more'
-            template('.headertext h4').text("KTH Library");
+            template('.kthname').text("KTH Library");
         }
         if (event.lang == 'sv') {
             feed = await parser.parseURL(process.env.RSSFEED_SV);
             qrcodetext = 'Läs mer'
-            template('.headertext h4').text("KTH Biblioteket");
+            template('.kthname').text("KTH Biblioteket");
         }
 
         let item = feed.items.filter(item => '1.' + item.guid.split('-1.')[1] == event.contentid)
