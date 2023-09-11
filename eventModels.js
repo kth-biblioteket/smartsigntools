@@ -597,7 +597,7 @@ const createEventLogoColor = (event_id, color_id) => {
 //Ta bort ett events bakgrundsfärg
 const deleteEventLogoColor = (event_id) => {
     return new Promise(function (resolve, reject) {
-        const sql = `DELETE FROM eventlgocolor
+        const sql = `DELETE FROM eventlogocolor
                     WHERE event_id = ?`;
         database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
             if(err) {
