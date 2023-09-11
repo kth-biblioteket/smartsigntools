@@ -345,7 +345,7 @@ const readEventTextColor = (event_id) => {
 const readEventLogoColor = (event_id) => {
     return new Promise(function (resolve, reject) {
 
-        const sql = `SELECT colors.id, eventtextcolor.event_id, colors.name, colors.code, colors.description
+        const sql = `SELECT colors.id, eventlogocolor.event_id, colors.name, colors.code, colors.description
                     FROM eventlogocolor
                     JOIN colors ON eventlogocolor.color_id = colors.id
                     AND eventlogocolor.event_id = ?`;
