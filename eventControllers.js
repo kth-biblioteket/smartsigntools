@@ -1731,10 +1731,11 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
             height = orientation=='portrait' ? 1122 : 793
         }
 
+        let deviceScaleFactor = process.env.DEVICESCALEFACTOR || 1
         await page.setViewport({
             width: width,
             height: height,
-            deviceScaleFactor: process.env.DEVICESCALEFACTOR || 1,
+            deviceScaleFactor: deviceScaleFactor,
         });
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
