@@ -43,6 +43,28 @@ CREATE TABLE IF NOT EXISTS eventimage (
     CONSTRAINT constraint_fields UNIQUE (events_id)
 );
 
+CREATE TABLE IF NOT EXISTS qrcodetracking (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    events_id INT NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    browser VARCHAR(500) NOT NULL,
+    scantime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS qrcodegeneral (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    url VARCHAR(500) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `dailywifi` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `code` varchar(20) NOT NULL,
+  `daynumber` int NOT NULL,
+  `code_date` date NOT NULL
+);
+
+/* Nya tabeller 2023-09-11 (Ny grafisk profil etc) */
+
 CREATE TABLE IF NOT EXISTS colors (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name varchar(25) NOT NULL,
@@ -50,6 +72,40 @@ CREATE TABLE IF NOT EXISTS colors (
   code varchar(50) NOT NULL,
   sortorder int NOT NULL
 );
+
+INSERT INTO `colors` (`id`, `name`, `description`, `code`, `sortorder`) VALUES
+(1, 'Vit', 'Vit', 'FFFFFF', 10),
+(2, 'Sand', 'Warm Grey 1C', 'EBE5E0', 30),
+(3, 'KTH-blå', '7686 C', '004791', 40),
+(4, 'Himmelsblå', '2755 C', '6298D2', 50),
+(5, 'Marinblå', 'Marinblå', '000061', 60),
+(6, 'Ljusblå', '2707', 'DEF0FF', 70),
+(7, 'Digitalblå', 'Den här färgen är inte möjlig att \r\ntrycka. Använd KTH-blå vid tryck.', '0029ED', 80),
+(8, 'Svart', 'Svart', '000000', 20);
+
+CREATE TABLE IF NOT EXISTS linepatternplacements (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name varchar(50) NOT NULL,
+  description varchar(200) NOT NULL,
+  code varchar(10) NOT NULL
+);
+
+INSERT INTO `linepatternplacements` (`id`, `name`, `description`, `code`) VALUES
+(1, 'Längst ner till höger', 'Längst ner till höger', 'br'),
+(2, 'Längst upp till vänster', 'Längst upp till vänster', 'tl');
+
+CREATE TABLE IF NOT EXISTS linepatterns (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name varchar(50) NOT NULL,
+  description varchar(200) NOT NULL,
+  code varchar(10) NOT NULL
+);
+
+INSERT INTO `linepatterns` (`id`, `name`, `description`, `code`) VALUES
+(1, 'Ett', 'Ett', '1'),
+(2, 'Två', 'Två', '2'),
+(3, 'Tre', 'Tre', '3'),
+(4, 'Fyra', 'Fyra', '4');
 
 CREATE TABLE IF NOT EXISTS eventbgcolor (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -75,6 +131,12 @@ CREATE TABLE IF NOT EXISTS eventimageoverlay (
   enabled tinyint(1) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS eventimageoverlayopacity (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int(11) NOT NULL,
+  opacity decimal(5,2) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS eventlinepattern (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   event_id int NOT NULL,
@@ -93,46 +155,11 @@ CREATE TABLE IF NOT EXISTS eventlinepatternplacement (
   linepatternplacement_id int NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS linepatternplacements (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name varchar(50) NOT NULL,
-  description varchar(200) NOT NULL,
-  code varchar(10) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS linepatterns (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name varchar(50) NOT NULL,
-  description varchar(200) NOT NULL,
-  code varchar(10) NOT NULL
-);
-
-
 CREATE TABLE IF NOT EXISTS eventtextcolor (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   event_id int NOT NULL,
   color_id int NOT NULL
 );
-
-CREATE TABLE IF NOT EXISTS qrcodetracking (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    events_id INT NOT NULL,
-    url VARCHAR(500) NOT NULL,
-    browser VARCHAR(500) NOT NULL,
-    scantime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS qrcodegeneral (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    url VARCHAR(500) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS `dailywifi` (
-  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `code` varchar(20) NOT NULL,
-  `daynumber` int NOT NULL,
-  `code_date` date NOT NULL
-)
 
 /*
 INSERT INTO fields(type, name, description)
