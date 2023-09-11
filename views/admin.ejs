@@ -244,6 +244,7 @@
                     <%let eventimage=event_.eventimage %>
                     <%let eventbgcolor=event_.eventbgcolor %>
                     <%let eventtextcolor=event_.eventtextcolor %>
+                    <%let eventlogocolor=event_.eventlogocolor %>
                     <%let eventlinepattern=event_.eventlinepattern %>
                     <%let eventlinepatternplacement=event_.eventlinepatternplacement %>
                     <%let eventlinepatterncolor=event_.eventlinepatterncolor %>
@@ -336,7 +337,7 @@
                                             <div style="padding-top:10px">
                                                 Bild från bildbank
                                             </div>
-                                            <select class="form-select imageselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="imagebankselect<%=event.id%>" title="Välj bild" class="selectpicker">
+                                            <select class="form-select imageselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="imagebankselect<%=event.id%>" title="Välj bild">
                                                 <option value="0">Välj...</option>
                                                 <% let selectedimage='' %>
                                                 <% imagebank.forEach(image => {%>
@@ -368,7 +369,7 @@
                                             <div style="padding-top:10px">
                                                 Bakgrundsfärg
                                             </div>
-                                            <select class="form-select bgcolorselect"  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="bgcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
+                                            <select class="form-select bgcolorselect"  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="bgcolorselect<%=event.id%>" title="Välj färg">
                                                 <option value="0">Välj...</option>
                                                 <% let selectedbgcolor='' %>
                                                 <% colors.forEach(bgcolor => {%>
@@ -385,7 +386,7 @@
                                             <div style="padding-top:10px">
                                                 Textfärg
                                             </div>
-                                            <select class="form-select textcolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="textcolorselect<%=event.id%>" title="Välj färg" class="selectpicker">
+                                            <select class="form-select textcolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="textcolorselect<%=event.id%>" title="Välj färg">
                                                 <option value="0">Välj...</option>
                                                 <% let selectedtextcolor='' %>
                                                 <% colors.forEach(textcolor => {%>
@@ -397,6 +398,23 @@
                                                         <% }%>
                                                     <% } %>
                                                     <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
+                                                <%})%>
+                                            </select>
+                                            <div style="padding-top:10px">
+                                                Logofärg
+                                            </div>
+                                            <select class="form-select logocolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="logocolorselect<%=event.id%>" title="Välj färg">
+                                                <option value="0">Välj...</option>
+                                                <% let selectedlogocolor='' %>
+                                                <% colors.forEach(logocolor => {%>
+                                                    <% if (eventlogocolor[0]) {%>
+                                                        <% if (eventlogocolor[0].id == logocolor.id) {%>
+                                                            <% selectedlogocolor= 'selected'%>
+                                                        <% } else {%>
+                                                            <% selectedlogocolor = ''%>
+                                                        <% }%>
+                                                    <% } %>
+                                                    <option <%=selectedlogocolor%> value="<%=logocolor.id%>"><%=logocolor.name%></option>
                                                 <%})%>
                                             </select>
                                             <div style="padding-top:10px">
@@ -451,7 +469,7 @@
                                             <div style="padding-top:10px">
                                                 Linjemönsters placering
                                             </div>
-                                            <select class="form-select linepatternplacementselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering" class="selectpicker">
+                                            <select class="form-select linepatternplacementselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering">
                                                 <option value="0">Välj...</option>
                                                 <% let selectedlinepatternplacement='' %>
                                                 <% linepatternplacements.forEach(linepatternplacement => {%>
@@ -468,7 +486,7 @@
                                             <div style="padding-top:10px">
                                                 Linjemönsters färg
                                             </div>
-                                            <select class="form-select linepatterncolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg" class="selectpicker">
+                                            <select class="form-select linepatterncolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg">
                                                 <option value="0">Välj...</option>
                                                 <% let selectedlinepatterncolor='' %>
                                                 <% colors.forEach(linepatterncolor => {%>
@@ -724,6 +742,12 @@
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
                     updateEventBgColor(event_id, frameid, this)
+                });
+
+                $(".logocolorselect").on('change', function () {
+                    var event_id= $(this).attr("data-eventid");
+                    var frameid= $(this).attr("data-frameid");
+                    updateEventLogoColor(event_id, frameid, this)
                 });
 
                 $(".linepatternselect").on('click', function () {
@@ -1448,6 +1472,42 @@
                         }, 500);
                     };
                     xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/textcolor", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "color_id": color_id
+                    }));
+                }
+            }
+
+            function updateEventLogoColor(events_id, frameid, selectlist) {
+                checkjwt()
+                var x = document.getElementById("logocolorselect");
+                color_id = selectlist.value
+                var xhttp = new XMLHttpRequest();
+                if (color_id != "0") {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/logocolor", true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "events_id": events_id,
+                        "color_id": color_id
+                    }));
+                } else {
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        setTimeout(function () {
+                            document.getElementById(frameid).src = document.getElementById(frameid).src
+                        }, 500);
+                    };
+                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/logocolor", true);
                     xhttp.setRequestHeader('Content-Type', 'application/json');
                     xhttp.send(JSON.stringify({
                         "events_id": events_id,

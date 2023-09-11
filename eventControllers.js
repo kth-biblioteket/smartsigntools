@@ -152,6 +152,7 @@ async function readEventsPaginated(req, res, next) {
                 eventsarray[i].eventimage = await eventModel.readEventImage(events[i].id)
                 eventsarray[i].eventbgcolor = await eventModel.readEventBgColor(events[i].id)
                 eventsarray[i].eventtextcolor = await eventModel.readEventTextColor(events[i].id)
+                eventsarray[i].eventlogocolor = await eventModel.readEventLogoColor(events[i].id)
                 eventsarray[i].eventimageoverlay = await eventModel.readEventImageOverlay(events[i].id)
                 eventsarray[i].eventimageoverlayopacity = await eventModel.readEventImageOverlayOpacity(events[i].id)
                 eventsarray[i].eventimageheader = await eventModel.readEventImageHeader(events[i].id)
@@ -559,6 +560,37 @@ async function createEventTextColor(event_id, color_id) {
 async function deleteEventTextColor(event_id) {
     try {
         let result = await eventModel.deleteEventTextColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readEventLogoColor(event_id) {
+    try {
+        let result = await eventModel.readEventLogoColor(event_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createEventLogoColor(event_id, color_id) {
+    try {
+        let result = await eventModel.deleteEventLogoColor(event_id)
+        result = await eventModel.createEventLogoColor(event_id, color_id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteEventLogoColor(event_id) {
+    try {
+        let result = await eventModel.deleteEventLogoColor(event_id)
         return result
     } catch (err) {
         console.log(err.message)
@@ -1012,6 +1044,8 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
 
         let eventtextcolor = await readEventTextColor(event.id)
 
+        let eventlogocolor = await readEventLogoColor(event.id)
+
         let eventlinepatterncolor = await readEventLinePatternColor(event.id)
 
         let eventtimageoverlay = await readEventImageOverlay(event.id)
@@ -1066,6 +1100,10 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                     color: #${eventtextcolor[0] ? eventtextcolor[0].code : '000000'};
                 }
 
+                .kthlogo .cls-1 {
+                    fill: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
+                }
+
                 .cls-2 {
                     stroke: #${eventlinepatterncolor[0] ? eventlinepatterncolor[0].code : '000000'};
                 }
@@ -1081,10 +1119,12 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
         if (event.lang == 'en') {
             feed = await parser.parseURL(process.env.RSSFEED);
             qrcodetext = 'Read more'
+            template('.headertext h4').text("KTH Library");
         }
         if (event.lang == 'sv') {
             feed = await parser.parseURL(process.env.RSSFEED_SV);
             qrcodetext = 'Läs mer'
+            template('.headertext h4').text("KTH Biblioteket");
         }
 
         let item = feed.items.filter(item => '1.' + item.guid.split('-1.')[1] == event.contentid)
@@ -1919,6 +1959,9 @@ module.exports = {
     readEventTextColor,
     createEventTextColor,
     deleteEventTextColor,
+    readEventLogoColor,
+    createEventLogoColor,
+    deleteEventLogoColor,
     readEventImage,
     createEventImage,
     deleteEventImage,

@@ -341,6 +341,25 @@ const readEventTextColor = (event_id) => {
 
 };
 
+//Hämta logofärg för event
+const readEventLogoColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+
+        const sql = `SELECT colors.id, eventtextcolor.event_id, colors.name, colors.code, colors.description
+                    FROM eventlogocolor
+                    JOIN colors ON eventlogocolor.color_id = colors.id
+                    AND eventlogocolor.event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+
+};
+
 //Hämta bild för event
 const readEventImage = (events_id) => {
     return new Promise(function (resolve, reject) {
@@ -475,7 +494,6 @@ const readEventLinePatternPlacement = (event_id) => {
             resolve(result);
         });
     })
-createEventTextColor
 };
 
 //Hämta textfärg för event
@@ -494,7 +512,6 @@ const readEventLinePatternColor = (event_id) => {
             resolve(result);
         });
     })
-
 };
 
 //Lägg till ett events bakgrundsfärd
@@ -549,6 +566,38 @@ const createEventTextColor = (event_id, color_id) => {
 const deleteEventTextColor = (event_id) => {
     return new Promise(function (resolve, reject) {
         const sql = `DELETE FROM eventtextcolor
+                    WHERE event_id = ?`;
+        database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Lägg till ett events bakgrundsfärd
+const createEventLogoColor = (event_id, color_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO eventlogocolor(event_id, color_id)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[event_id, color_id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The color was successfully created."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort ett events bakgrundsfärg
+const deleteEventLogoColor = (event_id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM eventlgocolor
                     WHERE event_id = ?`;
         database.db.query(database.mysql.format(sql,[event_id]),(err, result) => {
             if(err) {
@@ -1138,6 +1187,9 @@ module.exports = {
     readEventTextColor,
     createEventTextColor,
     deleteEventTextColor,
+    readEventLogoColor,
+    createEventLogoColor,
+    deleteEventLogoColor,
     readEventImage,
     createEventImage,
     deleteEventImage,

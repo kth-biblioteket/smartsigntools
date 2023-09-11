@@ -205,6 +205,26 @@ apiRoutes.delete("/calendar/event/textcolor", VerifyToken, async function (req, 
     }
 });
 
+apiRoutes.post("/calendar/event/logocolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.createEventLogoColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.delete("/calendar/event/logocolor", VerifyToken, async function (req, res, next) {
+    try {
+        let color_id = req.body.color_id
+        let events_id = req.body.events_id
+        res.send(eventController.deleteEventLogoColor(events_id, color_id))
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.post("/calendar/event/image", VerifyToken, async function (req, res, next) {
     try {
         let images_id = req.body.images_id

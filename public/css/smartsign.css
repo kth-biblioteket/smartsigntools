@@ -84,6 +84,14 @@ h6 {
     padding: 10px;
 }
 
+.kthlogo svg {
+    width: 160px;
+}
+
+.kthlogo .cls-1 {
+    fill: #fff;
+}
+
 .kthname {
     position: absolute;
     top: 0px;

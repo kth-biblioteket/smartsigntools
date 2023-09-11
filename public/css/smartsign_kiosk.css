@@ -71,6 +71,14 @@ h6 {
     width:150px
 }
 
+.kthlogo svg {
+    width: 150px;
+}
+
+.kthlogo .cls-1 {
+    fill: #fff;
+}
+
 .headertext {
     float:right;
     padding-top:0px;

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS fields (
     type VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(30) NOT NULL,
     description VARCHAR(200) NULL,
+    sortable TINYINT(1) NOT NULL,
     CONSTRAINT constraint_type UNIQUE (type)
 );
 
@@ -161,6 +162,12 @@ CREATE TABLE IF NOT EXISTS eventtextcolor (
   color_id int NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS eventlogocolor (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id int NOT NULL,
+  color_id int NOT NULL
+);
+
 /*
 INSERT INTO fields(type, name, description)
 VALUES
@@ -173,4 +180,10 @@ VALUES
 ('image','Bild','Bilden för händelsen(från polopoly)'),
 ('qrcode','QR-Kod','QR-kod med länk till händelsen'),
 ('typeofevent','Typ av event','Vad är det för typ av event');
+*/
+
+/*
+UPDATE images
+SET fullpath = CONCAT('/app/imagebank/', SUBSTRING(fullpath, LENGTH('/app/imagebank/') + 1))
+WHERE fullpath LIKE '/app/imagebank/%';
 */
