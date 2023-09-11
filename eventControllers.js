@@ -1731,7 +1731,7 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
             height = orientation=='portrait' ? 1122 : 793
         }
 
-        let deviceScaleFactor = process.env.DEVICESCALEFACTOR || 1
+        let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
         await page.setViewport({
             width: width,
             height: height,
