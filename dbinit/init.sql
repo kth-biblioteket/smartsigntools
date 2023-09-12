@@ -184,6 +184,6 @@ VALUES
 
 /*
 UPDATE images
-SET fullpath = CONCAT('/app/imagebank/', SUBSTRING(fullpath, LENGTH('/app/imagebank/') + 1))
-WHERE fullpath LIKE '/app/imagebank/%';
+SET fullpath = SUBSTRING(fullpath, LENGTH('/app/imagebank/') + 1)
+WHERE fullpath LIKE '/app/imagebank/%'
 */

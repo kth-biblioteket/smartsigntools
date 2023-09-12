@@ -1796,7 +1796,7 @@ async function getGrbAsImage() {
             deviceScaleFactor: 1,
         });
 
-        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage', { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage?internal=true', { waitUntil: 'networkidle0' })
 
         let pageimage
         pageimage = await page.screenshot({ });

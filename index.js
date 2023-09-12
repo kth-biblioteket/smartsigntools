@@ -931,7 +931,9 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
     try {
         let kiosk
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        res.render('grb', {smartsignconfig: {"kiosk" : kiosk}});
+        let bookingystemapiserverurl
+        req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
+        res.render('grb', {smartsignconfig: {"kiosk" : kiosk, "bookingystemapiserverurl" : bookingystemapiserverurl,}});
     } catch(err) {
         res.send(err.message)
     }
