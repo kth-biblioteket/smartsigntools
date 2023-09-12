@@ -1367,7 +1367,7 @@
     var html = '';
     $.ajax({
       cache: false,
-      url: '<%= smartsignconfig.externalserverurl %>smartsigntools/api/v1/imas/realtime',
+      url: '<%= smartsignconfig.serverurl %>smartsigntools/api/v1/imas/realtime',
       //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
         showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
