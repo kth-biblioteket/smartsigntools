@@ -1767,7 +1767,7 @@ async function getImasAsImage() {
             deviceScaleFactor: 1,
         });
 
-        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage', { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage?internal=true', { waitUntil: 'networkidle0' })
 
         let pageimage
         pageimage = await page.screenshot({ });
