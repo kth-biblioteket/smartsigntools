@@ -1027,7 +1027,7 @@ const readQrcodetrackingByTimePeriod = (scantime_from, scantime_to) => {
                     FROM
                         qrcodetracking
                     WHERE
-                        scantime >= ? AND scantime <= ?
+                        DATE_FORMAT(scantime, '%Y-%m-%d') >= ? AND DATE_FORMAT(scantime, '%Y-%m-%d') <= ?
                     GROUP BY
                         url  
                     ORDER BY nrofscans DESC;`;
