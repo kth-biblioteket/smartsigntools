@@ -813,8 +813,8 @@ apiRoutes.get("/qrcodetracking/:fromdate/:todate", async function (req, res) {
                                     html += 
                                     `<tr>
                                         <td>${row.url}</td>
-                                        <td>${row.first_scan.toLocaleDateString()}</td>
-                                        <td>${row.last_scan.toLocaleDateString()}</td>
+                                        <td>${row.first_scan}</td>
+                                        <td>${row.last_scan}</td>
                                         <td>${row.nrofscans}</td>
                                     </tr>`
                                 });
