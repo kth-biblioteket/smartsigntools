@@ -1021,8 +1021,8 @@ const readQrcodetrackingByTimePeriod = (scantime_from, scantime_to) => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT
                         url,
-                        MIN(scantime) AS first_scan,
-                        MAX(scantime) AS last_scan,
+                        MIN(DATE_FORMAT(scantime, '%Y-%m-%d %H:%i:%s')) AS first_scan,
+                        MAX(DATE_FORMAT(scantime, '%Y-%m-%d %H:%i:%s')) AS last_scan,
                         COUNT(*) AS nrofscans
                     FROM
                         qrcodetracking
