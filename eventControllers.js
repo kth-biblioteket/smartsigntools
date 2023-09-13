@@ -1818,6 +1818,9 @@ async function getTimeeditAsImage() {
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
+        const version = await browser.version(); // Get Chromium version
+        console.log(`Chromium Version: ${version}`);
+
         //Storlek på smartsignskärmarna är 1080x1920
         await page.setViewport({
             width: 1080,
