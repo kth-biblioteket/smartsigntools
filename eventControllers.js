@@ -1741,7 +1741,11 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
 
         let pageimage
-        pageimage = await page.screenshot({ });
+        let quality = parseInt(process.env.SCREENSHOT_QUALITY) || 100;
+        pageimage = await page.screenshot({
+            type: 'jpeg',
+            quality: quality
+         });
 
         await browser.close();
 
@@ -1760,17 +1764,22 @@ async function getImasAsImage() {
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
+        let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
         //Storlek på smartsignskärmarna är 1080x1920
         await page.setViewport({
             width: 1080,
             height: 1920,
-            deviceScaleFactor: 1,
+            deviceScaleFactor: deviceScaleFactor,
         });
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage?internal=true', { waitUntil: 'networkidle0' })
 
         let pageimage
-        pageimage = await page.screenshot({ });
+        let quality = parseInt(process.env.SCREENSHOT_QUALITY) || 100;
+        pageimage = await page.screenshot({
+            type: 'jpeg',
+            quality: quality
+         });
 
         await browser.close();
 
@@ -1789,17 +1798,22 @@ async function getGrbAsImage() {
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
+        let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
         //Storlek på smartsignskärmarna är 1080x1920
         await page.setViewport({
             width: 1080,
             height: 1920,
-            deviceScaleFactor: 1,
+            deviceScaleFactor: deviceScaleFactor,
         });
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage?internal=true', { waitUntil: 'networkidle0' })
 
         let pageimage
-        pageimage = await page.screenshot({ });
+        let quality = parseInt(process.env.SCREENSHOT_QUALITY) || 100;
+        pageimage = await page.screenshot({
+            type: 'jpeg',
+            quality: quality
+         });
 
         await browser.close();
 
