@@ -905,7 +905,7 @@ apiRoutes.get("/grb/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getGrbAsImage();
 
-        const lastModified = stats.mtime.toUTCString();
+        const lastModified = new Date().toUTCString();
         res.writeHead(200, {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
