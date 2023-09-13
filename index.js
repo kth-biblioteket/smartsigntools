@@ -910,7 +910,7 @@ apiRoutes.get("/grb/image", async function (req, res, next) {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0',
-            'Content-Type': 'image/png',
+            'Content-Type': 'image/jpeg',
             'Last-Modified': lastModified,
             'Content-Length': pageimage.length,
         });
@@ -924,7 +924,7 @@ apiRoutes.get("/timeedit/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getTimeeditAsImage();
         res.writeHead(200, {
-            'Content-Type': 'image/png',
+            'Content-Type': 'image/jpeg',
             'Content-Length': pageimage.length,
         });
         res.end(pageimage);

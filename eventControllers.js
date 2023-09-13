@@ -1818,20 +1818,23 @@ async function getTimeeditAsImage() {
         const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
-        const version = await browser.version(); // Get Chromium version
-        console.log(`Chromium Version: ${version}`);
+        let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
 
         //Storlek på smartsignskärmarna är 1080x1920
         await page.setViewport({
             width: 1080,
             height: 1920,
-            deviceScaleFactor: 1,
+            deviceScaleFactor: deviceScaleFactor,
         });
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage', { waitUntil: 'networkidle0' })
 
         let pageimage
-        pageimage = await page.screenshot({ });
+        let quality = process.env.SCREENSHOT_QUALITY || 100;
+        pageimage = await page.screenshot({
+            type: 'jpeg',
+            quality: quality
+         });
 
         await browser.close();
 
