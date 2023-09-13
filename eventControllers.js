@@ -1830,7 +1830,7 @@ async function getTimeeditAsImage() {
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage', { waitUntil: 'networkidle0' })
 
         let pageimage
-        let quality = process.env.SCREENSHOT_QUALITY || 100;
+        let quality = parseInt(process.env.SCREENSHOT_QUALITY) || 100;
         pageimage = await page.screenshot({
             type: 'jpeg',
             quality: quality
