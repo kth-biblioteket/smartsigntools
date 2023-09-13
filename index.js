@@ -904,11 +904,14 @@ apiRoutes.get("/imas/image", async function (req, res, next) {
 apiRoutes.get("/grb/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getGrbAsImage();
+
+        const lastModified = stats.mtime.toUTCString();
         res.writeHead(200, {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0', //
+            'Expires': '0',
             'Content-Type': 'image/png',
+            'Last-Modified': lastModified,
             'Content-Length': pageimage.length,
         });
         res.end(pageimage);
