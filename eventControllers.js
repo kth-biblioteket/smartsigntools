@@ -1100,6 +1100,10 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                     color: #${eventtextcolor[0] ? eventtextcolor[0].code : '000000'};
                 }
 
+                .kthname {
+                    color: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
+                }
+                
                 .kthlogo .cls-1 {
                     fill: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
                 }
