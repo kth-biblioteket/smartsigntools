@@ -1395,7 +1395,7 @@ async function generateQrCode(id, eventbgcolor) {
         let event = await readEventId(id)
         //MySQL kräver index [0]
         event = event[0]
-        const file = "kthlogo.jpg"
+        const file = "kthlogo_marinbla_qr.svg"
 
         const logo = await sharp(path.join(__dirname, "public/images/" + file))
             .extend({
