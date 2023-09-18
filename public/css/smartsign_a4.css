@@ -90,7 +90,7 @@ h6 {
 }
 
 .kthlogo svg {
-    width: 160px;
+    width: 120px;
 }
 
 .kthlogo .cls-1 {
@@ -105,7 +105,7 @@ h6 {
     width: 100%;
     color: #fff;
     padding: 20px 40px 0px 0px;
-    font-size: 30px;
+    font-size: 24px;
     font-weight: 700;
 }
 
@@ -132,7 +132,7 @@ h6 {
 }
 
 .App-title .titleimage {
-    max-height: 500px;
+    max-height: 660px;
     overflow: hidden;
 }
 
@@ -149,7 +149,7 @@ h6 {
 .App-title .rubrik {
     position: absolute;
     bottom: 20px;
-    font-size: 50px;
+    font-size: 40px;
     color: #fff;
     padding: 0px 40px 0px 40px;
     font-weight: 700;
@@ -165,7 +165,7 @@ h6 {
     padding: 40px 40px 0px 40px;
     font-weight: 700;
     line-height: 105%;
-    font-size: 50px;
+    font-size: 40px;
     font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
 }
   
@@ -384,7 +384,7 @@ strong {
     vertical-align: bottom;
     bottom: 0px;
     margin: 10px 10px 14px 10px;
-    width: 14%;
+    width: 100px;
 }
 
 .landscape .qrcode {
