@@ -1620,10 +1620,6 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
@@ -1681,10 +1677,6 @@ async function savePageAsPdf(events_id, pdffullpath, format='screen', template, 
     }
     catch (error) {
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
@@ -1727,10 +1719,6 @@ async function saveWifiPageAsPdf(pdffullpath, format, template) {
     }
     catch (error) {
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
@@ -1779,10 +1767,6 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
@@ -1819,10 +1803,6 @@ async function getImasAsImage() {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage')
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
@@ -1859,10 +1839,6 @@ async function getGrbAsImage() {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage')
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
@@ -1900,10 +1876,6 @@ async function getTimeeditAsImage() {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage')
         console.log(error)
-    } finally {
-        if (browser) {
-          await browser.close();
-        }
     }
 
 }
