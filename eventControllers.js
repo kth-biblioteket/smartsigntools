@@ -1612,12 +1612,18 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
 
         await page.screenshot({ path: imagefullpath, quality: parseInt(100) });
 
+        await page.close();
+
         await browser.close();
 
     }
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
@@ -1667,12 +1673,18 @@ async function savePageAsPdf(events_id, pdffullpath, format='screen', template, 
             });
         }
 
+        await page.close();
+
         await browser.close();
         return pdf;
 
     }
     catch (error) {
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
@@ -1707,12 +1719,18 @@ async function saveWifiPageAsPdf(pdffullpath, format, template) {
             });
         }
 
+        await page.close();
+
         await browser.close();
         return pdf;
 
     }
     catch (error) {
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
@@ -1751,6 +1769,8 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
             quality: quality
          });
 
+        await page.close();
+
         await browser.close();
 
         return pageimage
@@ -1759,6 +1779,10 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
@@ -1785,6 +1809,8 @@ async function getImasAsImage() {
             quality: quality
          });
 
+        await page.close();
+
         await browser.close();
 
         return pageimage
@@ -1793,6 +1819,10 @@ async function getImasAsImage() {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage')
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
@@ -1819,6 +1849,8 @@ async function getGrbAsImage() {
             quality: quality
          });
 
+        await page.close();
+
         await browser.close();
 
         return pageimage
@@ -1827,6 +1859,10 @@ async function getGrbAsImage() {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage')
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
@@ -1854,6 +1890,8 @@ async function getTimeeditAsImage() {
             quality: quality
          });
 
+        await page.close();
+
         await browser.close();
 
         return pageimage
@@ -1862,6 +1900,10 @@ async function getTimeeditAsImage() {
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage')
         console.log(error)
+    } finally {
+        if (browser) {
+          await browser.close();
+        }
     }
 
 }
