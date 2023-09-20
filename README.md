@@ -25,6 +25,8 @@ services:
   smartsigntools:
     container_name: "smartsigntools"
     image: ghcr.io/kth-biblioteket/smartsigntools:${REPO_TYPE}
+    ##För att puppeteer inte ska lämna en massa zombie processer
+    init: true
     depends_on:
       - smartsigntools-db
     restart: "always"

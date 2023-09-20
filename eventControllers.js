@@ -1597,8 +1597,8 @@ async function generateDailyWiFiPage(format='A4', lang ='en') {
 };
 
 async function savePageAsImage(events_id, html, imagefullpath, template) {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
@@ -1614,19 +1614,20 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
 
         await page.close();
 
-        await browser.close();
-
     }
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
     }
+    finally {
+        await browser.close();
+    }
 
 }
 
 async function savePageAsPdf(events_id, pdffullpath, format='screen', template, orientation) {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
         const page = await browser.newPage();
 
         let width = 1080;
@@ -1671,19 +1672,21 @@ async function savePageAsPdf(events_id, pdffullpath, format='screen', template, 
 
         await page.close();
 
-        await browser.close();
         return pdf;
 
     }
     catch (error) {
         console.log(error)
+    } 
+    finally {
+        await browser.close();
     }
 
 }
 
 async function saveWifiPageAsPdf(pdffullpath, format, template) {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
@@ -1713,19 +1716,21 @@ async function saveWifiPageAsPdf(pdffullpath, format, template) {
 
         await page.close();
 
-        await browser.close();
         return pdf;
 
     }
     catch (error) {
         console.log(error)
     }
+    finally {
+        await browser.close();
+    }
 
 }
 
 async function getPageAsImage(events_id, html, template = 'templates/smartsign_template.html', format='screen', orientation = 'portrait') {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
@@ -1759,8 +1764,6 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
 
         await page.close();
 
-        await browser.close();
-
         return pageimage
 
     }
@@ -1768,12 +1771,15 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
     }
+    finally {
+        await browser.close();
+    }
 
 }
 
 async function getImasAsImage() {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
@@ -1795,8 +1801,6 @@ async function getImasAsImage() {
 
         await page.close();
 
-        await browser.close();
-
         return pageimage
 
     }
@@ -1804,12 +1808,15 @@ async function getImasAsImage() {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/imas/smartsignpage')
         console.log(error)
     }
+    finally {
+        await browser.close();
+    }
 
 }
 
 async function getGrbAsImage() {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
@@ -1831,8 +1838,6 @@ async function getGrbAsImage() {
 
         await page.close();
 
-        await browser.close();
-
         return pageimage
 
     }
@@ -1840,12 +1845,15 @@ async function getGrbAsImage() {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/grb/smartsignpage')
         console.log(error)
     }
+    finally {
+        await browser.close();
+    }
 
 }
 
 async function getTimeeditAsImage() {
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
-        const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
         const page = await browser.newPage();
 
         let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
@@ -1868,14 +1876,15 @@ async function getTimeeditAsImage() {
 
         await page.close();
 
-        await browser.close();
-
         return pageimage
 
     }
     catch (error) {
         console.log(process.env.SERVERURL + 'smartsigntools/api/v1/timeedit/smartsignpage')
         console.log(error)
+    }
+    finally {
+        await browser.close();
     }
 
 }
