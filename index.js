@@ -361,7 +361,7 @@ apiRoutes.delete("/calendar/event/linepatterncolor", VerifyToken, async function
 
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
-        let html_template = req.query.template || 'templates/smartsign_template.html'
+        let html_template = req.query.template || 'templates/smartsign_template_screen.html'
         let format = req.query.format || ''
         let orientation = req.query.orientation || 'portrait'
         if (req.params.id) {
@@ -404,7 +404,7 @@ apiRoutes.get("/calendar/pdf/:id", async function (req, res, next) {
 apiRoutes.get("/calendar/image/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
-            let template = req.query.template || 'templates/smartsign_template.html'
+            let template = req.query.template || 'templates/smartsign_template_screen.html'
             let format = req.query.format || 'screen'
             let orientation = req.query.orientation || 'portrait'
             let pageimage = await eventController.getPageAsImage(req.params.id, "", template, format, orientation);

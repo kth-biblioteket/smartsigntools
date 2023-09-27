@@ -7,18 +7,3 @@
   font-family: "FarnhamDisplay-RegularOSF"; 
   src:  url("/smartsign/api/v1/public/FarnhamDisplay-RegularOSF.ttf") format("truetype"); 
 }
-
-/*
-.App-title .rubrikplatta {
-  font-family: "TheSans","Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
-}
-
-.App-content {
-  font-family: "TheSans","Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
-}
-
-
-#ingress {
-  font-family: "FarnhamDisplay-RegularOSF","Open Sans",Arial,"Helvetica Neue",helvetica,sans-serif;
-}
-*/

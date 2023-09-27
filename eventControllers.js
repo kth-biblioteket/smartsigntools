@@ -995,7 +995,7 @@ async function deleteQrCodeGeneral(id) {
     }
 }
 
-async function generateCalendarPage(req, events_id, html_template = 'templates/smartsign_template.html', format='', orientation='portrait', lang ='sv') {
+async function generateCalendarPage(req, events_id, html_template = 'templates/smartsign_template_screen.html', format='', orientation='portrait', lang ='sv') {
     const files = fs.readFileSync(path.join(__dirname, html_template));
     const template = cheerio.load(files.toString(), null, true);
     //template('.headertext h4').text("KTH LIBRARY");
@@ -1021,17 +1021,26 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
         }
 
         if (eventlinepatternplacement[0]) {
+            // Linjemönster vid texten
             if (eventlinepatternplacement[0].code=='br') {
-                template('#linepattern').addClass("linepattern-bottom-right");
+                if (orientation !== 'landscape') {
+                    template('#linepattern').addClass("linepattern-bottom-right")
+                } else {
+                    //vid liggande format så placeras lm i vänstra halvans nedre högra hörn
+                    template('#linepattern').addClass("linepattern-left-bottom-right");
+                }
             }
+            // Linjemönster i bilden
             if (eventlinepatternplacement[0].code=='tl') {
-                template('#linepattern').addClass("linepattern-top-left");
+                if (orientation !== 'landscape') {
+                    template('#linepattern').addClass("linepattern-top-left")
+                } else {
+                    //vid liggande format så placeras lm i högra halvans nedre högra hörn
+                    template('#linepattern').addClass("linepattern-bottom-right");
+                }
             }
         }
     }
-    
-
-    ///console.log(template)
 
     try {
         //Hämta event
@@ -1068,6 +1077,7 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 height: 50%;
                 background: linear-gradient(to bottom, rgba(0, 0, 0, ${eventtimageoverlayopacity[0]?eventtimageoverlayopacity[0].opacity : 0.5}), rgba(0, 0, 0, 0) 100%, transparent 0%);
                 opacity: 1;
+                z-index:999;
             }
 
             .App-title .titleimage:after {
@@ -1079,13 +1089,39 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 height: 50%;
                 background: linear-gradient(to top, rgba(0, 0, 0, ${eventtimageoverlayopacity[0]?eventtimageoverlayopacity[0].opacity : 0.5}), rgba(0, 0, 0, 0) 100%, transparent 0%);
                 opacity: 1;
+                z-index:999;
             }
+/*
+            .App-title .content-right:before  {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 50%;
+                width: 50%;
+                height: 50%;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, ${eventtimageoverlayopacity[0]?eventtimageoverlayopacity[0].opacity : 0.5}), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                opacity: 1;
+                z-index:999;
+            }
+
+            .App-title .content-right:after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 50%;
+                height: 50%;
+                background: linear-gradient(to top, rgba(0, 0, 0, ${eventtimageoverlayopacity[0]?eventtimageoverlayopacity[0].opacity : 0.5}), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                opacity: 1;
+                z-index:999;
+            }
+*/
             `
         }
 
         if (eventtimageheader[0]) {
             imageheadercss = `
-                .rubrikplatta {
+                .rubrikitext {
                     display: none
                 }
             `
@@ -1157,10 +1193,11 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
             eventfields.forEach(row => {
                 
                 if (row.events_id !== null && row.type == 'title') {
+                    //Ska rubriken vara på bilden eller i texten
                     if (eventtimageheader[0]) { 
-                        template('.App-title .rubrik').text(item[0].title);
+                        template('.rubrikibild').text(item[0].title);
                     } else {
-                        template('#rubrikplatta').text(item[0].title);
+                        template('.rubrikitext').text(item[0].title);
                     }
                     
                 }
@@ -1229,18 +1266,23 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                     if (eventimage[0]) {
                         const imagebase64 = fs.readFileSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + eventimage[0].fullpath))
                         imagesrc = 'data:image/jpeg;base64,' + Buffer.from(imagebase64).toString('base64');
+                        template('.titleimage').addClass("fromimagebank")
                     } else {
+                        
                         if (cheeriocalendar('article .figure-img').length) {
                             imagesrc = 'https://www.kth.se' + cheeriocalendar('article .figure-img').attr('src')
+                            template('.titleimage').addClass("frompolopoly")
                         } else {
                             imagesrc = template('.titleimage img').attr('src')
+                            template('.titleimage').addClass("fromimagebank")
                         }
                     }
                     template('.titleimage img').attr('src', imagesrc);
+                    //template('.content-right').css('background-image', `url("${imagesrc}")`);
                 }
 
                 if (row.events_id !== null && row.type == 'qrcode') {
-                    template('.App-footer').html(`<div class="footerleft">${qrcodetext}&nbsp;<i class="bi bi-arrow-right"></i></div><img class="qrcode" src="${qrcode}"/><div class="footerright"></div>`);
+                    template('.App-footer').html(`<div class="footerleft">${qrcodetext}&nbsp;<i class="bi bi-arrow-right"></i></div><div class="footercenter"><img class="qrcode" src="${qrcode}"/></div><div class="footerright"></div>`);
                 }
                 rowcount++;
             })
@@ -1251,7 +1293,7 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
             return "unpublished"
         }
     } catch (error) {
-        console.log(error.message)
+        console.log(error)
         return error.message
     }
 };
@@ -1292,7 +1334,7 @@ async function generatePublishedPages(type, req) {
                 socketInstance.emit('uploadProgress', `{"type": "image", "total": ${total}, "progress": ${progress}}`);
                 //Saknas i kalenderfeed
                 if (calendarpagehtml != 'unpublished') {
-                    await savePageAsImage(element.id, calendarpagehtml, path.join(__dirname, "/publishedevents/images/smartsign" + index + ".jpg"), 'templates/smartsign_template.html')
+                    await savePageAsImage(element.id, calendarpagehtml, path.join(__dirname, "/publishedevents/images/smartsign" + index + ".jpg"), 'templates/smartsign_template_screen.html')
                 }
                 index++
                 progress++
@@ -1344,7 +1386,7 @@ async function generatePublishedPageAsImage(req, res) {
             fs.unlinkSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT));
             res.send("Event Image deleted, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT))
         } else {
-            await savePageAsImage(req.params.id, "", path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT), 'templates/smartsign_template.html')
+            await savePageAsImage(req.params.id, "", path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT), 'templates/smartsign_template_screen.html')
             res.send("Event Image generated, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT))
         }
     } catch (err) {
@@ -1497,7 +1539,7 @@ async function generatePdfPage(id, format='A4', orientation='portrait') {
                 template = 'templates/smartsign_template_pdf_A4.html'
                 pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
             } else {
-                template = 'templates/smartsign_template_pdf_A4.html'
+                template = 'templates/smartsign_template_pdf_landscape_A4.html'
                 pdfpath = 'publishedevents/pdf/smartsign_A4_landscape.pdf'
             }
         } else {
@@ -1505,7 +1547,7 @@ async function generatePdfPage(id, format='A4', orientation='portrait') {
                 template = 'templates/smartsign_template_pdf.html'
                 pdfpath = 'publishedevents/pdf/smartsign.pdf'
             } else {
-                template = 'templates/smartsign_template_pdf.html'
+                template = 'templates/smartsign_template_pdf_landscape.html'
                 pdfpath = 'publishedevents/pdf/smartsign_landscape.pdf'
             }
         }
@@ -1579,7 +1621,7 @@ async function generateDailyWiFiPage(format='A4', lang ='en') {
             
             let rubriktext_en=`Today's wifi password`
             let description_en=`In case you are not a student or an employee at KTH you can use the library's open Wi-Fi. This provides access to the internet, but not to the library's electronic resources`
-            template('#rubrikplatta').html(`<div>${rubriktext}</div>
+            template('.rubrikitext').html(`<div>${rubriktext}</div>
                                             <div>${rubriktext_en}</div>`);
             template('.App-content').html(`<div><b>Wifi:</b> KTHOPEN</div>
                                             <div><b>User name:</b> kthb-dayguest</div>
@@ -1637,17 +1679,9 @@ async function savePageAsPdf(events_id, pdffullpath, format='screen', template, 
             height = orientation=='portrait' ? 1920 : 1080
         }
         if (format == 'A4') {
-            width = orientation=='portrait' ? 793 : 1122
-            height = orientation=='portrait' ? 1122 : 793
+            width = orientation=='portrait' ? 794 : 1123
+            height = orientation=='portrait' ? 1123 : 794
         }
-        
-        await page.setViewport({
-            width: width,
-            height: height,
-            deviceScaleFactor: 1
-        });
-        
-
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
 
@@ -1728,13 +1762,13 @@ async function saveWifiPageAsPdf(pdffullpath, format, template) {
 
 }
 
-async function getPageAsImage(events_id, html, template = 'templates/smartsign_template.html', format='screen', orientation = 'portrait') {
+async function getPageAsImage(events_id, html, template = 'templates/smartsign_template_screen.html', format='screen', orientation = 'portrait') {
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
         const page = await browser.newPage();
 
         //Storlek på smartsignskärmarna är 1080x1920
-        //Storlek A4 är 793X1122
+        //Storlek A4 är 794X1123
         let width = 1080;
         let height = 1920;
         if (format == 'screen') {
@@ -1742,8 +1776,8 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
             height = orientation=='portrait' ? 1920 : 1080
         }
         if (format == 'A4') {
-            width = orientation=='portrait' ? 793 : 1122
-            height = orientation=='portrait' ? 1122 : 793
+            width = orientation=='portrait' ? 794 : 1123
+            height = orientation=='portrait' ? 1123 : 794
         }
 
         let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1

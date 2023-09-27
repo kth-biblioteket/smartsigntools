@@ -49,8 +49,8 @@ h6 {
     text-align: left;
     color: #000;
     /* smartsignskärmarnas upplösning */
-    height: 1920px;
-    width: 1080px;
+    height: 1080px;
+    width: 1920px;
     font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
     overflow: hidden;
     position: relative;
@@ -60,29 +60,25 @@ h6 {
     padding-top:60px;
 }
 
-.kthlogo {
+.imagetop {
     position: absolute;
-    top: 50px;
+    top: 0px;
     z-index: 1000;
     text-align: center;
-    width: 100%;  
+    width: 50%;
+    height: 244px;
 }
 
-.kthlogo img {
-    width: 180px;
-    padding: 10px;
-}
-
-.kthlogo svg {
+.imagetop svg {
     width: 160px;
 }
 
-.kthlogo .cls-1 {
+.imagetop .cls-1 {
     fill: #fff;
 }
 
 .kthname {
-    position: absolute;
+    position: relative;
     top: 0px;
     z-index: 1000;
     text-align: right;
@@ -113,47 +109,61 @@ h6 {
 .App-title {
     font-size: 1.5em;
     position: relative;
+    display: flex;
+    flex-direction: row;
 }
 
 .App-title .titleimage {
-    max-height: 900px;
+    position: relative;
+    max-height: 1080px;
     overflow: hidden;
-}
-
-.App-title .titleimage img {
-    width: 100%;
 }
 
 .App-title .titleimage.frompolopoly img {
     position: relative;
-    left: -170px;
-    width:125%
+    width: 1620px;
+    left: -340px;
 }
 
 .App-title .titleimage.fromimagebank img {
-    width: 100%;
+    position: relative;
+    width: 1200px;
+    left: -120px;
 }
+
 
 .App-title .rubrikibild {
     position: absolute;
-    bottom: 20px;
-    font-size: 80px;
+    top: 245px;
+    width: 50%;
+    font-size: 60px;
     color: #fff;
-    padding: 0px 40px 0px 40px;
+    padding: 40px;
     font-weight: 700;
     line-height: 105%;
+    height: 656px;
     z-index: 1000;
 }
 
-.content-top {
+.content-left {
+    flex:1
+}
+
+.content-right {
+    flex:1;
+    overflow: hidden;
+    height: 1080px;
+    background-size: 1200px;
+    background-position: -110px 0px;
+}
+  
+.App-intro {
+    font-size: large;
+}
+
+.App-text {
     height: 900px;
-    position: relative;
 }
-
-.content-bottom {
-    height: 1020px;
-}
-
 
 .rubrikitext {
     width: 100%;
@@ -162,18 +172,10 @@ h6 {
     padding: 40px 40px 0px 40px;
     font-weight: 700;
     line-height: 105%;
-    font-size: 80px;
+    font-size: 60px;
     font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
 }
   
-.App-intro {
-    font-size: large;
-}
-
-.App-text {
-    height: 840px;
-}
-
 .App-content {
     font-weight:500;
     font-size: 40px;
@@ -198,83 +200,11 @@ h6 {
 }
 
 .smartsign-node #ingress {
-    font-size: 42px;
+    font-size: 36px;
 }
 
 #time, #location, #language, #lecturer, #typeofevent {
     font-weight: 700;
-}
-
-.linepattern {
-    display: none;
-}
-
-.linepattern-top-left {
-    display: block;
-    width: 300px;
-    height: 450px;
-    overflow: hidden;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    transform: rotate(180deg);
-}
-
-.linepattern-bottom-right {
-    display: block;
-    width: 300px;
-    height: 450px;
-    overflow: hidden;
-    position: absolute;
-    bottom: 0px;
-    right: 0px;
-    transform: rotate(0deg);
-}
-
-.linepattern-one {
-    width: 800px;
-    height: 800px;
-    transform-origin: center center;
-    transform: rotate(0deg) scale(1.0) translate(-500px, -350px);
-}
-
-.linepattern-two {
-    width: 800px;
-    height: 800px;
-    transform-origin: center center;
-    transform: rotate(90deg) scale(1.0) translate(-350px, 500px);
-}
-
-.linepattern-three {
-    width: 800px;
-    height: 800px;
-    transform-origin: center center;
-    transform: rotate(180deg) scale(1.0) translate(500px, 350px);
-}
-
-.linepattern-four {
-    width: 800px;
-    height: 800px;
-    transform-origin: center center;
-    transform: rotate(270deg) scale(1.0) translate(350px, -500px);
-}
-
-strong {
-    font-weight: 700;
-}
-
-.gauge-header-small {
-    font-size: 30px;
-}
-
-.gauge-header-medium {
-    font-size: 40px;
-    font-weight: bold;
-}
-
-.gauge-header-large {
-    font-size: 46px;
-    font-weight: bold;
 }
 
 .App-footer {
@@ -329,6 +259,89 @@ strong {
     position: relative;
     width: 150px;
     margin: 10px
+}
+
+.linepattern {
+    display: none;
+}
+
+.linepattern-top-left {
+    display: block;
+    width: 300px;
+    height: 450px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: rotate(180deg);
+}
+
+.linepattern-bottom-right {
+    display: block;
+    width: 300px;
+    height: 450px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    transform: rotate(0deg);
+}
+
+.linepattern-left-bottom-right {
+    display: block;
+    width: 300px;
+    height: 450px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    right: 960px;
+    transform: rotate(0deg);
+}
+
+.linepattern-one {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(0deg) scale(1.0) translate(-500px, -350px);
+}
+
+.linepattern-two {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(90deg) scale(1.0) translate(-350px, 500px);
+}
+
+.linepattern-three {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(180deg) scale(1.0) translate(500px, 350px);
+}
+
+.linepattern-four {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(270deg) scale(1.0) translate(350px, -500px);
+}
+
+strong {
+    font-weight: 700;
+}
+
+.gauge-header-small {
+    font-size: 30px;
+}
+
+.gauge-header-medium {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.gauge-header-large {
+    font-size: 46px;
+    font-weight: bold;
 }
 
 .float {

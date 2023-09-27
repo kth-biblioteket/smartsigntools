@@ -13,6 +13,7 @@ publishedevents/pdf/*.pdf
 imagebank/*.jpg
 imagebank/*.jpeg
 imagebank/*.png
+imagebank/*.jfif
 *.db
 test.js
 frame*.png

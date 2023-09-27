@@ -29,7 +29,7 @@ h3 {
 }
 
 h4 {
-    font-size: 25px;
+    font-size: 32px;
     font-weight: bold;
 }
   
@@ -38,23 +38,29 @@ h6 {
 }
 
 .bottom-padding {
-    padding-bottom: 20px;
+    padding-bottom: 40px;
 }
 
 .top-padding {
-    padding-top: 20px;
+    padding-top: 40px;
 }
 
 .App {
     text-align: left;
     color: #000;
     /* a4 */
-    height: 297mm;
-    width: 210mm;
+    width: 297mm;
+    height: 210mm;
     font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
     overflow: hidden;
     position: relative;
 }
+
+/*
+.App-padding {
+    padding: 60px 54px 0px 54px;
+}
+*/
 
 .App-padding-top {
     padding-top:60px;
@@ -65,36 +71,32 @@ h6 {
     height: 80px;
 }
 
-.kthlogo {
+.imagetop {
     position: absolute;
-    top: 25px;
+    top: 0px;
     z-index: 1000;
     text-align: center;
-    width: 100%;  
+    width: 50%;
+    height: 56mm;
 }
 
-.kthlogo img {
-    width: 140px;
-    padding: 10px;
-}
-
-.kthlogo svg {
+.imagetop svg {
     width: 120px;
 }
 
-.kthlogo .cls-1 {
+.imagetop .cls-1 {
     fill: #fff;
 }
 
 .kthname {
-    position: absolute;
+    position: relative;
     top: 0px;
     z-index: 1000;
     text-align: right;
     width: 100%;
     color: #fff;
     padding: 20px 40px 0px 0px;
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
 }
 
@@ -107,7 +109,7 @@ h6 {
 }
 
 .App-header .kthlogo img{
-    width:100px
+    width:150px
 }
 
 .headertext {
@@ -118,59 +120,51 @@ h6 {
 .App-title {
     font-size: 1.5em;
     position: relative;
+    display: flex;
+    flex-direction: row;
 }
 
 .App-title .titleimage {
-    max-height: 160mm;
-    overflow: hidden;
     position: relative;
-}
-
-.App-title .titleimage img {
-    width: 100%;
+    max-height: 210mm;
+    overflow: hidden;
 }
 
 .App-title .titleimage.frompolopoly img {
-    /*height: 160mm;*/
     position: relative;
-    left: -120px;
-    width:125%
+    width: 1200px;
+    left: -320px;
 }
- 
+
 .App-title .titleimage.fromimagebank img {
-    width: 100%;
+    position: relative;
+    width: 890px;
+    left: -160px;
 }
 
 .App-title .rubrikibild {
     position: absolute;
-    bottom: 20px;
+    top: 57mm;
+    width: 50%;
     font-size: 40px;
     color: #fff;
-    padding: 0px 30px 0px 30px;
+    padding: 30px;
     font-weight: 700;
     line-height: 105%;
+    height: 124mm;
     z-index: 1000;
 }
 
-.content-top {
-    height: 160mm;
-    position: relative;
+.content-left {
+    flex:1
 }
 
-.content-bottom {
-    height: 137mm;
-}
-  
-
-.rubrikitext {
-    width: 100%;
-    top: 150px;
-    left: 0px;
-    padding: 30px 30px 0px 30px;
-    font-weight: 700;
-    line-height: 105%;
-    font-size: 40px;
-    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+.content-right {
+    flex:1;
+    overflow: hidden;
+    height: 210mm;
+    background-size: 890px;
+    background-position: -160px 0px
 }
   
 .App-intro {
@@ -178,22 +172,33 @@ h6 {
 }
 
 .App-text {
-    height: 107mm;
+    height: 180mm;
 }
-  
+
+.rubrikitext {
+    width: 100%;
+    top: 240px;
+    left: 0px;
+    padding: 40px 40px 0px 40px;
+    font-weight: 700;
+    line-height: 105%;
+    font-size: 40px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+
 .App-content {
     font-weight:500;
     font-size: 24px;
     font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
 }
 
-.App-content div:first-child { 
-    padding-top: 20px;
+.App-content>div:first-child { 
+    padding-top: 40px;
 }
 
 .content-padding {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
 }
 
 .content-header {
@@ -201,7 +206,7 @@ h6 {
 }
 
 #ingress {
-    font-size: 24px;
+    font-size: 40px;
 }
 
 .smartsign-node #ingress {
@@ -212,14 +217,68 @@ h6 {
     font-weight: 700;
 }
 
+.App-footer {
+    margin:5px 5px;
+    font-size: 20px;
+}
+
+.smartsign-node .App-footer {
+    position: relative;
+    margin: 0;
+    display: flex;
+    height: 26mm;
+}
+
+.App-footer>span {
+    position: relative;
+    bottom: 6px;
+    font-size: 40px;
+}
+
+.footerleft {
+    position: relative;
+    font-size: 26px;
+    font-weight: 700;
+    display: flex;
+    align-self: flex-end;
+    justify-content: flex-end;
+    line-height: 1;
+    flex: 2;
+    top: -2mm;
+}
+
+.footercenter {
+    text-align: center;
+    flex: 1;
+    max-width: 26mm
+}
+
+.footerright {
+    position: relative;
+    font-size: 40px;
+    font-weight: 700;
+    display: flex;
+    align-self: flex-end;
+    justify-content: flex-end;
+    line-height: 1;
+    flex: 2;
+}
+
+.qrcode {
+    display:block;
+    position: relative;
+    margin: 2mm;
+    width: 22mm;
+}
+
 .linepattern {
     display: none;
 }
 
 .linepattern-top-left {
     display: block;
-    width: 200px;
-    height: 300px;
+    width: 180px;
+    height: 270px;
     overflow: hidden;
     position: absolute;
     top: 0px;
@@ -229,12 +288,23 @@ h6 {
 
 .linepattern-bottom-right {
     display: block;
-    width: 130px;
-    height: 170px;
+    width: 200px;
+    height: 300px;
     overflow: hidden;
     position: absolute;
     bottom: 0px;
     right: 0px;
+    transform: rotate(0deg);
+}
+
+.linepattern-left-bottom-right {
+    display: block;
+    width: 150px;
+    height: 200px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    right: 561.5px;
     transform: rotate(0deg);
 }
 
@@ -266,33 +336,32 @@ h6 {
     transform: rotate(270deg) scale(1.0) translate(200px, -300px);
 }
 
-.linepattern-bottom-right .linepattern-one {
-    width: 300px;
-    height: 300px;
+.linepattern-left-bottom-right .linepattern-one {
+    width: 340px;
+    height: 340px;
     transform-origin: center center;
-    transform: rotate(0deg) scale(1.0) translate(-170px, -130px);
+    transform: rotate(0deg) scale(1.0) translate(-190px, -140px);
 }
 
-.linepattern-bottom-right .linepattern-two {
-    width: 300px;
-    height: 300px;
+.linepattern-left-bottom-right .linepattern-two {
+    width: 340px;
+    height: 340px;
     transform-origin: center center;
-    transform: rotate(90deg) scale(1.0) translate(-130px, 170px);
-
+    transform: rotate(90deg) scale(1.0) translate(-140px, 190px);
 }
 
-.linepattern-bottom-right .linepattern-three {
-    width: 300px;
-    height: 300px;
+.linepattern-left-bottom-right .linepattern-three {
+    width: 340px;
+    height: 340px;
     transform-origin: center center;
-    transform: rotate(180deg) scale(1.0) translate(170px, 130px);
+    transform: rotate(180deg) scale(1.0) translate(190px, 140px);
 }
 
-.linepattern-bottom-right .linepattern-four {
-    width: 300px;
-    height: 300px;
+.linepattern-left-bottom-right .linepattern-four {
+    width: 340px;
+    height: 340px;
     transform-origin: center center;
-    transform: rotate(270deg) scale(1.0) translate(130px, -170px);
+    transform: rotate(270deg) scale(1.0) translate(140px, -190px);
 }
 
 strong {
@@ -311,60 +380,6 @@ strong {
 .gauge-header-large {
     font-size: 46px;
     font-weight: bold;
-}
-
-.App-footer {
-    margin:5px 5px;
-    font-size: 20px;
-}
-
-.smartsign-node .App-footer {
-    position: relative;
-    margin: 0;
-    display: flex;
-    height: 26mm;
-}
-
-.App-footer>span {
-    position: relative;
-    bottom: 6px;
-    font-size: 14px;
-}
-
-.footerleft {
-    position: relative;
-    font-size: 24px;
-    font-weight: 700;
-    display: flex;
-    align-self: flex-end;
-    justify-content: flex-end;
-    line-height: 1;
-    flex: 2;
-    top: -2mm;
-}
-
-.footercenter {
-    text-align: center;
-    flex: 1;
-    max-width: 26mm
-}
-
-.footerright {
-    position: relative;
-    font-size: 24px;
-    font-weight: 700;
-    display: flex;
-    align-self: flex-end;
-    justify-content: flex-end;
-    line-height: 1;
-    flex: 2;
-}
-
-.qrcode {
-    display:block;
-    position: relative;
-    margin: 2mm;
-    width: 22mm;
 }
 
 .float {
