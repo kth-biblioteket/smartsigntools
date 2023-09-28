@@ -1,0 +1,368 @@
+/* Chromium färger PDF */
+html {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+  
+h1 {
+    font-size: 88px;
+}
+  
+h2 {
+    font-size: 60px;
+}
+
+h3 {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 32px;
+    font-weight: bold;
+}
+  
+h6 {
+   font-size: 32px; 
+}
+
+.bottom-padding {
+    padding-bottom: 40px;
+}
+
+.top-padding {
+    padding-top: 40px;
+}
+
+.App {
+    text-align: left;
+    color: #000;
+    /* smartsignskärmarnas upplösning */
+    height: 1080px;
+    width: 1920px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+    overflow: hidden;
+    position: relative;
+}
+
+.App-padding-top {
+    padding-top:60px;
+}
+
+.texttop {
+    position: relative;
+    top: 0px;
+    z-index: 1000;
+    text-align: center;
+    width: 100%;
+    /* height: 120px; */
+    display: flex;
+    padding: 40px 40px 0px 40px;
+}
+
+.texttop svg {
+    width: 100px;
+}
+
+.texttop .cls-1 {
+    fill: #004791;
+}
+
+.imagetop {
+    position: absolute;
+    top: 0px;
+    z-index: 1000;
+    text-align: center;
+    width: 50%;
+    height: 244px;
+}
+
+.imagetop svg {
+    width: 160px;
+}
+
+.imagetop .cls-1 {
+    fill: #fff;
+}
+
+.kthname {
+    position: relative;
+    top: 0px;
+    z-index: 1000;
+    text-align: right;
+    width: 100%;
+    color: #fff;
+    padding: 20px 40px 0px 0px;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.App-header {
+    overflow: hidden;
+}
+
+.App-header .kthlogo {
+    float: left
+}
+
+.App-header .kthlogo img{
+    width:150px
+}
+
+.headertext {
+    float:right;
+    padding-top:0px;
+}
+  
+.App-title {
+    font-size: 1.5em;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.App-title .titleimage {
+    position: relative;
+    max-height: 1080px;
+    overflow: hidden;
+}
+
+.App-title .titleimage.frompolopoly img {
+    position: relative;
+    width: 1620px;
+    left: -340px;
+}
+
+.App-title .titleimage.fromimagebank img {
+    position: relative;
+    width: 1200px;
+    left: -120px;
+}
+
+
+.App-title .rubrikibild {
+    position: absolute;
+    top: 245px;
+    width: 50%;
+    font-size: 60px;
+    color: #fff;
+    padding: 40px;
+    font-weight: 700;
+    line-height: 105%;
+    height: 656px;
+    z-index: 1000;
+}
+
+.content-left {
+    flex:1
+}
+
+.content-right {
+    flex:1;
+    overflow: hidden;
+    height: 1080px;
+    background-size: 1200px;
+    background-position: -110px 0px;
+}
+  
+.App-intro {
+    font-size: large;
+}
+
+.App-text {
+    height: 748px;
+}
+
+.rubrikitext {
+    width: 100%;
+    top: 240px;
+    left: 0px;
+    padding: 40px 40px 0px 40px;
+    font-weight: 700;
+    line-height: 105%;
+    font-size: 60px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+  
+.App-content {
+    font-weight:500;
+    font-size: 40px;
+    font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
+}
+
+.App-content>div:first-child { 
+    padding-top: 40px;
+}
+
+.content-padding {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.content-header {
+    font-size: 40px;
+}
+
+#ingress {
+    font-size: 40px;
+}
+
+.smartsign-node #ingress {
+    font-size: 36px;
+}
+
+#time, #location, #language, #lecturer, #typeofevent {
+    font-weight: 700;
+}
+
+.App-footer {
+    margin:5px 5px;
+    font-size: 20px;
+}
+
+.smartsign-node .App-footer {
+    position: relative;
+    margin: 0;
+    display: flex;
+    height: 170px;
+}
+
+.App-footer>span {
+    position: relative;
+    bottom: 6px;
+    font-size: 40px;
+}
+
+.footerleft {
+    position: relative;
+    font-size: 40px;
+    font-weight: 700;
+    display: flex;
+    align-self: flex-end;
+    justify-content: flex-end;
+    line-height: 1;
+    flex: 2;
+    top: -10px;
+}
+
+.footercenter {
+    text-align: center;
+    flex: 1;
+    max-width: 170px
+}
+
+.footerright {
+    position: relative;
+    font-size: 40px;
+    font-weight: 700;
+    display: flex;
+    align-self: flex-end;
+    justify-content: flex-end;
+    line-height: 1;
+    flex: 2;
+}
+
+.qrcode {
+    display:block;
+    position: relative;
+    width: 150px;
+    margin: 10px
+}
+
+.linepattern {
+    display: none;
+}
+
+.linepattern-top-left {
+    display: block;
+    width: 300px;
+    height: 450px;
+    overflow: hidden;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: rotate(180deg);
+}
+
+.linepattern-bottom-right {
+    display: block;
+    width: 300px;
+    height: 450px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    transform: rotate(0deg);
+}
+
+.linepattern-left-bottom-right {
+    display: block;
+    width: 300px;
+    height: 450px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0px;
+    right: 960px;
+    transform: rotate(0deg);
+}
+
+.linepattern-one {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(0deg) scale(1.0) translate(-500px, -350px);
+}
+
+.linepattern-two {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(90deg) scale(1.0) translate(-350px, 500px);
+}
+
+.linepattern-three {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(180deg) scale(1.0) translate(500px, 350px);
+}
+
+.linepattern-four {
+    width: 800px;
+    height: 800px;
+    transform-origin: center center;
+    transform: rotate(270deg) scale(1.0) translate(350px, -500px);
+}
+
+strong {
+    font-weight: 700;
+}
+
+.gauge-header-small {
+    font-size: 30px;
+}
+
+.gauge-header-medium {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.gauge-header-large {
+    font-size: 46px;
+    font-weight: bold;
+}
+
+.float {
+    overflow: hidden;
+}

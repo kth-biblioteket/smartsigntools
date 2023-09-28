@@ -1140,8 +1140,12 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                     color: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
                 }
                 
-                .kthlogo .cls-1 {
+                .imagetop .kthlogo .cls-1 {
                     fill: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
+                }
+
+                .texttop .kthlogo .cls-1 {
+                    fill: #${eventtextcolor[0] ? eventtextcolor[0].code : '004791'};
                 }
 
                 .cls-2 {
@@ -1380,6 +1384,7 @@ async function generatePublishedPages(type, req) {
 async function generatePublishedPageAsImage(req, res) {
     try {
         let published_as_image = req.query.published_as_image || req.body.published_as_image
+        console.log(published_as_image)
         await eventModel.updateEventPublishAsImage(req.params.id, published_as_image)
         if(published_as_image == 0) {
             //remove image file
@@ -1521,7 +1526,7 @@ async function generateQrCodeGeneral(id) {
     }
 }
 
-async function generatePdfPage(id, format='A4', orientation='portrait') {
+async function generatePdfPage(id, format='A4', orientation='portrait', template_ver='v1') {
     try {
         let calendarpagehtml = "";
         //Ta bort nuvarande pdf
@@ -1536,19 +1541,19 @@ async function generatePdfPage(id, format='A4', orientation='portrait') {
         let pdfpath
         if(format=='A4') {
             if(orientation == 'portrait'){
-                template = 'templates/smartsign_template_pdf_A4.html'
-                pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
+                template = `templates/smartsign_template_pdf_A4.html`
+                pdfpath = `publishedevents/pdf/smartsign_A4.pdf`
             } else {
-                template = 'templates/smartsign_template_pdf_landscape_A4.html'
-                pdfpath = 'publishedevents/pdf/smartsign_A4_landscape.pdf'
+                template = `templates/smartsign_template_pdf_landscape_A4_${template_ver}.html`
+                pdfpath = `publishedevents/pdf/smartsign_A4_landscape.pdf`
             }
         } else {
             if(orientation == 'portrait'){
-                template = 'templates/smartsign_template_pdf.html'
-                pdfpath = 'publishedevents/pdf/smartsign.pdf'
+                template = `templates/smartsign_template_pdf.html`
+                pdfpath = `publishedevents/pdf/smartsign.pdf`
             } else {
-                template = 'templates/smartsign_template_pdf_landscape.html'
-                pdfpath = 'publishedevents/pdf/smartsign_landscape.pdf'
+                template = `templates/smartsign_template_pdf_landscape_${template_ver}.html`
+                pdfpath = `publishedevents/pdf/smartsign_landscape.pdf`
             }
         }
         let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), format, template, orientation);
@@ -1650,7 +1655,7 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
             deviceScaleFactor: 1,
         });
 
-        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0', timeout: 90000 })
 
         await page.screenshot({ path: imagefullpath, quality: parseInt(100) });
 
