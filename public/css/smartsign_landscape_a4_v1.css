@@ -78,7 +78,7 @@ h6 {
     text-align: center;
     width: 100%;
     display: flex;
-    padding: 40px 40px 0px 40px;
+    padding: 20px 40px 0px 40px;
 }
 
 .texttop svg {
@@ -113,7 +113,7 @@ h6 {
     text-align: right;
     width: 100%;
     color: #fff;
-    padding: 20px 40px 0px 0px;
+    padding: 20px 20px 0px 0px;
     font-size: 30px;
     font-weight: 700;
 }
