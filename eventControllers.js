@@ -1144,6 +1144,10 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                     fill: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
                 }
 
+                .content-top .kthlogo .cls-1 {
+                    fill: #${eventlogocolor[0] ? eventlogocolor[0].code : 'ffffff'};
+                }
+
                 .texttop .kthlogo .cls-1 {
                     fill: #${eventtextcolor[0] ? eventtextcolor[0].code : '004791'};
                 }
