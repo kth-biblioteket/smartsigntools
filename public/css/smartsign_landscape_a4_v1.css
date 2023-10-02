@@ -67,6 +67,7 @@ h6 {
     text-align: center;
     width: 100%;
     display: flex;
+    /* kronbredd = 34px för 75px logo */
     padding: 34px 34px 0px 34px;
     height: 32mm;
 }

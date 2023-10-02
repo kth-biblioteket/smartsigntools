@@ -62,7 +62,8 @@ h6 {
 
 .kthlogo {
     position: absolute;
-    top: 50px;
+    /* kronbredd = 73px för 160px logo */
+    top: 73px;
     z-index: 1000;
     text-align: center;
     width: 100%;  
