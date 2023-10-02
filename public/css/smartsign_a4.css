@@ -67,7 +67,7 @@ h6 {
 
 .kthlogo {
     position: absolute;
-    top: 25px;
+    top: 55px;
     z-index: 1000;
     text-align: center;
     width: 100%;  
@@ -141,7 +141,7 @@ h6 {
     width: 100%;
 }
 
-.App-title .rubrikibild {
+.content-top .rubrik {
     position: absolute;
     bottom: 20px;
     font-size: 40px;
@@ -162,7 +162,7 @@ h6 {
 }
   
 
-.rubrikitext {
+.content-bottom .rubrik {
     width: 100%;
     top: 150px;
     left: 0px;
@@ -178,7 +178,7 @@ h6 {
 }
 
 .App-text {
-    height: 107mm;
+    height: 110mm;
 }
   
 .App-content {

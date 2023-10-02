@@ -1202,12 +1202,16 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 
                 if (row.events_id !== null && row.type == 'title') {
                     //Ska rubriken vara på bilden eller i texten
-                    if (eventtimageheader[0]) { 
-                        template('.rubrikibild').text(item[0].title);
+                    //För liggande format ska texten alltid vara i texten.
+                    if(orientation == 'landscape') { 
+                        template('.content-left .rubrik').text(item[0].title);
                     } else {
-                        template('.rubrikitext').text(item[0].title);
+                        if (eventtimageheader[0]) { 
+                            template('.content-top .rubrik').text(item[0].title);
+                        } else {
+                            template('.content-bottom .rubrik').text(item[0].title);
+                        }
                     }
-                    
                 }
 
                 if (row.events_id !== null && row.type == 'time') {

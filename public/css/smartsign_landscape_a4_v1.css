@@ -56,19 +56,8 @@ h6 {
     position: relative;
 }
 
-/*
-.App-padding {
-    padding: 60px 54px 0px 54px;
-}
-*/
-
 .App-padding-top {
     padding-top:60px;
-}
-  
-.App-logo {
-    animation: App-logo-spin infinite 20s linear;
-    height: 80px;
 }
 
 .texttop {
@@ -78,7 +67,12 @@ h6 {
     text-align: center;
     width: 100%;
     display: flex;
-    padding: 20px 40px 0px 40px;
+    padding: 34px 34px 0px 34px;
+    height: 32mm;
+}
+
+.texttop .kthlogo {
+    z-index: 1000;
 }
 
 .texttop svg {
@@ -160,7 +154,7 @@ h6 {
     left: -160px;
 }
 
-.App-title .rubrikibild {
+.content-right .rubrik {
     position: absolute;
     top: 57mm;
     width: 50%;
@@ -174,7 +168,7 @@ h6 {
 }
 
 .content-left {
-    flex:1
+    flex:1;
 }
 
 .content-right {
@@ -190,14 +184,15 @@ h6 {
 }
 
 .App-text {
+    padding: 0px 34px 0px 34px;
     height: 150mm;
+    overflow: hidden;
 }
 
-.rubrikitext {
+.content-left .rubrik {
     width: 100%;
     top: 240px;
     left: 0px;
-    padding: 40px 40px 0px 40px;
     font-weight: 700;
     line-height: 105%;
     font-size: 40px;
@@ -210,8 +205,12 @@ h6 {
     font-family: "Figtree",Arial,"Helvetica Neue",helvetica,sans-serif;
 }
 
+.App-text>div:first-child { 
+    padding-top: 34px;
+}
+
 .App-content>div:first-child { 
-    padding-top: 40px;
+    padding-top: 34px;
 }
 
 .content-padding {

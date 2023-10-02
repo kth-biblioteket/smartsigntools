@@ -134,7 +134,7 @@ h6 {
     width: 100%;
 }
 
-.App-title .rubrikibild {
+.content-top .rubrik {
     position: absolute;
     bottom: 20px;
     font-size: 80px;
@@ -155,7 +155,7 @@ h6 {
 }
 
 
-.rubrikitext {
+.content-bottom .rubrik {
     width: 100%;
     top: 240px;
     left: 0px;
