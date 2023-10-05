@@ -849,7 +849,6 @@ async function deleteEventLinePatternColor(event_id) {
     }
 }
 
-
 async function readImages() {
     try {
         result = await eventModel.readImages()
@@ -1164,15 +1163,22 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
         let feed
 
         let qrcodetext = ''
+
+        let typeofeventtext = '';
+        let typeofeventPrompttext = '';
         if (event.lang == 'en') {
             feed = await parser.parseURL(process.env.RSSFEED);
             qrcodetext = 'Read more'
             template('.kthname').text("KTH Library");
+            typeofeventPrompttext = 'Type of event'
+            typeofeventtext = 'Missing!';
         }
         if (event.lang == 'sv') {
             feed = await parser.parseURL(process.env.RSSFEED_SV);
             qrcodetext = 'Läs mer'
             template('.kthname').text("KTH Biblioteket");
+            typeofeventPrompttext = 'Typ'
+            typeofeventtext = 'Saknas!';
         }
 
         let item = feed.items.filter(item => '1.' + item.guid.split('-1.')[1] == event.contentid)
@@ -1253,8 +1259,11 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 }
 
                 if (row.events_id !== null && row.type == 'typeofevent') {
-                    if (cheeriodescription(".subject").html().length) {
-                        template('#App-content').append('<div id="typeofevent">' + cheeriodescription(".subject").html() + '</div>');
+                    var subjectElement = cheeriodescription(".subject");
+                    if (subjectElement.length) {
+                        template('#App-content').append('<div id="typeofevent">' + subjectElement.html() + '</div>');
+                    } else {
+                        template('#App-content').append('<div id="typeofevent"><strong>' + typeofeventPrompttext + ':</strong> ' + typeofeventtext + '</div>');
                     }
                 }
 
@@ -1493,7 +1502,8 @@ async function generateQrCode(id, eventbgcolor) {
 
 async function generateQrCodeGeneral(id) {
     try {
-        const file = "kthlogo.jpg"
+        //const file = "kthlogo.jpg"
+        const file = "kthlogo_marinbla_qr.svg"
         //const logo = fs.readFileSync(path.join(__dirname, "public/images/" + file))
         const logo = await sharp(path.join(__dirname, "public/images/" + file))
             .extend({
