@@ -1628,11 +1628,44 @@ async function generateDailyWiFiPage(format='A4', lang ='en') {
             html_template = 'templates/smartsign_template_general_A4.html';
             fontsize = '16px'
         }
+
         const files = fs.readFileSync(path.join(__dirname, html_template));
-        const template = cheerio.load(files.toString(), null, false);
+        const template = cheerio.load(files.toString(), null, true);
         
-        template('.headertext h4').text("KTH Library");
-        template('body').css('overflow', 'hidden');
+        let imageoverlaycss = `
+            .App-title .titleimage:before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 50%;
+                background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                opacity: 1;
+                z-index:999;
+            }
+
+            .App-title .titleimage:after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50%;
+                background: linear-gradient(to top, rgba(0, 0, 0,0.5), rgba(0, 0, 0, 0) 100%, transparent 0%);
+                opacity: 1;
+                z-index:999;
+            }`
+        if (lang == 'en') {            
+            template('.kthname').text("KTH Library");
+            typeofeventPrompttext = 'Type of event'
+            typeofeventtext = 'Missing!';
+        }
+        if (lang == 'sv') {
+            template('.kthname').text("KTH Biblioteket");
+            typeofeventPrompttext = 'Typ'
+            typeofeventtext = 'Saknas!';
+        }
         try {
             //Hämta daily code
             let wificode = await eventModel.readDailyWiFiCode()
@@ -1644,7 +1677,7 @@ async function generateDailyWiFiPage(format='A4', lang ='en') {
             
             let rubriktext_en=`Today's wifi password`
             let description_en=`In case you are not a student or an employee at KTH you can use the library's open Wi-Fi. This provides access to the internet, but not to the library's electronic resources`
-            template('.rubrikitext').html(`<div>${rubriktext}</div>
+            template('.rubrik').html(`<div>${rubriktext}</div>
                                             <div>${rubriktext_en}</div>`);
             template('.App-content').html(`<div><b>Wifi:</b> KTHOPEN</div>
                                             <div><b>User name:</b> kthb-dayguest</div>
@@ -1653,6 +1686,10 @@ async function generateDailyWiFiPage(format='A4', lang ='en') {
                                                 <p>${description}</p>
                                                 <p>${description_en}</p>
                                             </div>`);
+            template('head').append(
+                `<style>
+                    ${imageoverlaycss}
+                </style>`)
             return template.root().html()
         } catch (error) {
             console.log(error.message)
