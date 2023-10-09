@@ -379,8 +379,12 @@ apiRoutes.post("/calendar/event/:id", VerifyToken, eventController.generatePubli
 
 apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
     try {
+        let format = req.query.format || "string"
         if (req.params.id) {
-            let qrcode = await eventController.generateQrCode(req.params.id);
+            let qrcode = await eventController.generateQrCode(req.params.id,'',format);
+            if(format == "image") {
+                res.setHeader('Content-Type', 'image/jpeg');
+            }
             res.send(qrcode)
             
         }
@@ -460,10 +464,10 @@ apiRoutes.get("/calendar/images", async function (req, res) {
                         res.write(`</div>
                                     <div style="flex:1;display:flex;flex-direction:column;justify-content: flex-end;">
                                         <div style="display:flex;justify-content: flex-end;">
-                                            <button id="updateImage_${image.id}" onclick="updateImage('${image.id}', 'imageName_${image.id}');" type="button" class="btn btn-primary" style="margin-right:10px">
+                                            <button id="updateImage_${image.id}" onclick="updateImage('${image.id}', 'imageName_${image.id}');" type="button" class="btn btn-success" style="margin-right:10px">
                                                 Spara
                                             </button>
-                                            <button id="deleteImage_${image.id}" onclick="deleteImage('${image.id}');" type="button" class="btn btn-primary">
+                                            <button id="deleteImage_${image.id}" onclick="deleteImage('${image.id}');" type="button" class="btn btn-danger">
                                                 Ta bort
                                             </button>
                                         </div>

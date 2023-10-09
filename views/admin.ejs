@@ -25,6 +25,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +35,7 @@
         body {
             margin: 0 auto;
             font-family: "Figtree", Arial, "Helvetica Neue", helvetica, sans-serif;
+            font-weight: 300;
             padding: 0em 20px 20px 20px;
         }
 
@@ -41,6 +43,10 @@
             height: 6px;
             background-image: linear-gradient(to left, #005ea4, #5c98c4);
             margin-top: 10px;
+        }
+
+        strong {
+            font-weight: 700;
         }
 
         a {
@@ -86,6 +92,13 @@
             margin: 0 30px 0 0;
         }
 
+        .topbuttons {
+            width:100%;
+            display:flex;
+            justify-content:flex-end;
+            gap: 10px;
+        }
+
         .wrap {
             width: 380px;
             height: 674px;
@@ -119,15 +132,39 @@
             padding: 10px;
         }
 
+        .eventInfo p {
+            display: inline;
+            padding-right:5px;
+        }
+
         #content {
             z-index: 1;
-            padding: 10px;
+            padding: 0px;
             display: flex;
+        }
+
+        .eventcard {
+            margin-bottom: 10px;
+        }
+
+        .kth-sand-bg {
+            background-color: #EBE5E0;
+        }
+
+        .eventcard-body {
+            display:flex;
+            flex-direction:row;
+            padding-bottom:40px;
+            gap: 10px;
         }
 
         h2 {
             padding: 0;
             margin: 0;
+        }
+
+        h6 {
+            font-weight: 400;
         }
 
         .dropdown .form-select::after {
@@ -162,6 +199,24 @@
             width: 100px;
             height: auto;
         }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #004791;
+            border-color: #004791;
+        }
+
+        .btn-success {
+            color: #fff;
+            background-color: #4DA060;
+            border-color: #4DA060;
+        }
+
+        .btn-danger {
+            color: #fff;
+            background-color: #E86A58;
+            border-color: #E86A58;
+        }
     </style>
 </head>
 
@@ -175,30 +230,30 @@
         <% url.searchParams.set('page', admindata.pagination.page) %>
     <% } %>
     <div>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white nonsticky-top">
             <a class="navbar-brand" href="#">
                 <img alt="" src="/smartsigntools/images/kthlogo_marinbla.svg" class="kthlogo d-inline-block align-top marinbla"> KTH Bibliotekets Kalenderverktyg
             </a>
             <button aria-controls="basic-navbar-nav" type="button" aria-label="Toggle navigation"
                 class="navbar-toggler collapsed"><span class="navbar-toggler-icon"></span></button>
             <div class="navbar-collapse collapse" id="basic-navbar-nav">
-                <div class="navbar-nav">
+                <!--div class="navbar-nav">
                     <div class="nav-item">
                         <div style="flex:1;font-size:1.25rem">Kalenderhändelser</div>
                     </div>
-                </div>
+                </div-->
 
-                <form style="flex:2;display:flex;justify-content:flex-end">
-                    <button style="margin-right:10px" type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
+                <form class="topbuttons">
+                    <button type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
                         Hantera bilder
                     </button>
-                    <button style="margin-right:10px" type="button" onclick="getQrtracking()" class="btn btn-primary" data-bs-toggle="modal"
+                    <button type="button" onclick="getQrtracking()" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#qrcodetrackingModal">
                         Statistik QR-Scans
                     </button>
                     
-                    <button style="margin-right:10px" type="button" onclick="getQrCodesGeneral()" class="btn btn-primary" data-bs-toggle="modal"
+                    <button type="button" onclick="getQrCodesGeneral()" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#qrcodeGeneralModal">
                         QR-Koder
                     </button>
@@ -230,7 +285,7 @@
             </ul>
         </nav>
         <div id="content">
-            <div style="flex:1;padding-right:10px">
+            <div>
                 <% let published=false %>
                 <% let published_as_image=false %>
                 <% let eventimageheader=false %>
@@ -255,198 +310,244 @@
                     <%if(event_.eventimageoverlay[0]) { eventimageoverlay=true } else { eventimageoverlay=false } %>
                     <%if(event_.eventimageoverlayopacity[0]) { eventimageoverlayopacity=event_.eventimageoverlayopacity[0].opacity } else { eventimageoverlayopacity=0.5 } %>
                     <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
-                    <div class="card" style="margin-bottom:10px">
-                        <div class="card-body" style="display:flex;flex-direction:row;padding-bottom:40px">
-                            <div style="flex:3;padding-right:10px">
-                                <a href="<%= event.guid%>">
-                                    <%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %>
-                                </a>
-                                <div>
-                                    <%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
+                    <div class="eventcard card">
+                        <div class="card-header text-black kth-sand-bg"><h5>Kalenderevent - <a target="_blank" href="<%= event.guid%>"><%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %></h5></a><%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %></div>
+                        <div class="eventcard-body card-body">
+                            <div style="flex:2">
+                                <!--div class="card">
+                                    <h6 class="card-header text-black" style="background-color: #DEF0FF;">RSS-feed(polopoly)</h6>
+                                    <div class="card-body">
+                                        <a target="_blank" href="<%= event.guid%>">
+                                            <%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %>
+                                        </a>
+                                        <div>
+                                            <%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
+                                        </div>
+                                    </div>
+                                </div-->
+                                <div style="display:flex;gap: 10px; flex-direction: column;padding-top:0px">
+                                    <div class="card">
+                                        <h6 class="card-header" style="background-color: #C7EBBA;">Ladda ner affisch för skärm/powerpoint <i class="bi bi-display"></i></h6>
+                                        <div class="card-body">
+                                            <p class="card-text">Använd nedladdade pdf:er för visning på skärm eller i en powerpoint t ex</p>
+                                            <div>
+                                                <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'portrait');" type="button"
+                                                    class="btn btn-primary" style="margin:10px 0px">
+                                                    <i class="bi bi-download"></i> PDF Stående
+                                                </button>
+                                                <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'landscape');" type="button"
+                                                    class="btn btn-primary" style="margin:10px 0px">
+                                                    <i class="bi bi-download"></i> PDF Liggande
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <h6 class="card-header" style="background-color: #B2E0E0;">Ladda ner affisch för utskrifter(A4/A3) <i class="bi bi-printer"></i></h6>
+                                        <div class="card-body">
+                                            <p class="card-text">Använd nedladdade pdf:er för att skriva ut i A4- eller A3-format</p>
+                                            <div>
+                                                <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'portrait');" type="button"
+                                                    class="btn btn-primary" style="margin:10px 0px">
+                                                    <i class="bi bi-download"></i> PDF Stående
+                                                </button>
+                                                <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'landscape');" type="button"
+                                                    class="btn btn-primary" style="margin:10px 0px">
+                                                    <i class="bi bi-download"></i> PDF Liggande
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <a href="#qrcode<%=event.id%>" class="card-header text-black" style="background-color: #E6E6E6;" id="headingExampleTwo" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseIndicatorChevron">
+                                            QR-Kod <i class="bi bi-qr-code"></i>
+                                        </a>
+                                        <div id="qrcode<%=event.id%>" class="collapse show" aria-labelledby="headingExampleTwo">
+                                            <div class="card-body">
+                                              <!--div style="display:flex;padding-top:10px">
+                                                <button id="qrcodebtn_<%=event.id%>"
+                                                    onclick="getQrCode('<%=event.id%>', 'qrcodeimage_<%=event.id%>', this);"
+                                                    type="button" class="btn btn-primary" style="margin-right:10px">
+                                                    Visa QR Kod
+                                                </button>
+                                                </div-->
+                                                <div style="padding-bottom:10px" id="qrcodeimage_<%=event.id%>"><img style="width:200px;height:200px" src="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image"></div>
+                                                <a href="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image" download="downloaded-image.jpg">
+                                                    <button class="btn btn-primary" style="margin-left:5px"><i class="bi bi-download"></i> Ladda ner</button>
+                                                </a>
+                                            </div>
+                                          </div>
+                                    </div>
                                 </div>
-                                <div style="display:flex;padding-top:10px">
-                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'portrait');" type="button"
-                                        class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF skärm(stående)
-                                    </button>
-                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'portrait');" type="button"
-                                        class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF A4(stående)
-                                    </button>
-                                </div>
-                                <div style="display:flex;padding-top:10px">
-                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'landscape');" type="button"
-                                        class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF skärm/powerpoint (liggande)
-                                    </button>
-                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'landscape');" type="button"
-                                        class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF A4(liggande)
-                                    </button>
-                                </div>
-                                <div style="display:flex;padding-top:10px">
-                                    <button id="qrcodebtn_<%=event.id%>"
-                                        onclick="getQrCode('<%=event.id%>', 'qrcodeimage_<%=event.id%>', this);"
-                                        type="button" class="btn btn-primary" style="margin-right:10px">
-                                        QR Kod
-                                    </button>
-                                </div>
-                                <div style="padding:10px" id="qrcodeimage_<%=event.id%>"></div>
                             </div>
-                            <div style="flex:3;display:flex;flex-direction:row">
-                                <div style="flex:1;display:flex;flex-direction:column;align-items: center;">
-                                    <div class="wrap">
-                                        <iframe id="frame_<%=frameindex%>" class="frame"
-                                            src="/smartsigntools/api/v1/calendar/event/<%=event.id%>"></iframe>
+                            <div style="flex:1">
+                                <div class="card">
+                                    <h6 class="card-header" style="background-color: #FFCCC4;">Affisch(smartsign)</h6>
+                                    <div class="card-body" style="flex:1;display:flex;flex-direction:column;align-items: center;">
+                                        <div class="wrap">
+                                            <iframe id="frame_<%=frameindex%>" class="frame"
+                                                src="/smartsigntools/api/v1/calendar/event/<%=event.id%>"></iframe>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div style="flex:3">
-                                <form>
-                                    <div style="display:flex;justify-content: stretch;">
-                                        <div style="flex:1;padding:10px">
-                                            <div class="form-check">
-                                                <input class="form-check-input languagechoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-lang="en" <%-event.lang == "en" ? "checked" : "" %> type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
-                                                <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
-                                                    Engelska
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input languagechoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-lang="sv" <%-event.lang == "sv" ? "checked" : "" %> type="radio" name="flexRadio<%=frameindex%>" id="flexRadioSwedish<%=frameindex%>">
-                                                <label class="form-check-label" for="flexRadioSwedish<%=frameindex%>">
-                                                    Svenska
-                                                </label>
-                                            </div>
+                                <div class="card">
+                                    <h6 class="card-header text-black" style="background-color: #FFF0B0;">Inställningar för affisch</h6>
+                                    <form>
+                                        <div style="display:flex;justify-content: stretch;">
+                                            <div style="flex:1;padding:10px">
+                                                <div class="form-check">
+                                                    <input class="form-check-input languagechoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-lang="en" <%-event.lang == "en" ? "checked" : "" %> type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
+                                                        Engelska
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input languagechoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-lang="sv" <%-event.lang == "sv" ? "checked" : "" %> type="radio" name="flexRadio<%=frameindex%>" id="flexRadioSwedish<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexRadioSwedish<%=frameindex%>">
+                                                        Svenska
+                                                    </label>
+                                                </div>
 
-                                            <div style="padding-top:10px">
-                                                Fält som ska visas (<span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span> - Välj placering genom att dra fälten upp eller ner i listan)
+                                                <div style="padding-top:10px">
+                                                    <div>Fält som ska visas</div><div style="font-size: 12px;">(<span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span> - Välj placering genom att dra fälten upp eller ner i listan)</div>
+                                                </div>
+                                                <ul id="sortable<%=event.id%>" class="sortable-list list-group">
+                                                    <%eventfields.forEach(field=> { %>
+                                                        
+                                                        <%if(field.sortable==1){%>
+                                                            <li class="list-group-item ui-state-default sortable-item" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>">
+                                                                <span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
+                                                            <%} else {%>
+                                                            <li class="list-group-item ui-state-default non-sortable-item">
+                                                            <%}%>
+                                                                <input class="fieldchoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
+                                                                <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
+                                                            </li>
+                                                    <%}) %>
+                                                </ul>
+                                                
+                                                <div style="padding-top:10px">
+                                                    Bild från bildbank
+                                                </div>
+                                                <select class="form-select imageselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="imagebankselect<%=event.id%>" title="Välj bild">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedimage='' %>
+                                                    <% imagebank.forEach(image => {%>
+                                                        <% if (eventimage[0]) {%>
+                                                            <% if (eventimage[0].id == image.id) {%>
+                                                                <% selectedimage = 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedimage = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedimage%> value="<%=image.id%>"><%=image.name%></option>
+                                                    <%})%>
+                                                </select>
                                             </div>
-                                            <ul id="sortable<%=event.id%>" class="sortable-list list-group">
-                                                <%eventfields.forEach(field=> { %>
-                                                    
-                                                    <%if(field.sortable==1){%>
-                                                        <li class="list-group-item ui-state-default sortable-item" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>">
-                                                            <span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
-                                                        <%} else {%>
-                                                        <li class="list-group-item ui-state-default non-sortable-item">
-                                                        <%}%>
-                                                            <input class="fieldchoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
-                                                            <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
-                                                        </li>
-                                                <%}) %>
-                                            </ul>
-                                            
-                                            <div style="padding-top:10px">
-                                                Bild från bildbank
-                                            </div>
-                                            <select class="form-select imageselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="imagebankselect<%=event.id%>" title="Välj bild">
-                                                <option value="0">Välj...</option>
-                                                <% let selectedimage='' %>
-                                                <% imagebank.forEach(image => {%>
-                                                    <% if (eventimage[0]) {%>
-                                                        <% if (eventimage[0].id == image.id) {%>
-                                                            <% selectedimage = 'selected'%>
+                                            <div style="flex:1;padding:10px">    
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input imageheaderchoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" <%-eventimageheader ? "checked" : "" %> type="checkbox" id="flexSwitchCheckImageHeader<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexSwitchCheckImageHeader<%=frameindex%>">Visa rubriken på bilden</label>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input imageoverlaychoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" <%-eventimageoverlay ? "checked" : "" %> type="checkbox" id="flexSwitchCheckImageOverlay<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexSwitchCheckImageOverlay<%=frameindex%>">Aktivera Gradient för bilden</label>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="imageoverlayopacitySlider<%=frameindex%>" class="form-label">Gradient styrka(0-1)</label>
+                                                    <input  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" type="range" class="form-range" id="imageoverlayopacitySlider<%=frameindex%>" value="<%-eventimageoverlayopacity ? eventimageoverlayopacity * 100 : 50 %>" min="0" max="100" step="1">
+                                                    <span class="slider-value"><%-eventimageoverlayopacity ? eventimageoverlayopacity : 0.50 %></span>
+                                                </div>
+                                                <div style="padding-top:10px">
+                                                    Bakgrundsfärg
+                                                </div>
+                                                <select class="form-select bgcolorselect"  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="bgcolorselect<%=event.id%>" title="Välj färg">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedbgcolor='' %>
+                                                    <% colors.forEach(bgcolor => {%>
+                                                        <% if (eventbgcolor[0]) {%>
+                                                            <% if (eventbgcolor[0].id == bgcolor.id) {%>
+                                                                <% selectedbgcolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedbgcolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedbgcolor%> value="<%=bgcolor.id%>"><%=bgcolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Textfärg
+                                                </div>
+                                                <select class="form-select textcolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="textcolorselect<%=event.id%>" title="Välj färg">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedtextcolor='' %>
+                                                    <% colors.forEach(textcolor => {%>
+                                                        <% if (eventtextcolor[0]) {%>
+                                                            <% if (eventtextcolor[0].id == textcolor.id) {%>
+                                                                <% selectedtextcolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedtextcolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Logofärg
+                                                </div>
+                                                <select class="form-select logocolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="logocolorselect<%=event.id%>" title="Välj färg">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedlogocolor='' %>
+                                                    <% colors.forEach(logocolor => {%>
+                                                        <% if (eventlogocolor[0]) {%>
+                                                            <% if (eventlogocolor[0].id == logocolor.id) {%>
+                                                                <% selectedlogocolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedlogocolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedlogocolor%> value="<%=logocolor.id%>"><%=logocolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Linjemönster
+                                                </div>
+                                                <% let selectedlinepattern='' %>
+                                                <% linepatterns.forEach(linepattern => {%>
+                                                    <% if (eventlinepattern[0]) {%>
+                                                        <% if (eventlinepattern[0].id == linepattern.id) {%>
+                                                            <% selectedlinepattern= 'selected'%>
                                                         <% } else {%>
-                                                            <% selectedimage = ''%>
+                                                            <% selectedlinepattern = ''%>
                                                         <% }%>
                                                     <% } %>
-                                                    <option <%=selectedimage%> value="<%=image.id%>"><%=image.name%></option>
                                                 <%})%>
-                                            </select>
-                                        </div>
-                                        <div style="flex:1;padding:10px">    
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input imageheaderchoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" <%-eventimageheader ? "checked" : "" %> type="checkbox" id="flexSwitchCheckImageHeader<%=frameindex%>">
-                                                <label class="form-check-label" for="flexSwitchCheckImageHeader<%=frameindex%>">Visa rubriken på bilden</label>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input imageoverlaychoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" <%-eventimageoverlay ? "checked" : "" %> type="checkbox" id="flexSwitchCheckImageOverlay<%=frameindex%>">
-                                                <label class="form-check-label" for="flexSwitchCheckImageOverlay<%=frameindex%>">Aktivera Gradient för bilden</label>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="imageoverlayopacitySlider<%=frameindex%>" class="form-label">Gradient styrka(0-1)</label>
-                                                <input  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" type="range" class="form-range" id="imageoverlayopacitySlider<%=frameindex%>" value="<%-eventimageoverlayopacity ? eventimageoverlayopacity * 100 : 50 %>" min="0" max="100" step="1">
-                                                <span class="slider-value"><%-eventimageoverlayopacity ? eventimageoverlayopacity : 0.50 %></span>
-                                            </div>
-                                            <div style="padding-top:10px">
-                                                Bakgrundsfärg
-                                            </div>
-                                            <select class="form-select bgcolorselect"  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="bgcolorselect<%=event.id%>" title="Välj färg">
-                                                <option value="0">Välj...</option>
-                                                <% let selectedbgcolor='' %>
-                                                <% colors.forEach(bgcolor => {%>
-                                                    <% if (eventbgcolor[0]) {%>
-                                                        <% if (eventbgcolor[0].id == bgcolor.id) {%>
-                                                            <% selectedbgcolor= 'selected'%>
-                                                        <% } else {%>
-                                                            <% selectedbgcolor = ''%>
-                                                        <% }%>
-                                                    <% } %>
-                                                    <option <%=selectedbgcolor%> value="<%=bgcolor.id%>"><%=bgcolor.name%></option>
-                                                <%})%>
-                                            </select>
-                                            <div style="padding-top:10px">
-                                                Textfärg
-                                            </div>
-                                            <select class="form-select textcolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="textcolorselect<%=event.id%>" title="Välj färg">
-                                                <option value="0">Välj...</option>
-                                                <% let selectedtextcolor='' %>
-                                                <% colors.forEach(textcolor => {%>
-                                                    <% if (eventtextcolor[0]) {%>
-                                                        <% if (eventtextcolor[0].id == textcolor.id) {%>
-                                                            <% selectedtextcolor= 'selected'%>
-                                                        <% } else {%>
-                                                            <% selectedtextcolor = ''%>
-                                                        <% }%>
-                                                    <% } %>
-                                                    <option <%=selectedtextcolor%> value="<%=textcolor.id%>"><%=textcolor.name%></option>
-                                                <%})%>
-                                            </select>
-                                            <div style="padding-top:10px">
-                                                Logofärg
-                                            </div>
-                                            <select class="form-select logocolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="logocolorselect<%=event.id%>" title="Välj färg">
-                                                <option value="0">Välj...</option>
-                                                <% let selectedlogocolor='' %>
-                                                <% colors.forEach(logocolor => {%>
-                                                    <% if (eventlogocolor[0]) {%>
-                                                        <% if (eventlogocolor[0].id == logocolor.id) {%>
-                                                            <% selectedlogocolor= 'selected'%>
-                                                        <% } else {%>
-                                                            <% selectedlogocolor = ''%>
-                                                        <% }%>
-                                                    <% } %>
-                                                    <option <%=selectedlogocolor%> value="<%=logocolor.id%>"><%=logocolor.name%></option>
-                                                <%})%>
-                                            </select>
-                                            <div style="padding-top:10px">
-                                                Linjemönster
-                                            </div>
-                                            <% let selectedlinepattern='' %>
-                                            <% linepatterns.forEach(linepattern => {%>
-                                                <% if (eventlinepattern[0]) {%>
-                                                    <% if (eventlinepattern[0].id == linepattern.id) {%>
-                                                        <% selectedlinepattern= 'selected'%>
-                                                    <% } else {%>
-                                                        <% selectedlinepattern = ''%>
-                                                    <% }%>
-                                                <% } %>
-                                            <%})%>
-                                            <div class="dropdown">
-                                                <button class="btn btn-default dropdown-toggle form-select selected" type="button" id="linepatternbtn<%=event.id%>" data-linepatternid="<%- eventlinepattern[0] ? eventlinepattern[0].id : 0%>" data-bs-toggle="dropdown" aria-expanded="false" style="display:flex">
-                                                    <%- eventlinepattern[0] ? eventlinepattern[0].name + `<img style="width:50px; height:30px" src="/smartsigntools/images/linepattern${eventlinepattern[0].id}.png" />` : 'Inget...'%>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <% linepatterns.forEach(linepattern => {%>
-                                                        <% if (eventlinepattern[0]) {%>
-                                                            <% if (eventlinepattern[0].id == linepattern.id) {%>
-                                                                <li>
-                                                                    <div class="dropdown-item linepatternselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-linepatternid="0" style="display:flex">
-                                                                        <div  class="form-select-option" style="width:50px; height:30px">
-                                                                            Inget...
+                                                <div class="dropdown">
+                                                    <button class="btn btn-default dropdown-toggle form-select selected" type="button" id="linepatternbtn<%=event.id%>" data-linepatternid="<%- eventlinepattern[0] ? eventlinepattern[0].id : 0%>" data-bs-toggle="dropdown" aria-expanded="false" style="display:flex">
+                                                        <%- eventlinepattern[0] ? eventlinepattern[0].name + `<img style="width:50px; height:30px" src="/smartsigntools/images/linepattern${eventlinepattern[0].id}.png" />` : 'Inget...'%>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <% linepatterns.forEach(linepattern => {%>
+                                                            <% if (eventlinepattern[0]) {%>
+                                                                <% if (eventlinepattern[0].id == linepattern.id) {%>
+                                                                    <li>
+                                                                        <div class="dropdown-item linepatternselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-linepatternid="0" style="display:flex">
+                                                                            <div  class="form-select-option" style="width:50px; height:30px">
+                                                                                Inget...
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                </li>
+                                                                    </li>
+                                                                <% } else {%>
+                                                                    <li>
+                                                                        <div class="dropdown-item linepatternselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-linepatternid="<%=linepattern.id%>" style="display:flex">
+                                                                            <div  class="form-select-option" style="width:50px; height:30px">
+                                                                                <%=linepattern.name%>
+                                                                            </div> <img src="/smartsigntools/images/linepattern<%=linepattern.id%>.png" />
+                                                                        </div>
+                                                                    </li>
+                                                                <% }%>
                                                             <% } else {%>
                                                                 <li>
                                                                     <div class="dropdown-item linepatternselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-linepatternid="<%=linepattern.id%>" style="display:flex">
@@ -456,92 +557,84 @@
                                                                     </div>
                                                                 </li>
                                                             <% }%>
-                                                        <% } else {%>
-                                                            <li>
-                                                                <div class="dropdown-item linepatternselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-linepatternid="<%=linepattern.id%>" style="display:flex">
-                                                                    <div  class="form-select-option" style="width:50px; height:30px">
-                                                                        <%=linepattern.name%>
-                                                                    </div> <img src="/smartsigntools/images/linepattern<%=linepattern.id%>.png" />
-                                                                </div>
-                                                            </li>
-                                                        <% }%>
+                                                        <%})%>
+                                                    </ul>
+                                                </div>
+                                                <div style="padding-top:10px">
+                                                    Linjemönsters placering
+                                                </div>
+                                                <select class="form-select linepatternplacementselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedlinepatternplacement='' %>
+                                                    <% linepatternplacements.forEach(linepatternplacement => {%>
+                                                        <% if (eventlinepatternplacement[0]) {%>
+                                                            <% if (eventlinepatternplacement[0].id == linepatternplacement.id) {%>
+                                                                <% selectedlinepatternplacement= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedlinepatternplacement = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedlinepatternplacement%> value="<%=linepatternplacement.id%>"><%=linepatternplacement.name%></option>
                                                     <%})%>
-                                                </ul>
-                                            </div>
-                                            <div style="padding-top:10px">
-                                                Linjemönsters placering
-                                            </div>
-                                            <select class="form-select linepatternplacementselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering">
-                                                <option value="0">Välj...</option>
-                                                <% let selectedlinepatternplacement='' %>
-                                                <% linepatternplacements.forEach(linepatternplacement => {%>
-                                                    <% if (eventlinepatternplacement[0]) {%>
-                                                        <% if (eventlinepatternplacement[0].id == linepatternplacement.id) {%>
-                                                            <% selectedlinepatternplacement= 'selected'%>
-                                                        <% } else {%>
-                                                            <% selectedlinepatternplacement = ''%>
-                                                        <% }%>
-                                                    <% } %>
-                                                    <option <%=selectedlinepatternplacement%> value="<%=linepatternplacement.id%>"><%=linepatternplacement.name%></option>
-                                                <%})%>
-                                            </select>
-                                            <div style="padding-top:10px">
-                                                Linjemönsters färg
-                                            </div>
-                                            <select class="form-select linepatterncolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg">
-                                                <option value="0">Välj...</option>
-                                                <% let selectedlinepatterncolor='' %>
-                                                <% colors.forEach(linepatterncolor => {%>
-                                                    <% if (eventlinepatterncolor[0]) {%>
-                                                        <% if (eventlinepatterncolor[0].id == linepatterncolor.id) {%>
-                                                            <% selectedlinepatterncolor= 'selected'%>
-                                                        <% } else {%>
-                                                            <% selectedlinepatterncolor = ''%>
-                                                        <% }%>
-                                                    <% } %>
-                                                    <option <%=selectedlinepatterncolor%> value="<%=linepatterncolor.id%>"><%=linepatterncolor.name%></option>
-                                                <%})%>
-                                            </select>
-                                            
-                                            <div style="padding-top:10px;" class="form-group">
-                                                <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
-                                                <div class="input-group">
-                                                    <input value="<%=admindata.smartsignlink + event.id%>"
-                                                        type="text" class="form-control"
-                                                        id="smartsignLink_<%=event.id%>" aria-describedby="linkHelp"
-                                                        placeholder="">
-                                                    <span style="cursor: pointer"
-                                                        onclick="copytext('smartsignLink_<%=event.id%>')"
-                                                        class="input-group-text" id="copybtn_<%=event.id%>">
-                                                        <i class="bi bi-clipboard"></i>
-                                                    </span>
+                                                </select>
+                                                <div style="padding-top:10px">
+                                                    Linjemönsters färg
                                                 </div>
-                                                <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
-                                            </div>
-                                            <% if(event.published_as_image==1) { %>
-                                            <!--div style="padding-top:10px;" class="form-group">
-                                                <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
-                                                <div class="input-group">
-                                                    <input value="<%=event.smartsignlink + 'image/' + event.id%>"
-                                                        type="text" class="form-control"
-                                                        id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
-                                                        placeholder="">
-                                                    <span style="cursor: pointer"
-                                                        onclick="copytext('smartsignLinkImage_<%=event.id%>')"
-                                                        class="input-group-text" id="copybtn_Image_<%=event.id%>">
-                                                        <i class="bi bi-clipboard"></i>
-                                                    </span>
+                                                <select class="form-select linepatterncolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg">
+                                                    <option value="0">Välj...</option>
+                                                    <% let selectedlinepatterncolor='' %>
+                                                    <% colors.forEach(linepatterncolor => {%>
+                                                        <% if (eventlinepatterncolor[0]) {%>
+                                                            <% if (eventlinepatterncolor[0].id == linepatterncolor.id) {%>
+                                                                <% selectedlinepatterncolor= 'selected'%>
+                                                            <% } else {%>
+                                                                <% selectedlinepatterncolor = ''%>
+                                                            <% }%>
+                                                        <% } %>
+                                                        <option <%=selectedlinepatterncolor%> value="<%=linepatterncolor.id%>"><%=linepatterncolor.name%></option>
+                                                    <%})%>
+                                                </select>
+                                                
+                                                <div style="padding-top:10px;" class="form-group">
+                                                    <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
+                                                    <div class="input-group">
+                                                        <input value="<%=admindata.smartsignlink + event.id%>"
+                                                            type="text" class="form-control"
+                                                            id="smartsignLink_<%=event.id%>" aria-describedby="linkHelp"
+                                                            placeholder="">
+                                                        <span style="cursor: pointer"
+                                                            onclick="copytext('smartsignLink_<%=event.id%>')"
+                                                            class="input-group-text" id="copybtn_<%=event.id%>">
+                                                            <i class="bi bi-clipboard"></i>
+                                                        </span>
+                                                    </div>
+                                                    <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
                                                 </div>
-                                                <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
-                                            </div-->
-                                            <% } %>
-                                            <!--div class="form-check form-switch">
-                                                <input class="form-check-input publisheventchoice" <%-published ? "checked" : "" %> type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
-                                                <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
-                                            </div-->
+                                                <% if(event.published_as_image==1) { %>
+                                                <!--div style="padding-top:10px;" class="form-group">
+                                                    <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
+                                                    <div class="input-group">
+                                                        <input value="<%=event.smartsignlink + 'image/' + event.id%>"
+                                                            type="text" class="form-control"
+                                                            id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
+                                                            placeholder="">
+                                                        <span style="cursor: pointer"
+                                                            onclick="copytext('smartsignLinkImage_<%=event.id%>')"
+                                                            class="input-group-text" id="copybtn_Image_<%=event.id%>">
+                                                            <i class="bi bi-clipboard"></i>
+                                                        </span>
+                                                    </div>
+                                                    <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                                                </div-->
+                                                <% } %>
+                                                <!--div class="form-check form-switch">
+                                                    <input class="form-check-input publisheventchoice" <%-published ? "checked" : "" %> type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
+                                                    <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
+                                                </div-->
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

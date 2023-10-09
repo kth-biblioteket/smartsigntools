@@ -165,6 +165,7 @@ async function readEventsPaginated(req, res, next) {
         //filtrera bort tomma poster
         data.events = eventsarray.filter((a) => a);
         admindata = {
+            "app_path": process.env.APP_PATH,
             "url": req.protocol + '://' + req.get('host') + req.originalUrl,
             "pagination": data.pagination,
             "imagebank":  data.imagebank,
@@ -1453,7 +1454,7 @@ async function getPublishedPageAsImage(req, res) {
     }
 }
 
-async function generateQrCode(id, eventbgcolor) {
+async function generateQrCode(id, eventbgcolor="", format="string") {
     let returnimage;
     try {
         let event = await readEventId(id)
@@ -1493,7 +1494,11 @@ async function generateQrCode(id, eventbgcolor) {
             ])
             .toBuffer();
         const dataURI = `data:image/png;base64,${qrlogobuffer.toString('base64')}`;
-        return dataURI;
+        if(format == "image") {
+            return qrlogobuffer;
+        } else {
+            return dataURI;
+        }
     } catch (err) {
         console.log(err.message)
         return "error: " + err.message
