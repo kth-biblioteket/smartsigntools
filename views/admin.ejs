@@ -901,16 +901,18 @@
                 });
             } );
 
-            function alert(message, type, placeholder) {
+            function alert(message, type, placeholder, remove=true, removaltime=2000 ) {
                 var alertPlaceholder = document.getElementById(placeholder)
                 var wrapper = document.createElement('div')
                 wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
                 alertPlaceholder.append(wrapper)
-                setTimeout(function () {
-                    $(".alert").fadeTo(500, 0).slideUp(500, function(){
-                        $(this).remove(); 
-                    });
-                }, 2000);
+                if(remove) {
+                    setTimeout(function () {
+                        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                            $(this).remove(); 
+                        });
+                    }, removaltime);
+                }
             }
 
             function checkjwt() {
@@ -1162,38 +1164,47 @@
                     document.getElementById('imgFileName').focus()
                     document.getElementById('imgFileName').style.color = "red";
                 } else {
-                    $("#uploadprogress").css('visibility', 'visible')
-                    checkjwt()
                     var formData = new FormData();
                     imgFile = document.getElementById('imgFile').files[0]
+                    console.log((imgFile.size / (1024 * 1024)).toFixed(2))
                     formData.append("imgFile", imgFile);
                     formData.append("imagename", document.getElementById('imgFileName').value);
                     var xhttp = new XMLHttpRequest();
 
-                    xhttp.upload.addEventListener("progress", function (e) {
-                        var loaded = e.loaded;
-                        var total = e.total
-                        var percent_complete = (loaded / total) * 100;
-                        if (percent_complete <= 100) {
-
-                            $("#uploadprogress-bar").css("width", percent_complete + "%").text(percent_complete + "%");
+                    const progressBar = document.getElementById('uploadprogress');
+                    xhttp.upload.onprogress = e => {
+                        if (e.lengthComputable) {
+                            $("#uploadprogress").css('visibility', 'visible')
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            progressBar.style.width = `${percentComplete}%`;
+                            if(percentComplete == 100) {
+                            }
                         }
-                        if (percent_complete == 100) {
-                            alert('Bild uppladdad', 'success', 'uploadAlertPlaceholder')
-                            $("#uploadprogress").css('visibility', 'hidden')
-                            document.getElementById('imgFile').value = ''
-                            document.getElementById('imgFileName').style.display = "none";
-                            getImages()
-                            setTimeout(function () {
-
-                            }, 3000);
-                        }
-                    })
+                    };
 
                     xhttp.onload = function () {
                         if (xhttp.status == 401) {
                         }
+
+                        if (xhttp.status == 413) {
+                            alert('Bilden är för stor', 'warning', 'uploadAlertPlaceholder', false)
+                            $("#uploadprogress").css('visibility', 'hidden')
+                        }
+
+                        if (xhttp.status == 200) {
+                            alert('Bild uppladdad', 'success', 'uploadAlertPlaceholder', false)
+                            $("#uploadprogress").css('visibility', 'hidden')
+                            document.getElementById('imgFile').value = ''
+                            document.getElementById('imgFileName').style.display = "none";
+                            getImages()
+                        } 
                     };
+
+                    xhttp.onerror = function() {
+                        alert('Network error. Please try again later.', 'danger', 'uploadAlertPlaceholder', false);
+                        $("#uploadprogress").css('visibility', 'hidden')
+                    };
+
                     xhttp.open("POST", "/smartsigntools/api/v1/calendar/uploadfile", true);
                     xhttp.send(formData);
                 }

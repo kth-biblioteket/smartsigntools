@@ -17,3 +17,4 @@ imagebank/*.jfif
 *.db
 test.js
 frame*.png
+dev
