@@ -139,7 +139,7 @@ apiRoutes.post("/calendar/event/publish", VerifyToken, async function (req, res,
     try {
         let events_id = req.query.events_id || req.body.events_id
         let publish = req.query.publish || req.body.publish
-        res.send(eventController.updateEventPublish(events_id, publish))
+        res.send(await eventController.updateEventPublish(events_id, publish))
     } catch(err) {
         res.send(err.message)
     }
@@ -149,7 +149,7 @@ apiRoutes.post("/calendar/event/field", VerifyToken, async function (req, res, n
     try {
         let fields_id = req.body.fields_id
         let events_id = req.body.events_id
-        res.send(eventController.createEventField(events_id, fields_id))
+        res.send(await eventController.createEventField(events_id, fields_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -159,7 +159,7 @@ apiRoutes.delete("/calendar/event/field", VerifyToken, async function (req, res,
     try {
         let fields_id = req.body.fields_id
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventField(events_id, fields_id))
+        res.send(await eventController.deleteEventField(events_id, fields_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -169,7 +169,7 @@ apiRoutes.post("/calendar/event/bgcolor", VerifyToken, async function (req, res,
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.createEventBgColor(events_id, color_id))
+        res.send(await eventController.createEventBgColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -179,7 +179,7 @@ apiRoutes.delete("/calendar/event/bgcolor", VerifyToken, async function (req, re
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventBgColor(events_id, color_id))
+        res.send(await eventController.deleteEventBgColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -189,7 +189,7 @@ apiRoutes.post("/calendar/event/textcolor", VerifyToken, async function (req, re
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.createEventTextColor(events_id, color_id))
+        res.send(await eventController.createEventTextColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -199,7 +199,7 @@ apiRoutes.delete("/calendar/event/textcolor", VerifyToken, async function (req, 
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventTextColor(events_id, color_id))
+        res.send(await eventController.deleteEventTextColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -209,7 +209,7 @@ apiRoutes.post("/calendar/event/logocolor", VerifyToken, async function (req, re
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.createEventLogoColor(events_id, color_id))
+        res.send(await eventController.createEventLogoColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -219,7 +219,7 @@ apiRoutes.delete("/calendar/event/logocolor", VerifyToken, async function (req, 
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventLogoColor(events_id, color_id))
+        res.send(await eventController.deleteEventLogoColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -229,7 +229,7 @@ apiRoutes.post("/calendar/event/image", VerifyToken, async function (req, res, n
     try {
         let images_id = req.body.images_id
         let events_id = req.body.events_id
-        res.send(eventController.createEventImage(events_id, images_id))
+        res.send(await eventController.createEventImage(events_id, images_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -239,7 +239,7 @@ apiRoutes.delete("/calendar/event/image", VerifyToken, async function (req, res,
     try {
         let images_id = req.body.images_id
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventImage(events_id, images_id))
+        res.send(await eventController.deleteEventImage(events_id, images_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -249,7 +249,7 @@ apiRoutes.post("/calendar/event/imageoverlay", VerifyToken, async function (req,
     try {
         let enabled = req.body.enabled
         let events_id = req.body.events_id
-        res.send(eventController.createEventImageOverlay(events_id, enabled))
+        res.send(await eventController.createEventImageOverlay(events_id, enabled))
     } catch(err) {
         res.send(err.message)
     }
@@ -259,7 +259,7 @@ apiRoutes.delete("/calendar/event/imageoverlay", VerifyToken, async function (re
     try {
         let enabled = req.body.enabled
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventImageOverlay(events_id, enabled))
+        res.send(await eventController.deleteEventImageOverlay(events_id, enabled))
     } catch(err) {
         res.send(err.message)
     }
@@ -269,7 +269,7 @@ apiRoutes.post("/calendar/event/imageoverlayopacity", VerifyToken, async functio
     try {
         let opacity = req.body.opacity
         let events_id = req.body.events_id
-        res.send(eventController.createEventImageOverlayOpacity(events_id, opacity))
+        res.send(await eventController.createEventImageOverlayOpacity(events_id, opacity))
     } catch(err) {
         res.send(err.message)
     }
@@ -278,7 +278,7 @@ apiRoutes.post("/calendar/event/imageoverlayopacity", VerifyToken, async functio
 apiRoutes.post("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
-        res.send(eventController.createEventImageHeader(events_id))
+        res.send(await eventController.createEventImageHeader(events_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -287,7 +287,7 @@ apiRoutes.post("/calendar/event/imageheader", VerifyToken, async function (req, 
 apiRoutes.delete("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventImageHeader(events_id))
+        res.send(await eventController.deleteEventImageHeader(events_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -305,7 +305,7 @@ apiRoutes.post("/calendar/event/linepattern", VerifyToken, async function (req, 
     try {
         let events_id = req.body.events_id
         let linepattern_id = req.body.linepattern_id
-        res.send(eventController.createEventLinePattern(events_id, linepattern_id))
+        res.send(await eventController.createEventLinePattern(events_id, linepattern_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -314,7 +314,7 @@ apiRoutes.post("/calendar/event/linepattern", VerifyToken, async function (req, 
 apiRoutes.delete("/calendar/event/linepattern", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventLinePattern(events_id))
+        res.send(await eventController.deleteEventLinePattern(events_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -324,7 +324,7 @@ apiRoutes.post("/calendar/event/linepatternplacement", VerifyToken, async functi
     try {
         let events_id = req.body.events_id
         let linepatternplacement_id = req.body.linepatternplacement_id
-        res.send(eventController.createEventLinePatternPlacement(events_id, linepatternplacement_id))
+        res.send(await eventController.createEventLinePatternPlacement(events_id, linepatternplacement_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -333,7 +333,7 @@ apiRoutes.post("/calendar/event/linepatternplacement", VerifyToken, async functi
 apiRoutes.delete("/calendar/event/linepatternplacement", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventLinePatternPlacement(events_id))
+        res.send(await eventController.deleteEventLinePatternPlacement(events_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -343,7 +343,7 @@ apiRoutes.post("/calendar/event/linepatterncolor", VerifyToken, async function (
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.createEventLinePatternColor(events_id, color_id))
+        res.send(await eventController.createEventLinePatternColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -353,7 +353,7 @@ apiRoutes.delete("/calendar/event/linepatterncolor", VerifyToken, async function
     try {
         let color_id = req.body.color_id
         let events_id = req.body.events_id
-        res.send(eventController.deleteEventLinePatternColor(events_id, color_id))
+        res.send(await eventController.deleteEventLinePatternColor(events_id, color_id))
     } catch(err) {
         res.send(err.message)
     }
@@ -486,7 +486,7 @@ apiRoutes.get("/calendar/images", async function (req, res) {
 
 apiRoutes.put("/calendar/images/:id", VerifyToken, async function (req, res, next) {
     try {
-        res.send(eventController.updateImage(req.params.id, req.body.name ))
+        res.send(await eventController.updateImage(req.params.id, req.body.name ))
     } catch(err) {
         res.send(err.message)
     }
@@ -494,7 +494,7 @@ apiRoutes.put("/calendar/images/:id", VerifyToken, async function (req, res, nex
 
 apiRoutes.delete("/calendar/images/:id", VerifyToken, async function (req, res, next) {
     try {
-        res.send(eventController.deleteImage(req.params.id))
+        res.send(await eventController.deleteImage(req.params.id))
     } catch(err) {
         res.send(err.message)
     }
