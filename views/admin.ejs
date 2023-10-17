@@ -25,6 +25,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -216,6 +217,10 @@
             color: #fff;
             background-color: #E86A58;
             border-color: #E86A58;
+        }
+
+        .sortitem-background {
+            background-color: #DEF0FF;
         }
     </style>
 </head>
@@ -429,25 +434,22 @@
                                                         Svenska
                                                     </label>
                                                 </div>
-
                                                 <div style="padding-top:10px">
                                                     <div>Fält som ska visas</div><div style="font-size: 12px;">(<span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span> - Välj placering genom att dra fälten upp eller ner i listan)</div>
                                                 </div>
-                                                <ul id="sortable<%=event.id%>" class="sortable-list list-group">
+                                                <ul id="sortable<%=event.id%>" data-frameid="frame_<%=frameindex%>" class="sortable-list list-group">
                                                     <%eventfields.forEach(field=> { %>
-                                                        
                                                         <%if(field.sortable==1){%>
-                                                            <li class="list-group-item ui-state-default sortable-item" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>">
-                                                                <span class="ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
+                                                            <li style="user-select: none;-webkit-user-select: none" class="list-group-item ui-state-default <%-event_.formdisabled ? "non-sortable-item" : "sortable-item" %>" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>">
+                                                                <span class="sort-handle ui-icon ui-icon-arrowthick-2-n-s mr-2"></span>
                                                             <%} else {%>
                                                             <li class="list-group-item ui-state-default non-sortable-item">
                                                             <%}%>
-                                                                <input class="fieldchoice" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
+                                                                <input class="fieldchoice form-check-input" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
                                                                 <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
                                                             </li>
                                                     <%}) %>
                                                 </ul>
-                                                
                                                 <div style="padding-top:10px">
                                                     Bild från bildbank
                                                 </div>
@@ -891,15 +893,36 @@
 
             });
             
+            // Gör så att listan över fält som ska visas går att sortera genom att dra fälten upp eller ner (använder sortable.js)
             $( function() {
-                $(".sortable-list").sortable({
-                    items: ".sortable-item",
-                    update: function(event, ui) {
-                        var listId = $(this).attr("id"); // Get the ID of the current list
-                        updateFieldOrder(listId);
-                    }
+                var sortableContainers = document.querySelectorAll('.sortable-list');
+                sortableContainers.forEach(function(container) {
+                    var sortable = new Sortable(container, {
+                        animation: 150,
+                        ghostClass: 'sortitem-background',
+                        //handle: '.sort-handle',
+                        //För mobiler etc behöver det finnas en delay så att normal scroll fungerar utan att det blir en sortering
+                        delay: 200,
+                        delayOnTouchOnly: true,
+                        // De som har den här klassen går inte att sortera
+                        filter: '.non-sortable-item',
+                        //Se till att de översta fälten inte går att sortera in i
+                        onMove: function (evt) {
+                            if (evt.related.className && evt.related.classList.contains('non-sortable-item')) {
+                                return false;
+                            }
+                            return true;
+                        },
+                        
+                        //Uppdatera fältens ordning när sorteringen är klar
+                        onEnd: function (event) {
+                            var listId = 'sortable' + $(event.item).attr("data-eventid");
+                            var frameid = $(event.item).attr("data-frameid");
+                            updateFieldOrder(listId, frameid);
+                        }
+                    });
                 });
-            } );
+            });
 
             function alert(message, type, placeholder, remove=true, removaltime=2000 ) {
                 var alertPlaceholder = document.getElementById(placeholder)
