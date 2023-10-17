@@ -1,0 +1,211 @@
+body {
+    margin: 0 auto;
+    font-family: "Figtree", Arial, "Helvetica Neue", helvetica, sans-serif;
+    font-weight: 300;
+    padding: 0em 20px 20px 20px;
+}
+
+body #gradientBorder {
+    height: 6px;
+    background-image: linear-gradient(to left, #005ea4, #5c98c4);
+    margin-top: 10px;
+}
+
+strong {
+    font-weight: 700;
+}
+
+a {
+    text-decoration: none;
+}
+
+main .navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 1rem;
+    padding-left: 0rem;
+}
+
+.nav-link {
+    font-size: 1.25rem;
+}
+
+.nav-link.active {
+    color: red;
+}
+
+.navbar {
+    display: block !important;
+    padding-top: 20px;
+}
+
+.navbar-nav {
+    flex: 1
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #000;
+    line-height: 1.375;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: auto;
+    max-width: calc(100% - 136px);
+    position: relative;
+    top: -5px;
+}
+
+.navbar-brand img {
+    margin: 0 30px 0 0;
+}
+
+.topbuttons {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.wrap {
+    width: 380px;
+    height: 674px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #888888;
+}
+
+.frame {
+    width: 1080px;
+    height: 1920px;
+    border: 0;
+    -ms-transform: scale(0.35);
+    -moz-transform: scale(0.35);
+    -o-transform: scale(0.35);
+    -webkit-transform: scale(0.35);
+    transform: scale(0.35);
+
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.header {
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    background-color: #ffffff;
+    padding: 10px;
+}
+
+.eventInfo p {
+    display: inline;
+    padding-right: 5px;
+}
+
+#content {
+    z-index: 1;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.eventcard {
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.kth-sand-bg {
+    background-color: #EBE5E0;
+}
+
+.eventcard-body {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 40px;
+    gap: 10px;
+}
+
+h2 {
+    padding: 0;
+    margin: 0;
+}
+
+h6 {
+    font-weight: 400;
+}
+
+.dropdown .form-select::after {
+    display: none;
+}
+
+.dropdown .form-select {
+    border-color: #ced4da;
+    background-color: #ffffff;
+    text-align: left;
+}
+
+.dropdown .form-select:hover {
+    background-color: #ffffff;
+}
+
+.dropdown .form-select:focus {
+    box-shadow: none;
+}
+
+input[type=date] {
+    border: 1px solid #d4d4d4;
+    background-color: #f6f6f6;
+    border-radius: 4px;
+    font-size: .875rem;
+    height: 44px;
+    width: 100%;
+    padding: 6px 10px;
+}
+
+.kthlogo {
+    width: 100px;
+    height: auto;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #004791;
+    border-color: #004791;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #4DA060;
+    border-color: #4DA060;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #E86A58;
+    border-color: #E86A58;
+}
+
+.sortitem-background {
+    background-color: #DEF0FF;
+}
+
+.hide {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    #content {
+        flex-direction: column;
+    }
+
+    .eventcard-body {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .topbuttons .btn {
+        font-size: 0.8rem;
+    }
+}

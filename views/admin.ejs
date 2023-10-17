@@ -31,213 +31,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            margin: 0 auto;
-            font-family: "Figtree", Arial, "Helvetica Neue", helvetica, sans-serif;
-            font-weight: 300;
-            padding: 0em 20px 20px 20px;
-        }
-
-        body #gradientBorder {
-            height: 6px;
-            background-image: linear-gradient(to left, #005ea4, #5c98c4);
-            margin-top: 10px;
-        }
-
-        strong {
-            font-weight: 700;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        main .navbar-expand-lg .navbar-nav .nav-link {
-            padding-right: 1rem;
-            padding-left: 0rem;
-        }
-
-        .nav-link {
-            font-size: 1.25rem;
-        }
-
-        .nav-link.active {
-            color: red;
-        }
-
-        .navbar {
-            display: block !important;
-            padding-top: 20px;
-        }
-
-        .navbar-nav {
-            flex: 1
-        }
-
-        .navbar-brand {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #000;
-            line-height: 1.375;
-            margin-top: 0;
-            margin-bottom: 0;
-            height: auto;
-            max-width: calc(100% - 136px);
-            position: relative;
-            top: -5px;
-        }
-
-        .navbar-brand img {
-            margin: 0 30px 0 0;
-        }
-
-        .topbuttons {
-            width:100%;
-            display:flex;
-            justify-content:flex-end;
-            gap: 10px;
-        }
-
-        .wrap {
-            width: 380px;
-            height: 674px;
-            padding: 0;
-            overflow: hidden;
-            border: 1px solid #888888;
-        }
-
-        .frame {
-            width: 1080px;
-            height: 1920px;
-            border: 0;
-            -ms-transform: scale(0.35);
-            -moz-transform: scale(0.35);
-            -o-transform: scale(0.35);
-            -webkit-transform: scale(0.35);
-            transform: scale(0.35);
-
-            -ms-transform-origin: 0 0;
-            -moz-transform-origin: 0 0;
-            -o-transform-origin: 0 0;
-            -webkit-transform-origin: 0 0;
-            transform-origin: 0 0;
-        }
-
-        .header {
-            z-index: 10;
-            display: flex;
-            flex-direction: row;
-            background-color: #ffffff;
-            padding: 10px;
-        }
-
-        .eventInfo p {
-            display: inline;
-            padding-right:5px;
-        }
-
-        #content {
-            z-index: 1;
-            padding: 0px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .eventcard {
-            flex:1;
-            margin-bottom: 10px;
-        }
-
-        .kth-sand-bg {
-            background-color: #EBE5E0;
-        }
-
-        .eventcard-body {
-            display:flex;
-            flex-direction:row;
-            padding-bottom:40px;
-            gap: 10px;
-        }
-
-        h2 {
-            padding: 0;
-            margin: 0;
-        }
-
-        h6 {
-            font-weight: 400;
-        }
-
-        .dropdown .form-select::after {
-            display: none;
-        }
-
-        .dropdown .form-select {
-            border-color: #ced4da;
-            background-color: #ffffff;
-            text-align: left;
-        }
-
-        .dropdown .form-select:hover {
-            background-color: #ffffff;
-        }
-
-        .dropdown .form-select:focus {
-            box-shadow: none;
-        }
-
-        input[type=date] {
-            border: 1px solid #d4d4d4;
-            background-color: #f6f6f6;
-            border-radius: 4px;
-            font-size: .875rem;
-            height: 44px;
-            width: 100%;
-            padding: 6px 10px;
-        }
-
-        .kthlogo {
-            width: 100px;
-            height: auto;
-        }
-
-        .btn-primary {
-            color: #fff;
-            background-color: #004791;
-            border-color: #004791;
-        }
-
-        .btn-success {
-            color: #fff;
-            background-color: #4DA060;
-            border-color: #4DA060;
-        }
-
-        .btn-danger {
-            color: #fff;
-            background-color: #E86A58;
-            border-color: #E86A58;
-        }
-
-        .sortitem-background {
-            background-color: #DEF0FF;
-        }
-
-        .hide {
-            display: none;
-        }
-
-        @media (max-width: 900px) {
-            #content {
-                flex-direction: column;
-            }
-            .eventcard-body {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/smartsigntools/css/admin.css">
 </head>
 
 <body>
@@ -254,15 +48,7 @@
             <a class="navbar-brand" href="#">
                 <img alt="" src="/smartsigntools/images/kthlogo_marinbla.svg" class="kthlogo d-inline-block align-top marinbla"> KTH Bibliotekets Kalenderverktyg
             </a>
-            <button aria-controls="basic-navbar-nav" type="button" aria-label="Toggle navigation"
-                class="navbar-toggler collapsed"><span class="navbar-toggler-icon"></span></button>
-            <div class="navbar-collapse collapse" id="basic-navbar-nav">
-                <!--div class="navbar-nav">
-                    <div class="nav-item">
-                        <div style="flex:1;font-size:1.25rem">Kalenderhändelser</div>
-                    </div>
-                </div-->
-
+            <div class="">
                 <form class="topbuttons">
                     <button type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
@@ -335,17 +121,6 @@
                         </div>
                         <div class="eventcard-body card-body">
                             <div style="flex:2">
-                                <!--div class="card">
-                                    <h6 class="card-header text-black" style="background-color: #DEF0FF;">RSS-feed(polopoly)</h6>
-                                    <div class="card-body">
-                                        <a target="_blank" href="<%= event.guid%>">
-                                            <%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %>
-                                        </a>
-                                        <div>
-                                            <%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
-                                        </div>
-                                    </div>
-                                </div-->
                                 <div style="display:flex;gap: 10px; flex-direction: column;padding-top:0px">
                                     <div class="card">
                                         <h6 class="card-header" style="background-color: #C7EBBA;">Ladda ner affisch för skärm/powerpoint <i class="bi bi-display"></i></h6>
@@ -364,12 +139,6 @@
                                                     <i class="bi bi-download"></i> PDF Liggande
                                                 </button>
                                                 </a>
-                                                <!--a href="/smartsigntools/api/v1/calendar/image/<%=event.id%>?template=/templates/smartsign_template_pdf.html&orientation=portrait" download="downloaded-image.jpg">
-                                                    <button class="btn btn-primary" style="margin-left:0px"><i class="bi bi-download"></i> JPG Stående</button>
-                                                </a>
-                                                <a href="/smartsigntools/api/v1/calendar/image/<%=event.id%>?template=/templates/smartsign_template_pdf_landscape_v1.html&orientation=landscape" download="downloaded-image.jpg">
-                                                    <button class="btn btn-primary" style="margin-left:0px"><i class="bi bi-download"></i> JPG Liggande</button>
-                                                </a-->
                                             </div>
                                         </div>
                                     </div>
@@ -390,12 +159,6 @@
                                                         <i class="bi bi-download"></i> PDF Liggande
                                                     </button>
                                                 </a>
-                                                <!--a href="/smartsigntools/api/v1/calendar/image/<%=event.id%>?template=/templates/smartsign_template_pdf_A4.html&orientation=portrait&format=A4" download="downloaded-image.jpg">
-                                                    <button class="btn btn-primary" style="margin-left:0px"><i class="bi bi-download"></i> JPG Stående</button>
-                                                </a>
-                                                <a href="/smartsigntools/api/v1/calendar/image/<%=event.id%>?template=/templates/smartsign_template_pdf_landscape_A4_v1.html&orientation=landscape&format=A4" download="downloaded-image.jpg">
-                                                    <button class="btn btn-primary" style="margin-left:0px"><i class="bi bi-download"></i> JPG Liggande</button>
-                                                </a-->
                                             </div>
                                         </div>
                                     </div>
@@ -405,13 +168,6 @@
                                         </a>
                                         <div id="qrcode<%=event.id%>" class="collapse show" aria-labelledby="headingExampleTwo">
                                             <div class="card-body">
-                                              <!--div style="display:flex;padding-top:10px">
-                                                <button id="qrcodebtn_<%=event.id%>"
-                                                    onclick="getQrCode('<%=event.id%>', 'qrcodeimage_<%=event.id%>', this);"
-                                                    type="button" class="btn btn-primary" style="margin-right:10px">
-                                                    Visa QR Kod
-                                                </button>
-                                                </div-->
                                                 <div style="padding-bottom:10px" id="qrcodeimage_<%=event.id%>"><img style="width:200px;height:200px" src="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image"></div>
                                                 <a href="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image" download="downloaded-image.jpg">
                                                     <button class="btn btn-primary" style="margin-left:5px"><i class="bi bi-download"></i> Ladda ner</button>
@@ -648,27 +404,6 @@
                                                     </div>
                                                     <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
                                                 </div>
-                                                <% if(event.published_as_image==1) { %>
-                                                <!--div style="padding-top:10px;" class="form-group">
-                                                    <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
-                                                    <div class="input-group">
-                                                        <input value="<%=event.smartsignlink + 'image/' + event.id%>"
-                                                            type="text" class="form-control"
-                                                            id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
-                                                            placeholder="">
-                                                        <span style="cursor: pointer"
-                                                            onclick="copytext('smartsignLinkImage_<%=event.id%>')"
-                                                            class="input-group-text" id="copybtn_Image_<%=event.id%>">
-                                                            <i class="bi bi-clipboard"></i>
-                                                        </span>
-                                                    </div>
-                                                    <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
-                                                </div-->
-                                                <% } %>
-                                                <!--div class="form-check form-switch">
-                                                    <input class="form-check-input publisheventchoice" <%-published ? "checked" : "" %> type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
-                                                    <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
-                                                </div-->
                                             </div>
                                         </div>
                                     </form>
@@ -678,53 +413,6 @@
                     </div>
                 <% frameindex++ %>
             <%} %>
-                <!--div class="card">
-                    <div class="card-body">
-                        <div id="slideAlertPlaceholder"></div>
-                        <h5 class="card-title">Slideshows</h5>
-                        <div style="flex:2;display:flex;flex-direction:row">
-                            <div>
-                                <button id="publishbtn" type="button" class="btn btn-primary" style="margin-right:10px">
-                                    Publicera valda
-                                </button>
-                                <div style="visibility:hidden;margin-right:10px" id="pubprogress" class="progress">
-                                    <div id="pubprogress-bar" class="progress-bar" role="progressbar" aria-valuenow="0"
-                                        aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                                        <span class="sr-only">0% Complete</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <input class="form-check-input" type="checkbox" id="pubhtml">
-                            <label class="form-check-label" for="pubhtml" style="margin-right:10px">
-                                Html
-                            </label>
-                            <input class="form-check-input" type="checkbox" id="pubimages">
-                            <label class="form-check-label" for="pubimages">
-                                Bilder
-                            </label>
-                        </div>
-                        <h6 class="card-title">Publicerat</h6>
-                        <div class="card-title" style="flex:1;display:flex;flex-direction:column">
-                            <div class="wrap">
-                                <iframe id="slideshow" class="frame"
-                                    src="/smartsigntools/api/v1/calendar/published/slideshowimages"></iframe>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="smartsignLink_slide">Smartsignlänk</label>
-                            <div class="input-group">
-                                <input value="https://apps.lib.kth.se/smartsign/calendar" type="text"
-                                    class="form-control" id="smartsignLink_slide" aria-describedby="linkHelp"
-                                    placeholder="">
-                                <span style="cursor: pointer" onclick="copytext('smartsignLink_slide')"
-                                    class="input-group-text" id="copybtn_slide}">
-                                    <i class="bi bi-clipboard"></i>
-                                </span>
-                            </div>
-                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
-                        </div>
-                    </div>
-                </div-->
         </div>
         <!-- Bildbanken -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -953,12 +641,8 @@
                 }
             }
 
-            function checkjwt() {
-            
-            }
-
             function updateLang(events_id, lang, frameid) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -975,7 +659,7 @@
             }
 
             function publishEvent(events_id, frameid, cb) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 if (cb.checked) {
                     xhttp.onload = function () {
@@ -1009,7 +693,7 @@
             }
             
             function publishEventAsImage(events_id, cb, frameid) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 if (cb.checked) {
                     console.log($(this))
@@ -1040,7 +724,7 @@
             }
 
             function updateEvent(events_id, frameid, fields_id, cb) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 if (cb.checked) {
                     xhttp.onload = function () {
@@ -1077,7 +761,7 @@
             }
 
             function getQrCode(id, imageid, button) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1095,7 +779,7 @@
             function getQrCodeGeneral(id, imageid, button) {
                 $(button).prop("disabled", true);
                 $(button).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar QR Kod...');
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1121,7 +805,7 @@
                 $(cb).prop("disabled", true);
                 $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar pdf...');
 
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1182,7 +866,7 @@
                 }
                 $(this).prop("disabled", true);
                 $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicerar...');
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1251,7 +935,7 @@
             function getImages() {
                 $('.imagebankmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
                 
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1264,7 +948,7 @@
             }
 
             function updateImage(id, nameselector) {
-                checkjwt()
+                
                 let name = $("#" + nameselector).val()
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
@@ -1280,7 +964,7 @@
             }
 
             function deleteImage(id) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1292,7 +976,7 @@
             }
             
             function createQrCodeGeneral() {
-                checkjwt()
+                
                 url = $("#QRGeneralUrl").val();
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
@@ -1309,7 +993,7 @@
             }
 
             function deleteQrCodeGeneral(id) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1325,7 +1009,7 @@
             }
 
             function updateQrCodeGeneral(id, urlselector) {
-                checkjwt()
+                
                 let url = $("#" + urlselector).val();
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
@@ -1395,7 +1079,7 @@
             }
 
             function getQrtracking() {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1457,7 +1141,7 @@
             }
 
             function getAllQrtrackings() {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1493,7 +1177,7 @@
             }
 
             function getQrtrackingsPeriod(from_date, to_date) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1538,7 +1222,7 @@
             }
 
             function updateEventImage(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 images_id = selectlist.value
                 var xhttp = new XMLHttpRequest();
                 if (images_id != "0") {
@@ -1573,7 +1257,7 @@
             }
 
             function updateEventBgColor(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 var x = document.getElementById("bgcolorselect");
                 color_id = selectlist.value
                 var xhttp = new XMLHttpRequest();
@@ -1609,7 +1293,7 @@
             }
 
             function updateEventTextColor(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 var x = document.getElementById("textcolorselect");
                 color_id = selectlist.value
                 var xhttp = new XMLHttpRequest();
@@ -1645,7 +1329,7 @@
             }
 
             function updateEventLogoColor(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 var x = document.getElementById("logocolorselect");
                 color_id = selectlist.value
                 var xhttp = new XMLHttpRequest();
@@ -1681,7 +1365,7 @@
             }
 
             function updateEventImageOverlay(events_id, frameid, cb) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 if (cb.checked) {
                     xhttp.onload = function () {
@@ -1715,7 +1399,7 @@
             }
 
             function updateEventImageOverlayOpacity(events_id, opacity, frameid) {
-                checkjwt()
+                
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
@@ -1791,7 +1475,7 @@
             }
 
             function updateEventLinePattern(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 var value = $(selectlist).html();
                 var buttonHtml = $('#linepatternbtn' + events_id).html();
 
@@ -1841,7 +1525,7 @@
             }
 
             function updateEventLinePatternPlacement(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 var x = document.getElementById("textcolorselect");
                 linepatternplacement_id = selectlist.value
                 var xhttp = new XMLHttpRequest();
@@ -1877,7 +1561,7 @@
             }
 
             function updateEventLinePatternColor(events_id, frameid, selectlist) {
-                checkjwt()
+                
                 var x = document.getElementById("linepatterncolorselect");
                 color_id = selectlist.value
                 var xhttp = new XMLHttpRequest();
