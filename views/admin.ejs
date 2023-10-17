@@ -142,9 +142,11 @@
             z-index: 1;
             padding: 0px;
             display: flex;
+            flex-direction: column;
         }
 
         .eventcard {
+            flex:1;
             margin-bottom: 10px;
         }
 
@@ -222,6 +224,19 @@
         .sortitem-background {
             background-color: #DEF0FF;
         }
+
+        .hide {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            #content {
+                flex-direction: column;
+            }
+            .eventcard-body {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
@@ -290,7 +305,6 @@
             </ul>
         </nav>
         <div id="content">
-            <div>
                 <% let published=false %>
                 <% let published_as_image=false %>
                 <% let eventimageheader=false %>
@@ -316,7 +330,9 @@
                     <%if(event_.eventimageoverlayopacity[0]) { eventimageoverlayopacity=event_.eventimageoverlayopacity[0].opacity } else { eventimageoverlayopacity=0.5 } %>
                     <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
                     <div class="eventcard card">
-                        <div class="card-header text-black kth-sand-bg"><h5>Kalenderevent - <a target="_blank" href="<%= event.guid%>"><%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %></h5></a><%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %></div>
+                        <div class="card-header text-black kth-sand-bg">
+                            <h5>Kalenderevent - <a target="_blank" href="<%= event.guid%>"><%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %></a></h5><%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
+                        </div>
                         <div class="eventcard-body card-body">
                             <div style="flex:2">
                                 <!--div class="card">
@@ -709,7 +725,6 @@
                         </div>
                     </div>
                 </div-->
-            </div>
         </div>
         <!-- Bildbanken -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
