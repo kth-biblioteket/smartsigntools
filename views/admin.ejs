@@ -35,6 +35,7 @@
 </head>
 
 <body>
+    <div id="errorPlaceholder"></div>
     <% let nrOfPages = Math.ceil(admindata.pagination.total / admindata.pagination.size) %>
     <% var url = new URL(admindata.url) %>
     <% if (url.searchParams.has('size') !== true) { %>
@@ -91,8 +92,6 @@
             </ul>
         </nav>
         <div id="content">
-                <% let published=false %>
-                <% let published_as_image=false %>
                 <% let eventimageheader=false %>
                 <% let eventimageoverlay=false %>
                 <% let eventimageoverlayopacity=0.5 %>
@@ -110,11 +109,9 @@
                     <%let eventlinepattern=event_.eventlinepattern %>
                     <%let eventlinepatternplacement=event_.eventlinepatternplacement %>
                     <%let eventlinepatterncolor=event_.eventlinepatterncolor %>
-                    <%if(event.published==1) { published=true } else { published=false } %>
                     <%if(event_.eventimageheader[0]) { eventimageheader=true } else { eventimageheader=false } %>
                     <%if(event_.eventimageoverlay[0]) { eventimageoverlay=true } else { eventimageoverlay=false } %>
                     <%if(event_.eventimageoverlayopacity[0]) { eventimageoverlayopacity=event_.eventimageoverlayopacity[0].opacity } else { eventimageoverlayopacity=0.5 } %>
-                    <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
                     <div class="eventcard card">
                         <div class="card-header text-black kth-sand-bg">
                             <h5>Kalenderevent - <a target="_blank" href="<%= event.guid%>"><%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem.title %></a></h5><%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
@@ -225,7 +222,7 @@
                                                 <div style="padding-top:10px">
                                                     Bild från bildbank
                                                 </div>
-                                                <select class="form-select imageselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="imagebankselect<%=event.id%>" title="Välj bild">
+                                                <select class="form-select imageselect" data-fieldname="images_id" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="imagebankselect<%=event.id%>" title="Välj bild">
                                                     <option value="0">Välj...</option>
                                                     <% let selectedimage='' %>
                                                     <% imagebank.forEach(image => {%>
@@ -257,7 +254,7 @@
                                                 <div style="padding-top:10px">
                                                     Bakgrundsfärg
                                                 </div>
-                                                <select class="form-select bgcolorselect"  data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="bgcolorselect<%=event.id%>" title="Välj färg">
+                                                <select class="form-select bgcolorselect" data-fieldname="color_id" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="bgcolorselect<%=event.id%>" title="Välj färg">
                                                     <option value="0">Välj...</option>
                                                     <% let selectedbgcolor='' %>
                                                     <% colors.forEach(bgcolor => {%>
@@ -274,7 +271,7 @@
                                                 <div style="padding-top:10px">
                                                     Textfärg
                                                 </div>
-                                                <select class="form-select textcolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="textcolorselect<%=event.id%>" title="Välj färg">
+                                                <select class="form-select textcolorselect" data-fieldname="color_id" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="textcolorselect<%=event.id%>" title="Välj färg">
                                                     <option value="0">Välj...</option>
                                                     <% let selectedtextcolor='' %>
                                                     <% colors.forEach(textcolor => {%>
@@ -291,7 +288,7 @@
                                                 <div style="padding-top:10px">
                                                     Logofärg
                                                 </div>
-                                                <select class="form-select logocolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="logocolorselect<%=event.id%>" title="Välj färg">
+                                                <select class="form-select logocolorselect" data-fieldname="color_id" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="logocolorselect<%=event.id%>" title="Välj färg">
                                                     <option value="0">Välj...</option>
                                                     <% let selectedlogocolor='' %>
                                                     <% colors.forEach(logocolor => {%>
@@ -357,7 +354,7 @@
                                                 <div style="padding-top:10px">
                                                     Linjemönsters placering
                                                 </div>
-                                                <select class="form-select linepatternplacementselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering">
+                                                <select class="form-select linepatternplacementselect" data-fieldname="linepatternplacement_id" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatternplacementselect<%=event.id%>" title="Välj linjemönsters placering">
                                                     <option value="0">Välj...</option>
                                                     <% let selectedlinepatternplacement='' %>
                                                     <% linepatternplacements.forEach(linepatternplacement => {%>
@@ -374,7 +371,7 @@
                                                 <div style="padding-top:10px">
                                                     Linjemönsters färg
                                                 </div>
-                                                <select class="form-select linepatterncolorselect" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg">
+                                                <select class="form-select linepatterncolorselect" data-fieldname="color_id" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" id="linepatterncolorselect<%=event.id%>" title="Välj mönsterfärg">
                                                     <option value="0">Välj...</option>
                                                     <% let selectedlinepatterncolor='' %>
                                                     <% colors.forEach(linepatterncolor => {%>
@@ -495,15 +492,13 @@
             </div>
         </div>
         <script>
+            // Starta websocket
             const thisSessionId = Math.random().toString(36).substr(2, 9);
             const socket = io('', { path: "/smartsigntools/api/v1/socket.io" })
             socket.on("connect", () => {
 
             });
             socket.emit('connectInit', thisSessionId);
-            socket.on("uploadProgress", (data) => {
-                makeProgress(data)
-            })
 
             $(document).ready(function () {
 
@@ -519,25 +514,25 @@
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
                     var fieldid= $(this).attr("data-fieldid");
-                    updateEvent(event_id, frameid, fieldid, this)
+                    updateEventField(event_id, frameid, fieldid, this)
                 });
 
                 $(".imageselect").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventImage(event_id, frameid, this)
+                    updateEventSetting(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/image")
                 });
 
                 $(".imageheaderchoice").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventImageHeader(event_id, frameid, this)
+                    updateEventSettingCB(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/imageheader")
                 });
 
                 $(".imageoverlaychoice").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventImageOverlay(event_id, frameid, this)
+                    updateEventSettingCB(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/imageoverlay")
                 });
 
                 $("input[type='range']").on('input', function () {
@@ -555,19 +550,19 @@
                 $(".textcolorselect").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventTextColor(event_id, frameid, this)
+                    updateEventSetting(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/textcolor")
                 });
 
                 $(".bgcolorselect").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventBgColor(event_id, frameid, this)
+                    updateEventSetting(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/bgcolor")
                 });
 
                 $(".logocolorselect").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventLogoColor(event_id, frameid, this)
+                    updateEventSetting(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/logocolor")
                 });
 
                 $(".linepatternselect").on('click', function () {
@@ -579,19 +574,13 @@
                 $(".linepatternplacementselect").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventLinePatternPlacement(event_id, frameid, this)
+                    updateEventSetting(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/linepatternplacement")
                 });
 
                 $(".linepatterncolorselect").on('change', function () {
                     var event_id= $(this).attr("data-eventid");
                     var frameid= $(this).attr("data-frameid");
-                    updateEventLinePatternColor(event_id, frameid, this)
-                });
-
-                $(".publisheventchoice").on('click', function () {
-                    var event_id= $(this).attr("data-eventid");
-                    var frameid= $(this).attr("data-frameid");
-                    publishEvent(event_id, frameid, this)
+                    updateEventSetting(event_id, frameid, this, "/smartsigntools/api/v1/calendar/event/linepatterncolor")
                 });
 
             });
@@ -627,6 +616,7 @@
                 });
             });
 
+            // Funktion för att visa alertmeddelande
             function alert(message, type, placeholder, remove=true, removaltime=2000 ) {
                 var alertPlaceholder = document.getElementById(placeholder)
                 var wrapper = document.createElement('div')
@@ -641,139 +631,166 @@
                 }
             }
 
-            function updateLang(events_id, lang, frameid) {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    setTimeout(function () {
-                        document.getElementById(frameid).src = document.getElementById(frameid).src
-                    }, 500);
-                };
-                xhttp.open("PUT", "/smartsigntools/api/v1/calendar/eventlang/" + events_id, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
+            // Funktion som uppdaterar vilket språk eventet ska visas på
+            async function updateLang(events_id, lang, frameid) {
+                const response = await makeHttpRequest("PUT", "/smartsigntools/api/v1/calendar/eventlang/" + events_id, {
                     "lang": lang
-                }));
+                })
+                getEventFromDatabase(events_id, frameid )
             }
 
-            function publishEvent(events_id, frameid, cb) {
-                
-                var xhttp = new XMLHttpRequest();
+            // Funktion som uppdaterar vilka fält som ska visas
+            async function updateEventField(events_id, frameid, fields_id, cb) {
                 if (cb.checked) {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/publish", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
+                    const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/calendar/event/field", {
                         "events_id": events_id,
-                        "publish": 1
-                    }));
+                        "fields_id": fields_id
+                    })
                 } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/publish", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
+                    const response = await makeHttpRequest("DELETE", "/smartsigntools/api/v1/calendar/event/field", {
                         "events_id": events_id,
-                        "publish": 0
-                    }));
+                        "fields_id": fields_id
+                    })
                 }
+                getEventFromDatabase(events_id, frameid)
+            }
+
+            // Funktion som uppdaterar inställning för event via selectlist
+            async function updateEventSetting(events_id, frameid, inputelement, url) {
+                settings_id = inputelement.getAttribute('data-fieldname')
+                try {
+                    if (inputelement.value != "0") {
+                        const response = await makeHttpRequest("POST", url, JSON.parse(`{
+                            "events_id": ${events_id},
+                            "${settings_id}": ${inputelement.value}
+                        }`))
+                    } else {
+                        const response = await makeHttpRequest("DELETE", url, JSON.parse(`{
+                            "events_id": ${events_id},
+                            "${settings_id}": ${inputelement.value}
+                        }`))
+                    } 
+                } catch(err) {
+                    alert('Uppdateringen misslyckades ' + err.message, 'danger', 'errorPlaceholder', false)
+                }
+                getEventFromDatabase(events_id, frameid)
+            }
+
+            // Funktion som uppdaterar inställning för event via checkbox
+            async function updateEventSettingCB(events_id, frameid, inputelement, url) {
+                try {
+                    if (inputelement.checked) {
+                        const response = await makeHttpRequest("POST", url, JSON.parse(`{
+                            "events_id": ${events_id},
+                            "enabled": 1
+                        }`))
+                    } else {
+                        const response = await makeHttpRequest("DELETE", url, JSON.parse(`{
+                            "events_id": ${events_id},
+                            "enabled": 0
+                        }`))
+                    } 
+                } catch(err) {
+                    alert('Uppdateringen misslyckades ' + err.message, 'danger', 'errorPlaceholder', false)
+                }
+                getEventFromDatabase(events_id, frameid)
+            }
+
+            // Funktion som uppdaterar inställning för gradients opacity
+            async function updateEventImageOverlayOpacity(events_id, opacity, frameid) {
+                const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/calendar/event/imageoverlayopacity", {
+                    "events_id": events_id,
+                    "opacity": opacity
+                })
+                getEventFromDatabase(events_id, frameid)
+            }
+         
+            // Funktion som uppdaterar ordningen på events fält
+            async function updateFieldOrder(listId){
+                var fieldsOrder = [];
+                let frameid
+                let events_id
+                $("#" + listId + " .sortable-item").each(function(index) {
+                    frameid = $(this).attr("data-frameid"),
+                    events_id = $(this).attr("data-eventid"),
+                    fieldsOrder.push({
+                        "event_id" : $(this).attr("data-eventid"),
+                        "field_id" : $(this).attr("data-fieldid"),
+                        "sortorder" : index
+                    });
+                });
+                
+                const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/calendar/event/sortfields", {
+                    fieldsOrder
+                })
+                getEventFromDatabase(events_id, frameid)    
             }
             
-            function publishEventAsImage(events_id, cb, frameid) {
-                
-                var xhttp = new XMLHttpRequest();
-                if (cb.checked) {
-                    console.log($(this))
-                    $('#imagespinner_' + events_id).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicerar...');
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        location.reload();
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/" + events_id, true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "published_as_image": 1
-                    }));
+            // Funktion som uppdaterar events linjemönster
+            async function updateEventLinePattern(events_id, frameid, selectlist) {
+                var value = $(selectlist).html();
+                var buttonHtml = $('#linepatternbtn' + events_id).html();
+                var button_data_linepatternid = document.getElementById('linepatternbtn' + events_id).getAttribute('data-linepatternid')
+                var selected_data_linepatternid = selectlist.getAttribute('data-linepatternid')
+
+                //Sätt knappens html lika med det val som gjorts
+                $('#linepatternbtn' + events_id).html(value);
+                //Sätt knappens data-attribut lika med det val som gjorts
+                document.getElementById('linepatternbtn' + events_id).setAttribute('data-linepatternid', selected_data_linepatternid);
+
+                //Sätt det valda alternativets html lika med knappens
+                $(selectlist).html(buttonHtml);
+                //Sätt det valda alternativets data-attribut lika med knappens
+                selectlist.setAttribute('data-linepatternid', button_data_linepatternid);
+
+                if (selected_data_linepatternid != "0") {
+                    const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/calendar/event/linepattern", {
+                        "events_id": events_id,
+                        "linepattern_id": selected_data_linepatternid
+                    })
                 } else {
-                    $('#imagespinner_' + events_id).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Avpublicerar...');
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        location.reload();
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/" + events_id, true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "published_as_image": 0
-                    }));
+                    const response = await makeHttpRequest("DELETE", "/smartsigntools/api/v1/calendar/event/linepattern", {
+                        "events_id": events_id,
+                        "linepattern_id": selected_data_linepatternid
+                    })
                 }
+                getEventFromDatabase(events_id, frameid)
             }
 
-            function updateEvent(events_id, frameid, fields_id, cb) {
-                
-                var xhttp = new XMLHttpRequest();
-                if (cb.checked) {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) { 
-                        }
-                        setTimeout(function () {
-                            //document.getElementById(frameid).src = document.getElementById(frameid).src
-                            location.reload()
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/field", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "fields_id": fields_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            //document.getElementById(frameid).src = document.getElementById(frameid).src
-                            location.reload()
-                        }, 500);
-                        
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/field", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "fields_id": fields_id
-                    }));
-                }
+            // Funktion som hämtar event
+            async function getEventFromDatabase(event_id, frameid) {
+                const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/calendar/event/" + event_id + "?source=db")
+                var iframe = document.getElementById(frameid);
+                    iframe.contentDocument.open();
+                    iframe.contentDocument.write(response);
+                    iframe.contentDocument.close();
             }
 
-            function getQrCode(id, imageid, button) {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
+            // Funktion för api-anrop
+            function makeHttpRequest(method, url, data = null) {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open(method, url, true);
+
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(xhr.responseText);
+                        } else {
+                            reject(xhr.statusText);
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        reject(xhr.statusText);
+                    };
+
+                    if (data) {
+                        xhr.setRequestHeader("Content-Type", "application/json");
+                        xhr.send(JSON.stringify(data));
+                    } else {
+                        xhr.send();
                     }
-                    var image = xhttp.response;
-                    document.getElementById(imageid).innerHTML = '<img style="width:200px;height:200px" src="' + image + '">'
-
-                };
-                xhttp.open("GET", "/smartsigntools/api/v1/calendar/event/qrcode/" + id, true);
-                xhttp.setRequestHeader('x-access-token', sessionStorage.getItem("token"));
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send();
+                });
             }
 
             function getQrCodeGeneral(id, imageid, button) {
@@ -838,49 +855,6 @@
                 xhttp.send();
             }
 
-            function makeProgress(data) {
-                jsondata = JSON.parse(data)
-                if (jsondata.progress == 0) {
-                    $("#pubprogress").css('visibility', 'visible')
-                }
-                if (jsondata.progress <= jsondata.total) {
-                    percent = (jsondata.progress / jsondata.total) * 100
-                    $("#pubprogress-bar").css("width", percent + "%").text(percent + "%");
-                }
-                if (jsondata.progress == jsondata.total) {
-                    $("#pubprogress").css('visibility', 'hidden')
-                    $("#pubprogress-bar").css("width", "0%").text("0%");
-                }
-            }
-
-            $('#publishbtn').on('click', function () {
-                var parameters = "?"
-                if ($('#pubhtml').prop('checked')) {
-                    parameters += "type=html"
-                } else
-                    if ($('#pubimages').prop('checked')) {
-                        parameters += "type=images"
-                    }
-                if ($('#pubimages').prop('checked') && $('#pubhtml').prop('checked')) {
-                    parameters = "?type=all"
-                }
-                $(this).prop("disabled", true);
-                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicerar...');
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    alert('Slideshow skapad', 'success', 'slideAlertPlaceholder')
-                    $('#publishbtn').prop("disabled", false);
-                    $('#publishbtn').html('Publicera valda');
-                    document.getElementById('slideshow').src = document.getElementById('slideshow').src
-                };
-                xhttp.open("POST", "/smartsigntools/api/v1/calendar/published/slideshow" + parameters);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({ "sessionId": thisSessionId }));
-            });
-
             function uploadImage() {
                 if (document.getElementById('imgFileName').value == "") {
                     document.getElementById('imgFileName').focus()
@@ -932,109 +906,59 @@
                 }
             }
 
-            function getImages() {
+            async function getImages() {
                 $('.imagebankmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
-                
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                        $('.imagebankmodal-body').html('Fel vid hämtning')
-                    }
-                    $('.imagebankmodal-body').html(xhttp.response)
-                };
-                xhttp.open("GET", "/smartsigntools/api/v1/calendar/images", true);
-                xhttp.send();
+                const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/calendar/images")
+                $('.imagebankmodal-body').html(response)
             }
 
-            function updateImage(id, nameselector) {
+            async function updateImage(id, nameselector) {
                 
                 let name = $("#" + nameselector).val()
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    getImages()
-                };
-                xhttp.open("PUT", "/smartsigntools/api/v1/calendar/images/" + id, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
+                const response = await makeHttpRequest("PUT", "/smartsigntools/api/v1/calendar/images/" + id, {
                     "name": name
-                }));
+                })
+                getImages()
             }
 
-            function deleteImage(id) {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    getImages()
-                };
-                xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/images/" + id, true);
-                xhttp.send();
+            async function deleteImage(id) {
+                const response = await makeHttpRequest("DELETE", "/smartsigntools/api/v1/calendar/images/" + id)
+                getImages()
             }
             
-            function createQrCodeGeneral() {
+            async function createQrCodeGeneral() {
                 
                 url = $("#QRGeneralUrl").val();
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    getQrCodesGeneral()
-                    setTimeout(function () {}, 3000);
-                };
-                xhttp.open("POST", "/smartsigntools/api/v1/qrcode/general", true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
+                const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/qrcode/general", {
                     "url": url
-                }));
+                })
+                getQrCodesGeneral()
             }
 
-            function deleteQrCodeGeneral(id) {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    getQrCodesGeneral()
-                    setTimeout(function () {}, 3000);
-                };
-                xhttp.open("DELETE", "/smartsigntools/api/v1/qrcode/general", true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
+            async function deleteQrCodeGeneral(id) {
+                const response = await makeHttpRequest("DELETE", "/smartsigntools/api/v1/qrcode/general", {
                     "id": id
-                }));
+                })
+                getQrCodesGeneral()
             }
 
-            function updateQrCodeGeneral(id, urlselector) {
+            async function updateQrCodeGeneral(id, urlselector) {
                 
                 let url = $("#" + urlselector).val();
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    alert('Url uppdaterad', 'success', 'updateQRGeneralAlertPlaceholder')
-                    getQrCodesGeneral()
-                    setTimeout(function () {}, 3000);
-                };
-                xhttp.open("PUT", "/smartsigntools/api/v1/qrcode/general", true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
+                const response = await makeHttpRequest("PUT", "/smartsigntools/api/v1/qrcode/general", {
                     "id": id,
                     "url": url
-                }));
+                })
+                alert('Url uppdaterad', 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                getQrCodesGeneral()
             }
 
-            function getQrCodesGeneral() {
+            async function getQrCodesGeneral() {
                 $('.QRGeneralmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                        $('.QRGeneralmodal-body').html('Fel vid hämtning')
-                    }
-                    $('.QRGeneralmodal-body').html(xhttp.response)
+
+                try {
+                    const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/qrcodes/general")
+                    $('.QRGeneralmodal-body').html(response)
 
                     //Sortering för input-fält
                     $.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
@@ -1049,7 +973,7 @@
                         "columnDefs": [
                             { 
                                 "orderDataType": "dom-text",
-                                 type: "string",
+                                    type: "string",
                                 "width": "60%", 
                                 "targets": 1 
                             },
@@ -1069,146 +993,129 @@
                             }
                         } ]
                     });
-                    
+                        
                     $(function () {
                         $('[data-toggle="tooltip"]').tooltip()
                     })
-                };
-                xhttp.open("GET", "/smartsigntools/api/v1/qrcodes/general", true);
-                xhttp.send();
+                } catch (err) {
+                    $('.QRGeneralmodal-body').html('Fel vid hämtning')
+                }
             }
 
-            function getQrtracking() {
+            async function getQrtracking() {
                 
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    $('.QRmodal-body').html(xhttp.response)
-                    var today = new Date();
-                    today.setDate(1);
-                    var firstDayOfMonth = today.toISOString().slice(0, 10);
-                   
-                    today.setMonth(today.getMonth() + 1); // Move to the next month
-                    today.setDate(0);
-                    var lastDayOfMonth = today.toISOString().slice(0, 10);
-                    
-                    $("#start-date").val(firstDayOfMonth);
-                    $("#end-date").val(lastDayOfMonth);
+                const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/qrcodetracking")
 
+                $('.QRmodal-body').html(response)
+                var today = new Date();
+                today.setDate(1);
+                var firstDayOfMonth = today.toISOString().slice(0, 10);
+                
+                today.setMonth(today.getMonth() + 1);
+                today.setDate(0);
+                var lastDayOfMonth = today.toISOString().slice(0, 10);
+                
+                $("#start-date").val(firstDayOfMonth);
+                $("#end-date").val(lastDayOfMonth);
 
-                    var qrtrackingtable = $('#qrtrackingtable').DataTable({
-                        "dom": '<Bplfi<t>>',
-                        "order": [[ 2, 'desc' ]],
-                        buttons: [
-                            {
-                                text: 'Visa alla skanningar',
-                                action: function ( e, dt, node, config ) {
-                                    getAllQrtrackings() 
-                                }
-                            },
-                            {
-                                extend: 'spacer',
-                                style: 'bar',
-                                text: ''
-                            },
-                            {
-                                text: 'Skanningar för period',
-                                action: function ( e, dt, node, config ) {
-                                   
-                                    
-                                    var startDate = $('#start-date').val();
-                                    var endDate = $('#end-date').val();
-                                    getQrtrackingsPeriod(startDate, endDate)
-                                }
-                            },
-                            {
-                                extend: 'spacer',
-                                style: 'bar',
-                                text: ''
-                            },
-                            {
-                                extend: 'excelHtml5',
-                                autoFilter: true,
-                                filename: 'QRKod_statistik',
-                                sheetName: 'Statistik scannade QR-koder'
-                            } 
-                        ]
-                    });
-                };
-                xhttp.open("GET", "/smartsigntools/api/v1/qrcodetracking", true);
-                xhttp.send();
+                var qrtrackingtable = $('#qrtrackingtable').DataTable({
+                    "dom": '<Bplfi<t>>',
+                    "order": [[ 2, 'desc' ]],
+                    buttons: [
+                        {
+                            text: 'Visa alla skanningar',
+                            action: function ( e, dt, node, config ) {
+                                getAllQrtrackings() 
+                            }
+                        },
+                        {
+                            extend: 'spacer',
+                            style: 'bar',
+                            text: ''
+                        },
+                        {
+                            text: 'Skanningar för period',
+                            action: function ( e, dt, node, config ) {
+                                
+                                
+                                var startDate = $('#start-date').val();
+                                var endDate = $('#end-date').val();
+                                getQrtrackingsPeriod(startDate, endDate)
+                            }
+                        },
+                        {
+                            extend: 'spacer',
+                            style: 'bar',
+                            text: ''
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            filename: 'QRKod_statistik',
+                            sheetName: 'Statistik scannade QR-koder'
+                        } 
+                    ]
+                });
             }
 
-            function getAllQrtrackings() {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    var filterhtml = ``
-                    $('.QRmodal-body').html(xhttp.response)
-                    var qrtrackingtable = $('#qrtrackingtable').DataTable({
-                        "dom": '<Bplfi<t>>',
-                        "order": [[ 2, 'desc' ]],
-                        buttons: [
-                            {
-                                text: 'Visa summering',
-                                action: function ( e, dt, node, config ) {
-                                    getQrtracking() 
-                                }
-                            },
-                            {
-                                extend: 'spacer',
-                                style: 'bar',
-                                text: ''
-                            },
-                            {
-                                extend: 'excelHtml5',
-                                autoFilter: true,
-                                filename: 'QRKod_statistik',
-                                sheetName: 'Alla scannade QR-koder'
-                            } 
-                        ]
-                    });
-                };
-                xhttp.open("GET", "/smartsigntools/api/v1/qrcodetracking/all", true);
-                xhttp.send();
+            async function getAllQrtrackings() {
+                const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/qrcodetracking/all")
+
+                var filterhtml = ``
+                $('.QRmodal-body').html(response)
+                var qrtrackingtable = $('#qrtrackingtable').DataTable({
+                    "dom": '<Bplfi<t>>',
+                    "order": [[ 2, 'desc' ]],
+                    buttons: [
+                        {
+                            text: 'Visa summering',
+                            action: function ( e, dt, node, config ) {
+                                getQrtracking() 
+                            }
+                        },
+                        {
+                            extend: 'spacer',
+                            style: 'bar',
+                            text: ''
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            filename: 'QRKod_statistik',
+                            sheetName: 'Alla scannade QR-koder'
+                        } 
+                    ]
+                });
+            
             }
 
-            function getQrtrackingsPeriod(from_date, to_date) {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    $('.QRmodal-body').html(xhttp.response)
-                    var qrtrackingtable = $('#qrtrackingtable').DataTable({
-                        "dom": '<Bplfi<t>>',
-                        "order": [[ 3, 'desc' ]],
-                        buttons: [
-                            {
-                                text: 'Visa summering',
-                                action: function ( e, dt, node, config ) {
-                                    getQrtracking() 
-                                }
-                            },
-                            {
-                                extend: 'spacer',
-                                style: 'bar',
-                                text: ''
-                            },
-                            {
-                                extend: 'excelHtml5',
-                                autoFilter: true,
-                                filename: 'QRKod_statistik',
-                                sheetName: 'Skannade QR-koder för period'
-                            } 
-                        ]
-                    });
-                };
-                xhttp.open("GET", `/smartsigntools/api/v1/qrcodetracking/${from_date}/${to_date}`, true);
-                xhttp.send();
+            async function getQrtrackingsPeriod(from_date, to_date) {
+                const response = await makeHttpRequest("GET", `/smartsigntools/api/v1/qrcodetracking/${from_date}/${to_date}`)
+
+                $('.QRmodal-body').html(response)
+                var qrtrackingtable = $('#qrtrackingtable').DataTable({
+                    "dom": '<Bplfi<t>>',
+                    "order": [[ 3, 'desc' ]],
+                    buttons: [
+                        {
+                            text: 'Visa summering',
+                            action: function ( e, dt, node, config ) {
+                                getQrtracking() 
+                            }
+                        },
+                        {
+                            extend: 'spacer',
+                            style: 'bar',
+                            text: ''
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            filename: 'QRKod_statistik',
+                            sheetName: 'Skannade QR-koder för period'
+                        } 
+                    ]
+                });
             }
 
             function copytext(field_id) {
@@ -1221,380 +1128,6 @@
                 $('#' + imgFileName).show()
             }
 
-            function updateEventImage(events_id, frameid, selectlist) {
-                
-                images_id = selectlist.value
-                var xhttp = new XMLHttpRequest();
-                if (images_id != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/image", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "images_id": images_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/image", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "images_id": images_id
-                    }));
-                }
-            }
-
-            function updateEventBgColor(events_id, frameid, selectlist) {
-                
-                var x = document.getElementById("bgcolorselect");
-                color_id = selectlist.value
-                var xhttp = new XMLHttpRequest();
-                if (color_id != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/bgcolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/bgcolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                }
-            }
-
-            function updateEventTextColor(events_id, frameid, selectlist) {
-                
-                var x = document.getElementById("textcolorselect");
-                color_id = selectlist.value
-                var xhttp = new XMLHttpRequest();
-                if (color_id != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/textcolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/textcolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                }
-            }
-
-            function updateEventLogoColor(events_id, frameid, selectlist) {
-                
-                var x = document.getElementById("logocolorselect");
-                color_id = selectlist.value
-                var xhttp = new XMLHttpRequest();
-                if (color_id != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/logocolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/logocolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                }
-            }
-
-            function updateEventImageOverlay(events_id, frameid, cb) {
-                
-                var xhttp = new XMLHttpRequest();
-                if (cb.checked) {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageoverlay", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "enabled": 1
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/imageoverlay", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "enabled": 0
-                    }));
-                }
-            }
-
-            function updateEventImageOverlayOpacity(events_id, opacity, frameid) {
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    setTimeout(function () {
-                        document.getElementById(frameid).src = document.getElementById(frameid).src
-                    }, 500);
-                };
-                xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageoverlayopacity", true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
-                    "events_id": events_id,
-                    "opacity": opacity
-                }));
-            }
-
-            function updateEventImageHeader(events_id, frameid, cb) {
-                var xhttp = new XMLHttpRequest();
-                if (cb.checked) {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/imageheader", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/imageheader", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id
-                    }));
-                }
-            }
-            
-            function updateFieldOrder(listId){
-                var fieldsOrder = [];
-                let frameid
-                $("#" + listId + " .sortable-item").each(function(index) {
-                    frameid = $(this).attr("data-frameid"),
-                    fieldsOrder.push({
-                        "event_id" : $(this).attr("data-eventid"),
-                        "field_id" : $(this).attr("data-fieldid"),
-                        "sortorder" : index
-                    });
-                });
-                
-                var xhttp = new XMLHttpRequest();
-                xhttp.onload = function () {
-                    if (xhttp.status == 401) {
-                    }
-                    setTimeout(function () {
-                        document.getElementById(frameid).src = document.getElementById(frameid).src
-                    }, 500);
-                };
-                xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/sortfields", true);
-                xhttp.setRequestHeader('Content-Type', 'application/json');
-                xhttp.send(JSON.stringify({
-                    fieldsOrder
-              }));              
-            }
-
-            function updateEventLinePattern(events_id, frameid, selectlist) {
-                
-                var value = $(selectlist).html();
-                var buttonHtml = $('#linepatternbtn' + events_id).html();
-
-                var button_data_linepatternid = document.getElementById('linepatternbtn' + events_id).getAttribute('data-linepatternid')
-                var selected_data_linepatternid = selectlist.getAttribute('data-linepatternid')
-
-                //Sätt knappens html lika med det val som gjorts
-                $('#linepatternbtn' + events_id).html(value);
-                //Sätt knappens data-attribut lika med det val som gjorts
-                document.getElementById('linepatternbtn' + events_id).setAttribute('data-linepatternid', selected_data_linepatternid);
-
-                //Sätt det valda alternativets html lika med knappens
-                $(selectlist).html(buttonHtml);
-                //Sätt det valda alternativets data-attribut lika med knappens
-                selectlist.setAttribute('data-linepatternid', button_data_linepatternid);
-
-                var xhttp = new XMLHttpRequest();
-                if (selected_data_linepatternid != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/linepattern", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "linepattern_id": selected_data_linepatternid
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/linepattern", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "linepattern_id": selected_data_linepatternid
-                    }));
-                }
-            }
-
-            function updateEventLinePatternPlacement(events_id, frameid, selectlist) {
-                
-                var x = document.getElementById("textcolorselect");
-                linepatternplacement_id = selectlist.value
-                var xhttp = new XMLHttpRequest();
-                if (linepatternplacement_id != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/linepatternplacement", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "linepatternplacement_id": linepatternplacement_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/linepatternplacement", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "linepatternplacement_id": linepatternplacement_id
-                    }));
-                }
-            }
-
-            function updateEventLinePatternColor(events_id, frameid, selectlist) {
-                
-                var x = document.getElementById("linepatterncolorselect");
-                color_id = selectlist.value
-                var xhttp = new XMLHttpRequest();
-                if (color_id != "0") {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("POST", "/smartsigntools/api/v1/calendar/event/linepatterncolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                } else {
-                    xhttp.onload = function () {
-                        if (xhttp.status == 401) {
-                        }
-                        setTimeout(function () {
-                            document.getElementById(frameid).src = document.getElementById(frameid).src
-                        }, 500);
-                    };
-                    xhttp.open("DELETE", "/smartsigntools/api/v1/calendar/event/linepatterncolor", true);
-                    xhttp.setRequestHeader('Content-Type', 'application/json');
-                    xhttp.send(JSON.stringify({
-                        "events_id": events_id,
-                        "color_id": color_id
-                    }));
-                }
-            }
         </script>
     </div>
 </body>
