@@ -51,7 +51,7 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     height: auto;
     max-width: calc(100% - 136px);
     position: relative;
-    top: -5px;
+    top: 0px;
 }
 
 .navbar-brand img {
@@ -63,6 +63,11 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+.header {
+    display:flex;
+    justify-content: space-between
 }
 
 .wrap {
@@ -82,6 +87,106 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     -o-transform: scale(0.35);
     -webkit-transform: scale(0.35);
     transform: scale(0.35);
+
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.wrap.portrait.screen {
+    width: 380px;
+    height: 674px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #888888;
+}
+
+.portrait.screen .frame {
+    width: 1080px;
+    height: 1920px;
+    border: 0;
+    -ms-transform: scale(0.35);
+    -moz-transform: scale(0.35);
+    -o-transform: scale(0.35);
+    -webkit-transform: scale(0.35);
+    transform: scale(0.35);
+
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.wrap.portrait.a4 {
+    width: 380px;
+    height: 537px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #888888;
+}
+
+.portrait.a4 .frame {
+    width: 210mm;
+    height: 297mm;
+    border: 0;
+    -ms-transform: scale(0.48);
+    -moz-transform: scale(0.48);
+    -o-transform: scale(0.48);
+    -webkit-transform: scale(0.48);
+    transform: scale(0.48);
+
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.wrap.landscape {
+    width: 380px;
+    height: 214px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #888888;
+}
+
+.landscape.screen .frame {
+    width: 1920px;
+    height: 1080px;
+    border: 0;
+    -ms-transform: scale(0.198);
+    -moz-transform: scale(0.198);
+    -o-transform: scale(0.198);
+    -webkit-transform: scale(0.198);
+    transform: scale(0.198);
+
+    -ms-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+.wrap.landscape.a4 {
+    width: 380px;
+    height: 268px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #888888;
+}
+
+.landscape.a4 .frame {
+    width: 297mm;
+    height: 210mm;
+    border: 0;
+    -ms-transform: scale(0.337);
+    -moz-transform: scale(0.337);
+    -o-transform: scale(0.337);
+    -webkit-transform: scale(0.337);
+    transform: scale(0.337);
 
     -ms-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
@@ -199,7 +304,30 @@ input[type=date] {
     width: 95%;
     position: fixed;
     top: 0;
-  }
+}
+
+.bi-display.portrait::before {
+    transform: rotate(270deg);
+}
+
+.screen-icon {
+    display: inline-block;
+    width: 16px;
+    height: 10px;
+    position: relative;
+    border: 1px solid;
+    border-radius: 2px;
+}
+
+.screen-icon-portrait {
+    display: inline-block;
+    width: 16px;
+    height: 10px;
+    position: relative;
+    border: 1px solid;
+    border-radius: 2px;
+    transform: rotate(270deg);
+}
 
 @media (max-width: 900px) {
     #content {
@@ -214,5 +342,65 @@ input[type=date] {
 @media (max-width: 600px) {
     .topbuttons .btn {
         font-size: 0.8rem;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .wrap.portrait.screen {
+        width: 283px;
+        height: 501px;
+    }
+
+    .portrait.screen .frame {
+        -ms-transform: scale(0.26);
+        -moz-transform: scale(0.26);
+        -o-transform: scale(0.26);
+        -webkit-transform: scale(0.26);
+        transform: scale(0.26);
+    }
+
+    .wrap.portrait.a4 {
+        width: 288px;
+        height: 406px;
+    }
+    
+    .portrait.a4 .frame {
+        -ms-transform: scale(0.36);
+        -moz-transform: scale(0.36);
+        -o-transform: scale(0.36);
+        -webkit-transform: scale(0.36);
+        transform: scale(0.36);
+    }
+    
+    .wrap.landscape {
+        width: 290px;
+        height: 164px;
+    }
+    
+    .landscape.screen .frame {
+        -ms-transform: scale(0.15);
+        -moz-transform: scale(0.15);
+        -o-transform: scale(0.15);
+        -webkit-transform: scale(0.15);
+        transform: scale(0.15);
+    }
+    
+    .wrap.landscape.a4 {
+        width: 294px;
+        height: 208px;
+    }
+    
+    .landscape.a4 .frame {
+        -ms-transform: scale(0.26);
+        -moz-transform: scale(0.26);
+        -o-transform: scale(0.26);
+        -webkit-transform: scale(0.26);
+        transform: scale(0.26);
+    }
+
+    .previewform span {
+        display:none;
     }
 }
