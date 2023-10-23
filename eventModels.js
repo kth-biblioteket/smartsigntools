@@ -124,7 +124,7 @@ const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smart
                 console.error(err);
                 reject(err.message)
             } else {
-                //Lägg till fält
+                //Lägg till fält som visas default
                 //Skriv om detta!!
                 if(result.insertId != 0) {
                     await createEventField(result.insertId, 1)
@@ -135,7 +135,6 @@ const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smart
                     await createEventField(result.insertId, 6)
                     await createEventField(result.insertId, 7)
                     await createEventField(result.insertId, 8)
-                    await createEventField(result.insertId, 9)
                 }
 
                 const successMessage = "The event was entered successfully."
@@ -233,15 +232,6 @@ const updateEventPublishAsImage = (id, published_as_image) => {
 //Hämta fält för ett event
 const readEventFields = (events_id) => {
     return new Promise(function (resolve, reject) {
-
-        /*
-        const sql = SELECT 
-                        fields.id, eventfields.events_id, fields.type, fields.name, fields.description, fields.sortable 
-                    FROM fields
-                    LEFT JOIN eventfields ON eventfields.fields_id = fields.id AND eventfields.events_id = 242
-                    ORDER BY sortable`;
-        */
-
         const sql = `SELECT 
                         fields.id, 
                         eventfields.events_id, 
@@ -249,7 +239,8 @@ const readEventFields = (events_id) => {
                         fields.name, 
                         fields.description, 
                         fields.sortable,
-                        COALESCE(eventfieldsorder.sortorder, -1) AS sortorder
+                        COALESCE(eventfieldsorder.sortorder, -1) AS sortorder,
+                        fields.sortorder
                     FROM 
                         fields
                     LEFT JOIN 
@@ -259,6 +250,7 @@ const readEventFields = (events_id) => {
                     ORDER BY
                         fields.sortable,
                         sortorder,
+                        fields.sortorder,
                         name`
         database.db.query(database.mysql.format(sql,[events_id, events_id]),(err, result) => {
             if(err) {

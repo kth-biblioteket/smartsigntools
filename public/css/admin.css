@@ -146,8 +146,8 @@ main .navbar-expand-lg .navbar-nav .nav-link {
 }
 
 .wrap.landscape {
-    width: 380px;
-    height: 214px;
+    width: 541px;
+    height: 304px;
     padding: 0;
     overflow: hidden;
     border: 1px solid #888888;
@@ -157,11 +157,11 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     width: 1920px;
     height: 1080px;
     border: 0;
-    -ms-transform: scale(0.198);
-    -moz-transform: scale(0.198);
-    -o-transform: scale(0.198);
-    -webkit-transform: scale(0.198);
-    transform: scale(0.198);
+    -ms-transform: scale(0.281);
+    -moz-transform: scale(0.281);
+    -o-transform: scale(0.281);
+    -webkit-transform: scale(0.281);
+    transform: scale(0.281);
 
     -ms-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
@@ -171,8 +171,8 @@ main .navbar-expand-lg .navbar-nav .nav-link {
 }
 
 .wrap.landscape.a4 {
-    width: 380px;
-    height: 268px;
+    width: 541px;
+    height: 383px;
     padding: 0;
     overflow: hidden;
     border: 1px solid #888888;
@@ -182,11 +182,11 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     width: 297mm;
     height: 210mm;
     border: 0;
-    -ms-transform: scale(0.337);
-    -moz-transform: scale(0.337);
-    -o-transform: scale(0.337);
-    -webkit-transform: scale(0.337);
-    transform: scale(0.337);
+    -ms-transform: scale(0.481);
+    -moz-transform: scale(0.481);
+    -o-transform: scale(0.481);
+    -webkit-transform: scale(0.481);
+    transform: scale(0.481);
 
     -ms-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
@@ -217,11 +217,19 @@ main .navbar-expand-lg .navbar-nav .nav-link {
 
 .eventcard {
     flex: 1;
-    margin-bottom: 10px;
+    margin-bottom: 40px;
 }
 
 .kth-sand-bg {
     background-color: #EBE5E0;
+}
+
+.kth-tegel-bg {
+    background-color: #E86A58;
+}
+
+.kth-marinbla-bg {
+    background-color: #000061;
 }
 
 .eventcard-body {
@@ -229,6 +237,21 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     flex-direction: row;
     padding-bottom: 40px;
     gap: 10px;
+}
+
+.card-header {
+    position: relative;
+}
+
+.expand-indicator {
+    position: absolute;
+    right: 10px; /* Adjust the right value to control the spacing */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.flexcol {
+    flex-direction: column-reverse;
 }
 
 h2 {
@@ -335,6 +358,10 @@ input[type=date] {
     }
 
     .eventcard-body {
+        flex-direction: column;
+    }
+
+    .flexbox1_wrap {
         flex-direction: column;
     }
 }

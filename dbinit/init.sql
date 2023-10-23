@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS fields (
     name VARCHAR(30) NOT NULL,
     description VARCHAR(200) NULL,
     sortable TINYINT(1) NOT NULL,
+    sortorder int NOT NULL
     CONSTRAINT constraint_type UNIQUE (type)
 );
 
