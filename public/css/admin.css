@@ -70,6 +70,30 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     justify-content: space-between
 }
 
+.calendar__date {
+    width: 65px;
+    height: 65px;
+    background-color: #65656c;
+    text-align: center;
+    padding: 0 10px;
+    color: #fff;
+    float: left;
+    margin-right: 15px;
+    margin-top: 5px;
+    font-weight: 500;;
+}
+
+.calendar__date-day {
+    font-size: 1.875rem;
+    line-height: 1.4375;
+}
+
+.calendar__date-month {
+    position: relative;
+    top: -8px;
+    font-size: 1.125rem;
+}
+
 .wrap {
     width: 380px;
     height: 674px;
@@ -132,11 +156,11 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     width: 210mm;
     height: 297mm;
     border: 0;
-    -ms-transform: scale(0.48);
-    -moz-transform: scale(0.48);
-    -o-transform: scale(0.48);
-    -webkit-transform: scale(0.48);
-    transform: scale(0.48);
+    -ms-transform: scale(0.476);
+    -moz-transform: scale(0.476);
+    -o-transform: scale(0.476);
+    -webkit-transform: scale(0.476);
+    transform: scale(0.476);
 
     -ms-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
@@ -146,8 +170,8 @@ main .navbar-expand-lg .navbar-nav .nav-link {
 }
 
 .wrap.landscape {
-    width: 541px;
-    height: 304px;
+    width: 674px;
+    height: 380px;
     padding: 0;
     overflow: hidden;
     border: 1px solid #888888;
@@ -157,11 +181,11 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     width: 1920px;
     height: 1080px;
     border: 0;
-    -ms-transform: scale(0.281);
-    -moz-transform: scale(0.281);
-    -o-transform: scale(0.281);
-    -webkit-transform: scale(0.281);
-    transform: scale(0.281);
+    -ms-transform: scale(0.35);
+    -moz-transform: scale(0.35);
+    -o-transform: scale(0.35);
+    -webkit-transform: scale(0.35);
+    transform: scale(0.35);
 
     -ms-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
@@ -171,8 +195,8 @@ main .navbar-expand-lg .navbar-nav .nav-link {
 }
 
 .wrap.landscape.a4 {
-    width: 541px;
-    height: 383px;
+    width: 537px;
+    height: 380px;
     padding: 0;
     overflow: hidden;
     border: 1px solid #888888;
@@ -182,11 +206,11 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     width: 297mm;
     height: 210mm;
     border: 0;
-    -ms-transform: scale(0.481);
-    -moz-transform: scale(0.481);
-    -o-transform: scale(0.481);
-    -webkit-transform: scale(0.481);
-    transform: scale(0.481);
+    -ms-transform: scale(0.476);
+    -moz-transform: scale(0.476);
+    -o-transform: scale(0.476);
+    -webkit-transform: scale(0.476);
+    transform: scale(0.476);
 
     -ms-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
@@ -218,6 +242,7 @@ main .navbar-expand-lg .navbar-nav .nav-link {
 .eventcard {
     flex: 1;
     margin-bottom: 40px;
+    border: 1px solid #898989;
 }
 
 .kth-sand-bg {
@@ -250,8 +275,31 @@ main .navbar-expand-lg .navbar-nav .nav-link {
     transform: translateY(-50%);
 }
 
+.flexbox1_wrap {
+    display:flex;
+    flex:2;
+    gap: 10px
+}
+
+.flexbox2 {
+    flex:1
+}
+
 .flexcol {
-    flex-direction: column-reverse;
+    flex-direction: column;
+    flex:none;
+}
+
+.flex-1 {
+    flex: 1
+}
+
+.flexnone {
+    flex: none
+}
+
+.flexorder-1 {
+    order: 1
 }
 
 h2 {
@@ -363,6 +411,10 @@ input[type=date] {
 
     .flexbox1_wrap {
         flex-direction: column;
+    }
+
+    .flexbox1_1 {
+        order:1
     }
 }
 

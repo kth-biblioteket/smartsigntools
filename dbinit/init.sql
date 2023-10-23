@@ -169,19 +169,17 @@ CREATE TABLE IF NOT EXISTS eventlogocolor (
   color_id int NOT NULL
 );
 
-/*
-INSERT INTO fields(type, name, description)
+INSERT INTO fields(type, name, description, sortorder)
 VALUES
-('title','Titel','Rubriken från kalendern'),
-('ingress','Ingress','Ingressen från kalendern'),
-('time','Tid','Tiden för händelsen'),
-('location','Plats','Platsen för händelsen'),
-('language','Språk','Språket för händelsen'),
-('lecturer','Föreläsare','Föreläsare för händelsen'),
-('image','Bild','Bilden för händelsen(från polopoly)'),
-('qrcode','QR-Kod','QR-kod med länk till händelsen'),
-('typeofevent','Typ av event','Vad är det för typ av event');
-*/
+('title','Titel','Rubriken från kalendern',10),
+('ingress','Ingress','Ingressen från kalendern',90),
+('time','Tid','Tiden för händelsen',40),
+('location','Plats','Platsen för händelsen',50),
+('language','Språk','Språket för händelsen',60),
+('lecturer','Föreläsare','Föreläsare för händelsen',70),
+('image','Bild','Bilden för händelsen(från polopoly)',20),
+('qrcode','QR-Kod','QR-kod med länk till händelsen',30),
+('typeofevent','Typ av event','Vad är det för typ av event',80);
 
 /*
 UPDATE images
