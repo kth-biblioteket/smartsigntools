@@ -568,12 +568,6 @@
             </div>
         </div>
         <script>
-            //Spara events från ejs till variable
-            
-            var events = <%- JSON.stringify(events) %>;
-            console.log(events)
-            localStorage.setItem("events", JSON.stringify(events));
-
             // Starta websocket
             const thisSessionId = Math.random().toString(36).substr(2, 9);
             const socket = io('', { path: "/smartsigntools/api/v1/socket.io" })
