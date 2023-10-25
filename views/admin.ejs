@@ -253,7 +253,9 @@
                                                         </div>
                                                         <ul id="nonsortable<%=event.id%>" data-frameid="frame_<%=frameindex%>" class="list-group">
                                                             <%eventfields.forEach(field=> { %>
-                                                                <%if(field.sortable==0){%>
+                                                                <!-- Fix för att inte ha bilden som valbart fält-->
+                                                                <!-- Gör om på annat sätt senare! -->
+                                                                <%if(field.sortable==0 && field.type!='image'){%>
                                                                     <li class="list-group-item ui-state-default">
                                                                         <input class="fieldchoice form-check-input" data-eventid="<%=event.id%>" data-frameid="frame_<%=frameindex%>" data-fieldid="<%=field.id%>" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
                                                                         <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
@@ -566,6 +568,12 @@
             </div>
         </div>
         <script>
+            //Spara events från ejs till variable
+            
+            var events = <%- JSON.stringify(events) %>;
+            console.log(events)
+            localStorage.setItem("events", JSON.stringify(events));
+
             // Starta websocket
             const thisSessionId = Math.random().toString(36).substr(2, 9);
             const socket = io('', { path: "/smartsigntools/api/v1/socket.io" })

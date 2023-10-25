@@ -1284,20 +1284,17 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
                 }
 
                 //Bild antingen från bildbank eller kalender(har kalender ingen bild ligger bilden från template kvar)
+                // Eventfields innehåller bild(det ska det alltid göra)
                 if (row.events_id !== null && row.type == 'image') {
+                    //Det finns en bild vald från bildbank
                     if (eventimage[0]) {
                         const imagebase64 = fs.readFileSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + eventimage[0].fullpath))
                         imagesrc = 'data:image/jpeg;base64,' + Buffer.from(imagebase64).toString('base64');
                         template('.titleimage').addClass("fromimagebank")
                     } else {
-                        
-                        if (cheeriocalendar('article .figure-img').length) {
-                            imagesrc = 'https://www.kth.se' + cheeriocalendar('article .figure-img').attr('src')
-                            template('.titleimage').addClass("frompolopoly")
-                        } else {
-                            imagesrc = template('.titleimage img').attr('src')
-                            template('.titleimage').addClass("fromimagebank")
-                        }
+                        //Ingen bild vald från bildbanken, sätt den som är angiven som defaultbild
+                        imagesrc = template('.titleimage img').attr('src')
+                        template('.titleimage').addClass("fromimagebank")
                     }
                     template('.titleimage img').attr('src', imagesrc);
                     //template('.content-right').css('background-image', `url("${imagesrc}")`);
