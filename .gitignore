@@ -18,3 +18,7 @@ imagebank/*.jfif
 test.js
 frame*.png
 dev
+pdfjs
+docker-compose-dev.yml
+Dockerfile-dev
+package-dev.json

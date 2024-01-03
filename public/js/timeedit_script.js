@@ -124,8 +124,8 @@ $(document).ajaxSuccess(function (event, jqxhr, settings) {
             eventenddate.setHours(element.endtime.substr(0,2),element.endtime.substr(3,2),0);
             //currentdate.setHours(00,00,0);
             
-            //visa inte om sluttiden för eventet har passerats.
-            if (eventenddate > currentdate) {
+            //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
+            if (eventenddate > currentdate && element.columns[4] != "") {
                 if(element.columns[6]!=""){ info = ', ' + element.columns[6];}
                 html += '<div class="float bookingrow"><div class="eventtime">' + element.starttime.substr(0,5) + ' - ' + element.endtime.substr(0,5) + '</div><div class="eventobject">' + element.columns[4].replace('§', '').replace('-','') + '</div><div class="eventtitle"> ' + element.columns[5] + info + '</div></div>';
                 nobookingstoshow = false;
