@@ -541,6 +541,9 @@
                                   <label for="QRGeneralUrl" class="visually-hidden">Url</label>
                                   <input type="text" placeholder="Skriv in URL" class="form-control" name="QRGeneralUrl" id="QRGeneralUrl">
                                 </div>
+                                <div class="col-sm-10">
+                                    <input type="text" placeholder="Skriv in beskrivning" class="form-control" name="QRGeneralDesc" id="QRGeneralDesc">
+                                </div>
                                 <div class="col-sm">
                                     <button class="btn btn-primary px-4" type="button" onclick="createQrCodeGeneral()">
                                         Lägg till
@@ -1099,9 +1102,14 @@
             async function createQrCodeGeneral() {
                 
                 url = $("#QRGeneralUrl").val();
+                desc = $("#QRGeneralDesc").val();
                 const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/qrcode/general", {
-                    "url": url
+                    "url": url,
+                    "desc": desc
                 })
+                alert('QRkod  tillagd, ID: ' + response, 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                $("#QRGeneralUrl").val('')
+                $("#QRGeneralDesc").val('');
                 getQrCodesGeneral()
             }
 
@@ -1112,12 +1120,14 @@
                 getQrCodesGeneral()
             }
 
-            async function updateQrCodeGeneral(id, urlselector) {
+            async function updateQrCodeGeneral(id, urlselector, descselector) {
                 
                 let url = $("#" + urlselector).val();
+                let desc = $("#" + descselector).val();
                 const response = await makeHttpRequest("PUT", "/smartsigntools/api/v1/qrcode/general", {
                     "id": id,
-                    "url": url
+                    "url": url,
+                    "desc": desc
                 })
                 alert('Url uppdaterad', 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
                 getQrCodesGeneral()
@@ -1144,11 +1154,17 @@
                             { 
                                 "orderDataType": "dom-text",
                                     type: "string",
-                                "width": "60%", 
+                                "width": "30%", 
                                 "targets": 1 
                             },
+                            { 
+                                "orderDataType": "dom-text",
+                                    type: "string",
+                                "width": "30%", 
+                                "targets": 2 
+                            },
                             {
-                                "targets": 4,
+                                "targets": 5,
                                 "visible": false
                             }
                         ],
@@ -1159,7 +1175,7 @@
                             filename: 'QRKod_statistik',
                             sheetName: 'Statistik scannade QR-koder',
                             exportOptions: {
-                                columns: [ 0, 4]
+                                columns: [ 0, 4, 5]
                             }
                         } ]
                     });

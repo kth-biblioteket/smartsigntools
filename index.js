@@ -554,6 +554,7 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
                                     <tr>
                                         <th>Id</th>
                                         <th>Url</th>
+                                        <th>Beskrivning</th>
                                         <th>QR Kod</th>
                                         <th>Hantera</th>
                                         <th>Url</th>
@@ -565,13 +566,15 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
                                     `<tr>
                                         <td>${row.id}</td>
                                         <td><input class="form-control" type="text" id="row-${row.id}-url" name="row-${row.id}-url" value="${row.url}"> </td>
+                                        <td><input class="form-control" type="text" id="row-${row.id}-desc" name="row-${row.id}-desc" value="${row.description}"> </td>
+                                        
                                         <td>
                                             <button id="qrcodebtn_${row.id}" onclick="getQrCodeGeneral('${row.id}', '', this);" type="button" class="btn btn-primary" style="margin-right:10px" data-toggle="tooltip" title="Ladda ner QR-code i PNG-format" data-placement="top">
                                                 Hämta QR Kod
                                             </button>
                                         </td>
                                         <td>
-                                            <button id="updateQrCodeGeneral_${row.id}" onclick="updateQrCodeGeneral('${row.id}', 'row-${row.id}-url');" type="button" class="btn btn-success" style="margin-right:10px">
+                                            <button id="updateQrCodeGeneral_${row.id}" onclick="updateQrCodeGeneral('${row.id}', 'row-${row.id}-url', 'row-${row.id}-desc');" type="button" class="btn btn-success" style="margin-right:10px">
                                                 Spara
                                             </button>
                                             <button id="deleteQrCodeGeneral_${row.id}" onclick="deleteQrCodeGeneral('${row.id}');" type="button" class="btn btn-danger">
@@ -587,6 +590,7 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
                                     <tr>
                                         <th>Id</th>
                                         <th>Url</th>
+                                        <th>Beskrivning</th>
                                         <th>QR Kod</th>
                                         <th>Hantera</th>
                                         <th>Url</th>
@@ -607,8 +611,8 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
 apiRoutes.post("/qrcode/general", async function (req, res, next) {
     try {
         
-        if (req.body.url) {
-            let created_id = await eventController.createQrCodeGeneral(req.body.url);
+        if (req.body.url && req.body.desc) {
+            let created_id = await eventController.createQrCodeGeneral(req.body.url, req.body.desc);
             res.send(created_id.toString())
             
         } else {
@@ -623,8 +627,8 @@ apiRoutes.post("/qrcode/general", async function (req, res, next) {
 apiRoutes.put("/qrcode/general", async function (req, res, next) {
     try {
         
-        if (req.body.id && req.body.url) {
-            let result = await eventController.updateQrCodeGeneral(req.body.id, req.body.url);
+        if (req.body.id && req.body.url && req.body.desc) {
+            let result = await eventController.updateQrCodeGeneral(req.body.id, req.body.url, req.body.desc);
             res.send(result)
             
         } else {

@@ -965,9 +965,9 @@ async function readQrCodeGeneral(id) {
     }
 }
 
-async function createQrCodeGeneral(url) {
+async function createQrCodeGeneral(url, desc) {
     try {
-        let created_id = await eventModel.createQrCodeGeneral(url)
+        let created_id = await eventModel.createQrCodeGeneral(url, desc)
         return created_id
     } catch (err) {
         console.log(err.message)
@@ -975,9 +975,9 @@ async function createQrCodeGeneral(url) {
     }
 }
 
-async function updateQrCodeGeneral(id, url) {
+async function updateQrCodeGeneral(id, url, desc) {
     try {
-        let result = await eventModel.updateQrCodeGeneral(id, url)
+        let result = await eventModel.updateQrCodeGeneral(id, url, desc)
         return result
     } catch (err) {
         console.log(err.message)

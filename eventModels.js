@@ -1093,11 +1093,11 @@ const readQrCodeGeneral = (id) => {
 };
 
 //Lägg till qrcode
-const createQrCodeGeneral = (url) => {
+const createQrCodeGeneral = (url, desc) => {
     return new Promise(function (resolve, reject) {
-        const sql = `INSERT INTO qrcodegeneral(url)
-                VALUES(?)`;
-        database.db.query(database.mysql.format(sql,[url]),(err, result) => {
+        const sql = `INSERT INTO qrcodegeneral(url, description)
+                VALUES(?, ?)`;
+        database.db.query(database.mysql.format(sql,[url, desc]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -1109,12 +1109,12 @@ const createQrCodeGeneral = (url) => {
 };
 
 //Uppdatera qrcode generell
-const updateQrCodeGeneral = (id, url) => {
+const updateQrCodeGeneral = (id, url, desc) => {
     return new Promise(function (resolve, reject) {
         const sql = `UPDATE qrcodegeneral
-                    SET url = ?
+                    SET url = ?, description = ?
                     WHERE id = ?`;
-        database.db.query(database.mysql.format(sql,[url, id]),(err, result) => {
+        database.db.query(database.mysql.format(sql,[url, desc, id]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
