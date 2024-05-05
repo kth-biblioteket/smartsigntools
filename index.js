@@ -611,12 +611,12 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
 apiRoutes.post("/qrcode/general", async function (req, res, next) {
     try {
         
-        if (req.body.url && req.body.desc) {
-            let created_id = await eventController.createQrCodeGeneral(req.body.url, req.body.desc);
-            res.send(created_id.toString())
+        if (req.body.url) {
+            let result = await eventController.createQrCodeGeneral(req.body.url, req.body.desc);
+            res.send(result)
             
         } else {
-            res.status(400).send("url missing")
+            res.status(400).send("mandatory url missing")
         }
     } catch(err) {
         res.send(err.message)
@@ -626,13 +626,13 @@ apiRoutes.post("/qrcode/general", async function (req, res, next) {
 //Uppdatera QR-code URL generell
 apiRoutes.put("/qrcode/general", async function (req, res, next) {
     try {
-        
-        if (req.body.id && req.body.url && req.body.desc) {
+
+        if (req.body.id && req.body.url) {
             let result = await eventController.updateQrCodeGeneral(req.body.id, req.body.url, req.body.desc);
             res.send(result)
             
         } else {
-            res.status(400).send("parameters missing")
+            res.status(400).send("mandatory url missing")
         }
     } catch(err) {
         res.send(err.message)

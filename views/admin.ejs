@@ -949,7 +949,7 @@
                         if (xhr.status >= 200 && xhr.status < 300) {
                             resolve(xhr.responseText);
                         } else {
-                            reject(xhr.statusText);
+                            reject(xhr.statusText + " " + xhr.responseText);
                         }
                     };
 
@@ -1103,34 +1103,47 @@
                 
                 url = $("#QRGeneralUrl").val();
                 desc = $("#QRGeneralDesc").val();
-                const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/qrcode/general", {
-                    "url": url,
-                    "desc": desc
-                })
-                alert('QRkod  tillagd, ID: ' + response, 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
-                $("#QRGeneralUrl").val('')
-                $("#QRGeneralDesc").val('');
-                getQrCodesGeneral()
+                try {
+                    const response = await makeHttpRequest("POST", "/smartsigntools/api/v1/qrcode/general", {
+                        "url": url,
+                        "desc": desc
+                    })
+                    alert(response, 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                    $("#QRGeneralUrl").val('')
+                    $("#QRGeneralDesc").val('');
+                    getQrCodesGeneral()
+                } catch (err) {
+                    alert('Fel: "' + err + '"', 'danger', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                }
             }
 
             async function deleteQrCodeGeneral(id) {
-                const response = await makeHttpRequest("DELETE", "/smartsigntools/api/v1/qrcode/general", {
-                    "id": id
-                })
-                getQrCodesGeneral()
+                try {
+                    const response = await makeHttpRequest("DELETE", "/smartsigntools/api/v1/qrcode/general", {
+                        "id": id
+                    })
+                    alert(response, 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                    getQrCodesGeneral()
+                } catch (err) {
+                    alert('Fel: "' + err + '"', 'danger', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                }
             }
 
             async function updateQrCodeGeneral(id, urlselector, descselector) {
                 
                 let url = $("#" + urlselector).val();
                 let desc = $("#" + descselector).val();
-                const response = await makeHttpRequest("PUT", "/smartsigntools/api/v1/qrcode/general", {
-                    "id": id,
-                    "url": url,
-                    "desc": desc
-                })
-                alert('Url uppdaterad', 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
-                getQrCodesGeneral()
+                try {
+                    const response = await makeHttpRequest("PUT", "/smartsigntools/api/v1/qrcode/general", {
+                        "id": id,
+                        "url": url,
+                        "desc": desc
+                    })
+                    alert(response, 'success', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                    getQrCodesGeneral()
+                } catch(err) {
+                    alert('Fel: "' + err + '"', 'danger', 'updateQRGeneralAlertPlaceholder', true, 10000)
+                }
             }
 
             async function getQrCodesGeneral() {

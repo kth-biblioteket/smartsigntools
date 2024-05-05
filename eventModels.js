@@ -1102,8 +1102,8 @@ const createQrCodeGeneral = (url, desc) => {
                 console.error(err);
                 reject(err.message)
             }
-            const successMessage = "The qrcodeurl was successfully created."
-            resolve(result.insertId);
+            const successMessage = "The qrcode was successfully created. ID: " + result.insertId
+            resolve(successMessage);
         });
     })
 };
@@ -1119,7 +1119,7 @@ const updateQrCodeGeneral = (id, url, desc) => {
                 console.error(err);
                 reject(err.message)
             }
-            const successMessage = "The qrcode was successfully updated."
+            const successMessage = "The qrcode was successfully updated. ID: " + id
             resolve(successMessage);
         });
     })
@@ -1135,7 +1135,7 @@ const deleteQrCodeGeneral = (id) => {
                 console.error(err);
                 reject(err.message)
             }
-            const successMessage = "The qrcode was successfully deleted."
+            const successMessage = "The qrcode was successfully deleted. ID: " + id
             resolve(successMessage);
         });
     })

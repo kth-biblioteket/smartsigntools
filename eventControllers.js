@@ -967,8 +967,8 @@ async function readQrCodeGeneral(id) {
 
 async function createQrCodeGeneral(url, desc) {
     try {
-        let created_id = await eventModel.createQrCodeGeneral(url, desc)
-        return created_id
+        let result = await eventModel.createQrCodeGeneral(url, desc)
+        return result
     } catch (err) {
         console.log(err.message)
         return "error: " + err.message
@@ -987,8 +987,8 @@ async function updateQrCodeGeneral(id, url, desc) {
 
 async function deleteQrCodeGeneral(id) {
     try {
-        let created_id = await eventModel.deleteQrCodeGeneral(id)
-        return created_id
+        let result = await eventModel.deleteQrCodeGeneral(id)
+        return result
     } catch (err) {
         console.log(err.message)
         return "error: " + err.message
