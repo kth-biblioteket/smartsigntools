@@ -965,7 +965,35 @@ apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
 
 });
 
+apiRoutes.get("/librarytoday/smartsignpage", async function (req, res) {
+    try {
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        res.render('librarytoday', {smartsignconfig: {"kiosk" : kiosk}});
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
+apiRoutes.get("/angdomen/smartsignpage", async function (req, res) {
+    try {
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        res.render('angdomen', {smartsignconfig: {"kiosk" : kiosk}});
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
 apiRoutes.get("/outlook/calendaritems/emailaddress/:emailaddress", eventController.getExchangeCalendarItems);
+
+apiRoutes.get('/env', (req, res) => {
+    res.json({
+        bookingsystem_external_api_serverurl: process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL
+    });
+});
 
 app.use(process.env.APIROUTESPATH, apiRoutes);
 

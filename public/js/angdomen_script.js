@@ -1,0 +1,237 @@
+$(document).ready(async function() {
+    //Hämta events för dagen(pågående och kommande händelser)
+    let events = []
+    let today;
+    //Hämta dagens datum(eller använd urlparameter om angiven)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('todaysdate')) {
+        today = new Date(urlParams.get('todaysdate'));
+    } else {
+        today = new Date();
+    }
+
+    var dd = addZero(today.getDate());
+    var mm = addZero(today.getMonth()+1); //January is 0!
+    var yyyy = today.getFullYear();
+    var todaysdate
+
+    //TimeEdit
+    todaysdate = yyyy + mm + dd;
+    timeditresponse = await makeHttpRequest('GET', `https://cloud.timeedit.net/kth/web/public01/ri.json?h=f&sid=3&p=${todaysdate}-${todaysdate}&objects=417156.4&ox=0&types=0&fe=0&g=f&pl=f&sec=t&h2=2`)
+    jsonbookings = JSON.parse(timeditresponse);
+    if(jsonbookings.reservations.length > 0) {
+        jsonbookings.reservations.forEach(function(element) {
+            events.push({ 
+                "eventid" : element.id,
+                "location" : element.columns[4],
+                "title" : element.columns[5] + (element.columns[6]!="" ? ', ' + element.columns[6] : '') ,
+                "isalldayevent" : "",
+                "start" : element.startdate + ' ' + element.starttime,
+                "end" : element.enddate + ' ' + element.endtime,
+                "categories" : []
+            })
+        }); 
+    }
+    events.sort((a, b) => {
+        return new Date(a.start) - new Date(b.start);
+    });
+
+    console.log(events)
+
+    nobookingstoshow = true;
+    let html = '';
+    if(events.length > 0) {
+        events.forEach(function(element) {
+            var eventenddate = new Date(element.end);            
+            //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
+            if (eventenddate > today && element.location != "") {
+                html += '<div class="float bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div></div>';
+                nobookingstoshow = false;
+            }
+        }); 
+    } else {
+        html = '<div class="float bookingheader">No bookings</div>';
+    }
+    //uppdatera html
+    if(nobookingstoshow) {
+        html = '<div class="float bookingheader">No bookings</div>';
+    }
+    $("#lokalbokningar").html(html);
+
+    //Visa Dagens datum
+    //document.getElementById('todaysdate').innerHTML = todaysdate();
+    //Starta en digital klocka att visa på sidan
+    //startTime();
+    //Starta en "analog" klocka att visa på sidan
+    //drawClock();
+});
+
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
+}
+
+function getweekday(nr) {
+    var weekday=new Array(7);
+    weekday[1]="Måndag";
+    weekday[2]="Tisdag";
+    weekday[3]="Onsdag";
+    weekday[4]="Torsdag";
+    weekday[5]="Fredag";
+    weekday[6]="Lördag";
+    weekday[0]="Söndag";
+    return weekday[nr];
+}
+
+function getmonth(nr) {
+    var month=new Array(7);
+    month[0]="Januari";
+    month[1]="Februari";
+    month[2]="Mars";
+    month[3]="April";
+    month[4]="Maj";
+    month[5]="Juni";
+    month[6]="Juli";
+    month[7]="Augusti";
+    month[8]="September";
+    month[9]="Oktober";
+    month[10]="November";
+    month[11]="December";
+    return month[nr];
+}
+
+function todaysdate() {
+    var todaysdate = "",
+        today = new Date(),
+        year = today.getFullYear(),
+        day = today.getDate(),
+        weekday = getweekday(today.getDay()),
+        monthname = getmonth(today.getMonth()),
+    todaysdate = weekday + " " + day + " " + monthname + ", " + year
+    return todaysdate;
+}
+function startTime() {
+    var today = new Date(),
+        h = addZero(today.getHours()),
+        m = addZero(today.getMinutes()),
+        s = addZero(today.getSeconds());
+        
+    document.getElementById('currenttime').innerHTML = h + ":" + m;
+    t = setTimeout(function () {
+        startTime()
+    }, 1000);
+}
+
+// Funktion för api-anrop
+function makeHttpRequest(method, url, data = null) {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, url, true);
+
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(xhr.responseText);
+            } else {
+                reject(xhr.statusText + " " + xhr.responseText);
+            }
+        };
+
+        xhr.onerror = function() {
+            reject(xhr.statusText);
+        };
+
+        if (data) {
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
+    });
+}
+
+/*
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var radius = canvas.height / 2;
+ctx.translate(radius, radius);
+radius = radius * 0.90
+*/
+
+function drawClock() {
+    ctx.clearRect(-150, -150, canvas.width, canvas.height);
+    drawFace(ctx, radius);
+    drawNumbers(ctx, radius);
+    drawTime(ctx, radius);
+    t2 = setTimeout(function () {
+        drawClock()
+    }, 1000);
+}
+
+function drawFace(ctx, radius) {
+  var grad;
+  //Bakgrund
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2*Math.PI);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fill();
+  grad = ctx.createRadialGradient(0,0,radius*0.95, 0,0,radius*1.05);
+  grad.addColorStop(0, '#333');
+  grad.addColorStop(0.5, '#fff');
+  grad.addColorStop(1, '#333');
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = radius*0.1;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, radius*0.1, 0, 2*Math.PI);
+  ctx.fillStyle = '#333';
+  ctx.fill();
+}
+
+function drawNumbers(ctx, radius) {
+  var ang;
+  var num;
+  ctx.font = radius*0.15 + "px arial";
+  ctx.textBaseline="middle";
+  ctx.textAlign="center";
+  for(num = 1; num < 13; num++){
+    ang = num * Math.PI / 6;
+    ctx.rotate(ang);
+    ctx.translate(0, -radius*0.85);
+    ctx.rotate(-ang);
+    ctx.fillText(num.toString(), 0, 0);
+    ctx.rotate(ang);
+    ctx.translate(0, radius*0.85);
+    ctx.rotate(-ang);
+  }
+}
+
+function drawTime(ctx, radius){
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    hour=hour%12;
+    hour=(hour*Math.PI/6)+
+    (minute*Math.PI/(6*60))+
+    (second*Math.PI/(360*60));
+    drawHand(ctx, hour, radius*0.5, radius*0.07);
+
+    minute=(minute*Math.PI/30)+(second*Math.PI/(30*60));
+    drawHand(ctx, minute, radius*0.8, radius*0.07);
+
+    second=(second*Math.PI/30);
+    drawHand(ctx, second, radius*0.9, radius*0.02);
+}
+
+function drawHand(ctx, pos, length, width) {
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.moveTo(0,0);
+    ctx.rotate(pos);
+    ctx.lineTo(0, -length);
+    ctx.stroke();
+    ctx.rotate(-pos);
+}

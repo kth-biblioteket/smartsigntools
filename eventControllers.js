@@ -2040,20 +2040,27 @@ async function getExchangeCalendarItems(req, res) {
     let start
     let end
     let json=[]
+    let IsAllDayEvent = false;
     for (const appointment of appointments.Items) {
+        
         if(appointment.IsAllDayEvent) {
             start =new Date(appointment.Start).toLocaleDateString('sv-SE')
             end = new Date(appointment.End).toLocaleDateString('sv-SE')
+            IsAllDayEvent = true
         } else {
             start =new Date(appointment.Start).toLocaleString('sv-SE')
             end = new Date(appointment.End).toLocaleString('sv-SE')
+            IsAllDayEvent = false
         };
         json.push(
             {
+                "eventid": appointment.Id.UniqueId,
                 "location": appointment.Location != null ? appointment.Location : "",
                 "title": appointment.Subject,
+                "isalldayevent" : IsAllDayEvent,
                 "start": start,
-                "end": end
+                "end": end,
+                "categories" : appointment.Categories.items
             }
         )
     }

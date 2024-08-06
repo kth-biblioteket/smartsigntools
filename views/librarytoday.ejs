@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    <%- include('partials/librarytodayhead'); %>
+</head>
+
+<body>
+    <div class="App">
+        <% if (!smartsignconfig.kiosk) { %>
+            <div class="App-title App-padding content-top">
+                <div class="kthlogo">
+                    <img src="/smartsigntools/images/kthlogo_vit.svg">
+                </div>
+                <div class="rubrik">The library today</div>
+                <div class="openinghours"></div>
+            </div>
+            <% } %>
+                <div id="App-content" class="App-content content-padding">
+                    <div id="lokalbokningar" class="lokalbokningar">
+                    </div>
+                </div>
+                <div class="App-footer content-padding">
+                </div>
+    </div>
+    <%- include('partials/librarytodayscript'); %>
+</body>
+
+</html>

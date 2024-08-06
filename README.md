@@ -9,6 +9,19 @@ Deploy via github actions som anropar en webhook
  
 ### Hämtar bl a bibliotekets kalender på webben 
 
+### Hämtar timeeditbokningar
+Hitta lokaler/object 
+https://cloud.timeedit.net/kth/web/public01/ri1Q8.html
+https://cloud.timeedit.net/kth/web/public01/ri1Y8X80Q8fZ90Qv58081665yXY88Z3XY5655X2Q20898Y8530YY08XY4703677X86Y39578X896995087QY.html
+
+1. Salongen = 392851.4
+2. Ångdomen = 417156.4
+3. Hjärne = 420804.4
+4. Laviosier = 417154.4
+5. Lallerstedt = 420802.4
+6. Maxwell = 353552.4
+7. Rinman = 420801.4
+
 #### Dependencies
 sudo apt-get install chromium-browser
 
