@@ -88,7 +88,7 @@ body {
     color: #DEF0FF;
     font-weight: 200;
     display: flex;
-    justify-content: space-between;
+    /*justify-content: space-between;*/
     font-size: 32px;
     align-items: flex-start;
     height: 70px;
@@ -104,7 +104,7 @@ body {
 
 .bookingrow  {
     display: flex;
-    justify-content: space-between;
+    /*justify-content: space-between;*/
     font-size: 40px;
     font-weight: 200;
     align-items: flex-start;
@@ -122,7 +122,8 @@ body {
 }
 
 .eventtime {
-    flex:3;
+    /*flex:3;*/
+    width: 160px;
 }
 
 .eventqrcode {
@@ -130,11 +131,14 @@ body {
 }
 
 .eventobject {
-    flex:3;
+    /*flex:3;*/
+    width: 280px;
 }
 
 .eventtitle {
-    flex:7;
+    /*flex:8;*/
+    width: 530px;
+    padding-right:10px;
 }
 
 .grey {

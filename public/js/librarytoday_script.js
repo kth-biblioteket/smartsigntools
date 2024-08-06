@@ -53,6 +53,7 @@ $(document).ready(async function() {
     if(jsonbookings.reservations.length > 0) {
         jsonbookings.reservations.forEach(function(element) {
             events.push({ 
+                "type": "timeedit",
                 "eventid" : element.id,
                 "location" : element.columns[4],
                 "title" : element.columns[5] + (element.columns[6]!="" ? ', ' + element.columns[6] : '') ,
@@ -68,36 +69,46 @@ $(document).ready(async function() {
     todaysdate = yyyy + '-' + mm + '-' + dd;
     outlookresponse = await makeHttpRequest('GET', `/smartsigntools/api/v1/outlook/calendaritems/emailaddress/gvs-kthb-sydostragalleriet@ug.kth.se?&startdate=${todaysdate} 00:00:00&enddate=${todaysdate} 23:59:00`)
     jsonbookings = JSON.parse(outlookresponse);
+    //Filtrera på kategorier
+    const desiredCategories = env.outlookcategories.split(",").map(category => category.trim());
+    //const desiredCategories = ["Sydöstra galleriet", "Newton", "Bibliotekshallen", "Entréhallen", "Glasväggen"];
     if(jsonbookings.length > 0) {
         jsonbookings.forEach(function(element) {
-            events.push({ 
-                "eventid" : element.eventid,
-                "location" : element.location,
-                "title" : element.title ,
-                "isalldayevent" : element.isalldayevent,
-                "start" : element.start,
-                "end" : element.end,
-                "categories" : element.categories,
-            })
+            let matches = element.categories.some(category => desiredCategories.includes(category));
+            if (matches) {
+                events.push({ 
+                    "type": "outlook",
+                    "eventid" : element.eventid,
+                    "location" : element.location,
+                    "title" : element.title ,
+                    "isalldayevent" : element.isalldayevent,
+                    "start" : element.start,
+                    "end" : element.end,
+                    "categories" : element.categories,
+                })
+            }
         }); 
     } 
     events.sort((a, b) => {
         return new Date(a.start) - new Date(b.start);
     });
+
     let start
     nobookingstoshow = true;
-    html = '<div class="bookingheader"><div class="eventtitle">Event</div><div class="eventtime">Time</div><div class="eventobject">Room</div></div>';
+    html = '<div class="bookingheader"><div class="eventtitle">Event</div><div class="eventtime">Time</div><div class="eventobject">Location</div></div>';
     html += '<div class="divider"></div>';
             if(events.length > 0) {
                 events.forEach(function(element) {
                     let info = '';
                     let currentdate = new Date();
                     let eventenddate = new Date(element.end);
-                    
-                    //element.start = removeLeadingZero(element.start)
                     //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
-                    if (eventenddate > today && element.location != "") {
+                    if (eventenddate > today && element.type == "timeedit" && element.location != "") {
                         html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div><div class="eventobject">' + element.location.replace('§', '').replace('-','') + '</div></div>';
+                        nobookingstoshow = false;
+                    }
+                    if (eventenddate > today && element.type == "outlook") {
+                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div><div class="eventobject">' + element.categories[0] + '</div></div>';
                         nobookingstoshow = false;
                     }
                 }); 

@@ -991,7 +991,8 @@ apiRoutes.get("/outlook/calendaritems/emailaddress/:emailaddress", eventControll
 
 apiRoutes.get('/env', (req, res) => {
     res.json({
-        bookingsystem_external_api_serverurl: process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL
+        bookingsystem_external_api_serverurl : process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL,
+        outlookcategories : process.env.OUTLOOKCATEGORIES
     });
 });
 
