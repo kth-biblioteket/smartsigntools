@@ -1,9 +1,34 @@
 $(document).ready(async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    //Info
+    async function getDebug() {
+        try {
+            let response = await fetch('https://api.ipify.org?format=json');
+            let data = await response.json();
+            document.getElementById('debuginfo').textContent = data.ip;
+        } catch (error) {
+            document.getElementById('debuginfo').textContent = 'Error retrieving IP address';
+        }
+    }
+
+    // Key combination: Ctrl + Alt + I
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'd') {
+            event.preventDefault();
+            getDebug();
+            document.getElementById('debuginfo').style.display = "block"
+        }
+        if (event.key === 'q') {
+            event.preventDefault();
+            document.getElementById('debuginfo').style.display = "none"
+        }
+    });
+
     //Hämta events för dagen(pågående och kommande händelser)
     let events = []
     let today;
     //Hämta dagens datum(eller använd urlparameter om angiven)
-    const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('todaysdate')) {
         today = new Date(urlParams.get('todaysdate'));
     } else {
@@ -35,8 +60,6 @@ $(document).ready(async function() {
     events.sort((a, b) => {
         return new Date(a.start) - new Date(b.start);
     });
-
-    console.log(events)
 
     nobookingstoshow = true;
     let html = '';

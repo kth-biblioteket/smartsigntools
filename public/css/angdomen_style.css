@@ -175,3 +175,15 @@ body {
     height: 380px;
     margin-bottom: 30px;
 }
+
+#debuginfo {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    padding: 5px 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 5px;
+}
