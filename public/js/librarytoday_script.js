@@ -104,7 +104,8 @@ $(document).ready(async function() {
                     let eventenddate = new Date(element.end);
                     //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
                     if (eventenddate > today && element.type == "timeedit" && element.location != "") {
-                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div><div class="eventobject">' + element.location.replace('§', '').replace('-','') + '</div></div>';
+                        element.location = element.location.replace(/[§-]/g, '')
+                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div><div class="eventobject">' + element.location + '</div></div>';
                         nobookingstoshow = false;
                     }
                     if (eventenddate > today && element.type == "outlook") {
