@@ -13,6 +13,10 @@ body {
     position: relative;
 }
 
+.content-top {
+    padding-bottom: 70px;
+}
+
 .kthlogo {
     /* kronbredd = 73px för 160px logo */
     padding-top: 73px;
@@ -60,7 +64,7 @@ body {
     position: relative;
     font-size: 120px;
     color: #DEF0FF;
-    padding: 70px 50px 0px 50px;
+    padding: 0px 50px 0px 50px;
     font-weight: 700;
     line-height: 105%;
     z-index: 1000;
