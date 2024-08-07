@@ -987,6 +987,17 @@ apiRoutes.get("/angdomen/smartsignpage", async function (req, res) {
 
 });
 
+apiRoutes.get("/openinghours/smartsignpage", async function (req, res) {
+    try {
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        res.render('openinghours', {smartsignconfig: {"kiosk" : kiosk}});
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
 apiRoutes.get("/outlook/calendaritems/emailaddress/:emailaddress", eventController.getExchangeCalendarItems);
 
 apiRoutes.get('/env', (req, res) => {

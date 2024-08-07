@@ -1,0 +1,24 @@
+<html>
+
+<head>
+    <%- include('partials/openinghourshead'); %>
+</head>
+
+<body>
+    <div class="App">
+        <% if (!smartsignconfig.kiosk) { %>
+            <div class="App-title App-padding content-top">
+                <div class="kthlogo">
+                    <img src="/smartsigntools/images/kthlogo_vit.svg">
+                </div>
+            </div>
+        <% } %>
+            <div class="rubrik">Öppet idag</div>
+            <div class="openinghours"></div>
+            <div class="rubrik">Opening hours</div>
+            <div class="rubrik">today</div>
+    </div>
+    <%- include('partials/openinghoursscript'); %>
+</body>
+
+</html>
