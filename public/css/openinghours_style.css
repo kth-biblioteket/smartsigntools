@@ -80,6 +80,8 @@ body {
     font-weight: 700;
     line-height: 105%;
     z-index: 1000;
+    display: flex;
+    justify-content: center;
 }
 
 .lokalbokningar {
