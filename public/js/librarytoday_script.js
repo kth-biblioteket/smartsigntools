@@ -105,11 +105,11 @@ $(document).ready(async function() {
                     //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
                     if (eventenddate > today && element.type == "timeedit" && element.location != "") {
                         element.location = element.location.replace(/[§-]/g, '')
-                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div><div class="eventobject">' + element.location + '</div></div>';
+                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + (element.start.substr(14,2) != "00" ? element.start.substr(11,5) : element.start.substr(11,2)) + '–' + (element.end.substr(14,2) != "00" ? element.end.substr(11,5) : element.end.substr(11,2)) + '</div><div class="eventobject">' + element.location + '</div></div>';
                         nobookingstoshow = false;
                     }
                     if (eventenddate > today && element.type == "outlook") {
-                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div><div class="eventobject">' + element.categories[0] + '</div></div>';
+                        html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + (element.start.substr(14,2) != "00" ? element.start.substr(11,5) : element.start.substr(11,2)) + '–' + (element.end.substr(14,2) != "00" ? element.end.substr(11,5) : element.end.substr(11,2)) + '</div><div class="eventobject">' + element.categories[0] + '</div></div>';
                         nobookingstoshow = false;
                     }
                 }); 

@@ -123,7 +123,7 @@ body {
 
 .eventtime {
     /*flex:3;*/
-    width: 160px;
+    width: 240px;
 }
 
 .eventqrcode {
@@ -132,12 +132,12 @@ body {
 
 .eventobject {
     /*flex:3;*/
-    width: 280px;
+    width: 250px;
 }
 
 .eventtitle {
     /*flex:8;*/
-    width: 530px;
+    width: 480px;
     padding-right:10px;
 }
 
