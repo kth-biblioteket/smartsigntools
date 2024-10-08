@@ -41,7 +41,7 @@ $(document).ready(async function() {
     var todaysdate
 
     //TimeEdit
-    todaysdate = yyyy + mm + dd;
+    todaysdate = yyyy + '' + mm + '' + dd;
     timeditresponse = await makeHttpRequest('GET', `https://cloud.timeedit.net/kth/web/public01/ri.json?h=f&sid=3&p=${todaysdate}-${todaysdate}&objects=417156.4&ox=0&types=0&fe=0&g=f&pl=f&sec=t&h2=2`)
     jsonbookings = JSON.parse(timeditresponse);
     if(jsonbookings.reservations.length > 0) {
@@ -68,7 +68,7 @@ $(document).ready(async function() {
             var eventenddate = new Date(element.end);            
             //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
             if (eventenddate > today && element.location != "") {
-                html += '<div class="float bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + element.start.substr(11,2) + '–' + element.end.substr(11,2) + '</div></div>';
+                html += '<div class="float bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + (element.start.substr(14,2) != "00" ? element.start.substr(11,5) : element.start.substr(11,2)) + '–' + (element.end.substr(14,2) != "00" ? element.end.substr(11,5) : element.end.substr(11,2)) + '</div></div>';
                 nobookingstoshow = false;
             }
         }); 
