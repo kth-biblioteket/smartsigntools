@@ -155,18 +155,33 @@
                                                 </a>
                                                 <div id="dlpdfscreen<%=event.id%>" class="collapse">
                                                     <div class="card-body">
-                                                        <p class="card-text">Använd nedladdade pdf:er för visning på skärm eller i en powerpoint t ex</p>
+                                                        <p class="card-text">Använd nedladdade filer för visning på skärm eller i en powerpoint t ex</p>
                                                         <div style="display:grid;gap:10px;grid-template-columns: auto auto;">
                                                             <a>
-                                                                <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'portrait');" type="button"
+                                                                <button id="pdfbtn_screen" onclick="getPage('<%=event.id%>', 'pdf', this, 'screen', 'portrait');" type="button"
                                                                     class="btn btn-primary" style="margin:0px 0px">
                                                                     <i class="bi bi-download"></i> PDF Stående
                                                                 </button>
                                                             </a>
                                                             <a>
-                                                            <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'screen', 'landscape');" type="button"
+                                                            <button id="pdfbtn_screen" onclick="getPage('<%=event.id%>', 'pdf', this, 'screen', 'landscape');" type="button"
                                                                 class="btn btn-primary" style="margin:0px 0px">
                                                                 <i class="bi bi-download"></i> PDF Liggande
+                                                            </button>
+                                                            </a>
+                                                        </div>
+                                                        <br/>
+                                                        <div style="display:grid;gap:10px;grid-template-columns: auto auto;">
+                                                            <a>
+                                                                <button id="pdfbtn_screen" onclick="getPage('<%=event.id%>', 'jpeg', this, 'screen', 'portrait');" type="button"
+                                                                    class="btn btn-primary" style="margin:0px 0px">
+                                                                    <i class="bi bi-download"></i> JPEG Stående
+                                                                </button>
+                                                            </a>
+                                                            <a>
+                                                            <button id="pdfbtn_screen" onclick="getPage('<%=event.id%>', 'jpeg', this, 'screen', 'landscape');" type="button"
+                                                                class="btn btn-primary" style="margin:0px 0px">
+                                                                <i class="bi bi-download"></i> JPEG Liggande
                                                             </button>
                                                             </a>
                                                         </div>
@@ -182,13 +197,13 @@
                                                         <p class="card-text">Använd nedladdade pdf:er för att skriva ut i A4- eller A3-format</p>
                                                         <div style="display:grid;gap:10px;grid-template-columns: auto auto;">
                                                             <a>
-                                                                <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'portrait');" type="button"
+                                                                <button id="pdfbtn_a4" onclick="getPage('<%=event.id%>', 'pdf', this, 'A4', 'portrait');" type="button"
                                                                     class="btn btn-primary" style="margin:0px 0px">
                                                                     <i class="bi bi-download"></i> PDF Stående
                                                                 </button>
                                                             </a>
                                                             <a>
-                                                                <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4', 'landscape');" type="button"
+                                                                <button id="pdfbtn_a4" onclick="getPage('<%=event.id%>', 'pdf', this, 'A4', 'landscape');" type="button"
                                                                     class="btn btn-primary" style="margin:0px 0px">
                                                                     <i class="bi bi-download"></i> PDF Liggande
                                                                 </button>
@@ -990,10 +1005,10 @@
                 xhttp.send();
             }
 
-            function getPdf(id, cb, format, orientation) {
+            function getPage(id, type, cb, format, orientation) {
                 var restorehtml = $(cb).html()
                 $(cb).prop("disabled", true);
-                $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar pdf...');
+                $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar...');
 
                 
                 var xhttp = new XMLHttpRequest();
@@ -1003,14 +1018,14 @@
                     var blob = xhttp.response;
                     var link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.download = "smartsign_" + id + ".pdf";
+                    link.download = "smartsign_" + id + "." + type;
                     link.click();
                     $(cb).prop("disabled", false);
                     $(cb).html(restorehtml);
 
 
                 };
-                xhttp.open("GET", "/smartsigntools/api/v1/calendar/pdf/" + id + "?format=" + format + "&orientation=" + orientation, true);
+                xhttp.open("GET", "/smartsigntools/api/v1/calendar/download/" + id + "?format=" + format + "&type=" + type + "&orientation=" + orientation, true);
                 xhttp.responseType = "blob";
                 xhttp.setRequestHeader('Content-Type', 'application/json');
                 xhttp.send();

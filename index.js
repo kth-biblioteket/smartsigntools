@@ -103,6 +103,7 @@ apiRoutes.get("/calendar/published/slideshow", eventController.slideshow)
 
 apiRoutes.get("/calendar/published/slideshowimages", eventController.slideshowimages)
 
+//Skapa event
 apiRoutes.post("/calendar/event", VerifyToken, async function (req, res, next) {
     try {
         let guid = req.query.guid || req.body.guid
@@ -114,6 +115,7 @@ apiRoutes.post("/calendar/event", VerifyToken, async function (req, res, next) {
     }
 });
 
+//Uppdatera event
 apiRoutes.put("/calendar/event", VerifyToken, async function (req, res, next) {
     try {
         let guid = req.query.guid || req.body.guid
@@ -124,6 +126,7 @@ apiRoutes.put("/calendar/event", VerifyToken, async function (req, res, next) {
     }
 });
 
+//Ta bort event
 apiRoutes.delete("/calendar/event", VerifyToken, async function (req, res, next) {
     try {
         let guid = req.query.guid || req.body.guid
@@ -133,8 +136,10 @@ apiRoutes.delete("/calendar/event", VerifyToken, async function (req, res, next)
     } 
 });
 
+//Uppdatera språk för event
 apiRoutes.put("/calendar/eventlang/:id", VerifyToken, eventController.updateEventLang)
 
+//Publicera event(används inte)
 apiRoutes.post("/calendar/event/publish", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.query.events_id || req.body.events_id
@@ -145,6 +150,7 @@ apiRoutes.post("/calendar/event/publish", VerifyToken, async function (req, res,
     }
 });
 
+//Lägger till fält som ska visas för eventet
 apiRoutes.post("/calendar/event/field", VerifyToken, async function (req, res, next) {
     try {
         let fields_id = req.body.fields_id
@@ -155,6 +161,7 @@ apiRoutes.post("/calendar/event/field", VerifyToken, async function (req, res, n
     }
 });
 
+//Tar bort fält som ska visas för eventet
 apiRoutes.delete("/calendar/event/field", VerifyToken, async function (req, res, next) {
     try {
         let fields_id = req.body.fields_id
@@ -165,6 +172,7 @@ apiRoutes.delete("/calendar/event/field", VerifyToken, async function (req, res,
     }
 });
 
+//Sätter vilken bakgrundsfärg eventet ska ha
 apiRoutes.post("/calendar/event/bgcolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -175,6 +183,7 @@ apiRoutes.post("/calendar/event/bgcolor", VerifyToken, async function (req, res,
     }
 });
 
+//Tar bort bakgrundsfärg för eventet
 apiRoutes.delete("/calendar/event/bgcolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -185,6 +194,7 @@ apiRoutes.delete("/calendar/event/bgcolor", VerifyToken, async function (req, re
     }
 });
 
+//Sätter textfärg för eventet
 apiRoutes.post("/calendar/event/textcolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -195,6 +205,7 @@ apiRoutes.post("/calendar/event/textcolor", VerifyToken, async function (req, re
     }
 });
 
+//Tar bort testfärg för event
 apiRoutes.delete("/calendar/event/textcolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -205,6 +216,7 @@ apiRoutes.delete("/calendar/event/textcolor", VerifyToken, async function (req, 
     }
 });
 
+//Sätter färg för kth-logo för eventet
 apiRoutes.post("/calendar/event/logocolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -215,6 +227,7 @@ apiRoutes.post("/calendar/event/logocolor", VerifyToken, async function (req, re
     }
 });
 
+//Tar bort färg för kth-logo för eventet
 apiRoutes.delete("/calendar/event/logocolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -225,6 +238,7 @@ apiRoutes.delete("/calendar/event/logocolor", VerifyToken, async function (req, 
     }
 });
 
+//Sätter bild för eventet
 apiRoutes.post("/calendar/event/image", VerifyToken, async function (req, res, next) {
     try {
         let images_id = req.body.images_id
@@ -235,6 +249,7 @@ apiRoutes.post("/calendar/event/image", VerifyToken, async function (req, res, n
     }
 });
 
+//Tar bort färg för eventet
 apiRoutes.delete("/calendar/event/image", VerifyToken, async function (req, res, next) {
     try {
         let images_id = req.body.images_id
@@ -245,6 +260,7 @@ apiRoutes.delete("/calendar/event/image", VerifyToken, async function (req, res,
     }
 });
 
+//Sätter en imageoverlay för eventet
 apiRoutes.post("/calendar/event/imageoverlay", VerifyToken, async function (req, res, next) {
     try {
         let enabled = req.body.enabled
@@ -255,6 +271,7 @@ apiRoutes.post("/calendar/event/imageoverlay", VerifyToken, async function (req,
     }
 });
 
+//Tar bort imageoverlay för eventet
 apiRoutes.delete("/calendar/event/imageoverlay", VerifyToken, async function (req, res, next) {
     try {
         let enabled = req.body.enabled
@@ -265,6 +282,7 @@ apiRoutes.delete("/calendar/event/imageoverlay", VerifyToken, async function (re
     }
 });
 
+//Sätter opacity för overlay
 apiRoutes.post("/calendar/event/imageoverlayopacity", VerifyToken, async function (req, res, next) {
     try {
         let opacity = req.body.opacity
@@ -275,6 +293,7 @@ apiRoutes.post("/calendar/event/imageoverlayopacity", VerifyToken, async functio
     }
 });
 
+//Sätter om rubrik ska visas på bilden för eventet
 apiRoutes.post("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -284,6 +303,7 @@ apiRoutes.post("/calendar/event/imageheader", VerifyToken, async function (req, 
     }
 });
 
+//Tar bort om rubrik ska visas på bilden för eventet
 apiRoutes.delete("/calendar/event/imageheader", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -293,6 +313,7 @@ apiRoutes.delete("/calendar/event/imageheader", VerifyToken, async function (req
     }
 });
 
+//Ordna/sortera fälten för eventen
 apiRoutes.post("/calendar/event/sortfields", VerifyToken, async function (req, res, next) {
     try {
         res.send(await eventController.createEventFieldsOrder(req.body.fieldsOrder))
@@ -301,6 +322,7 @@ apiRoutes.post("/calendar/event/sortfields", VerifyToken, async function (req, r
     }
 });
 
+//Sätt linjemönster(mall från KTH grafisk profil) för bilden
 apiRoutes.post("/calendar/event/linepattern", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -311,6 +333,7 @@ apiRoutes.post("/calendar/event/linepattern", VerifyToken, async function (req, 
     }
 });
 
+//Ta bort linjemönster(mall från KTH grafisk profil) för bilden
 apiRoutes.delete("/calendar/event/linepattern", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -320,6 +343,7 @@ apiRoutes.delete("/calendar/event/linepattern", VerifyToken, async function (req
     }
 });
 
+//Sätt placering för linjemönster(mall från KTH grafisk profil) för bilden
 apiRoutes.post("/calendar/event/linepatternplacement", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -330,6 +354,7 @@ apiRoutes.post("/calendar/event/linepatternplacement", VerifyToken, async functi
     }
 });
 
+//Ta bort placering för linjemönster(mall från KTH grafisk profil) för bilden
 apiRoutes.delete("/calendar/event/linepatternplacement", VerifyToken, async function (req, res, next) {
     try {
         let events_id = req.body.events_id
@@ -339,6 +364,7 @@ apiRoutes.delete("/calendar/event/linepatternplacement", VerifyToken, async func
     }
 });
 
+//Sätt färg för linjemönster(mall från KTH grafisk profil) för bilden
 apiRoutes.post("/calendar/event/linepatterncolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -349,6 +375,7 @@ apiRoutes.post("/calendar/event/linepatterncolor", VerifyToken, async function (
     }
 });
 
+//Ta bort färg för linjemönster(mall från KTH grafisk profil) för bilden
 apiRoutes.delete("/calendar/event/linepatterncolor", VerifyToken, async function (req, res, next) {
     try {
         let color_id = req.body.color_id
@@ -359,6 +386,7 @@ apiRoutes.delete("/calendar/event/linepatterncolor", VerifyToken, async function
     }
 });
 
+//Hämta sida för eventet
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
         let html_template = req.query.template || 'templates/smartsign_template_screen.html'
@@ -373,10 +401,19 @@ apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     }
 });
 
+/**
+ * Hämta publicerad sida (används inte)
+ */
 apiRoutes.get("/calendar/event/image/:id", eventController.getPublishedPageAsImage)
 
+/**
+ * Generera publicerad sida som bild (används inte)
+ */
 apiRoutes.post("/calendar/event/:id", VerifyToken, eventController.generatePublishedPageAsImage)
 
+/**
+ * Skapa/hämta qr-kod för event
+ */
 apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
     try {
         let format = req.query.format || "string"
@@ -393,18 +430,21 @@ apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
     }
 });
 
-apiRoutes.get("/calendar/pdf/:id", async function (req, res, next) {
+//Ladda ner event i angivet format (pdf, png, jpeg)
+apiRoutes.get("/calendar/download/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
-            let pdf = await eventController.generatePdfPage(req.params.id, req.query.format, req.query.orientation);
-            res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
-            res.send(pdf)
+            let page = await eventController.generatePage(req.params.id, req.query.type, req.query.format, req.query.orientation);
+
+            res.set({ 'Content-Type': 'application/' + req.query.type, 'Content-Length': page.length })
+            res.send(page)
         }
     } catch(err) {
         res.send(err.message)
     }
 });
 
+//Hämta event som bild (används inte)
 apiRoutes.get("/calendar/image/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
@@ -423,6 +463,7 @@ apiRoutes.get("/calendar/image/:id", async function (req, res, next) {
     }
 });
 
+//Hämtar publicerade events som slideshow(används inte)
 apiRoutes.post("/calendar/published/slideshow", VerifyToken, async function (req, res, next) {
     try {
         let slideshow
@@ -442,6 +483,9 @@ apiRoutes.post("/calendar/published/slideshow", VerifyToken, async function (req
     }
 });
 
+/**
+ * Hämtar bilder från bildbanken
+ */
 apiRoutes.get("/calendar/images", async function (req, res) {
     try {
         res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="images">`)
@@ -484,6 +528,9 @@ apiRoutes.get("/calendar/images", async function (req, res) {
     }
 });
 
+/**
+ * Uppdatera bild i bildbanken
+ */
 apiRoutes.put("/calendar/images/:id", VerifyToken, async function (req, res, next) {
     try {
         res.send(await eventController.updateImage(req.params.id, req.body.name ))
@@ -492,6 +539,9 @@ apiRoutes.put("/calendar/images/:id", VerifyToken, async function (req, res, nex
     }
 });
 
+/**
+ * Tar bort bild från bildbanken
+ */
 apiRoutes.delete("/calendar/images/:id", VerifyToken, async function (req, res, next) {
     try {
         res.send(await eventController.deleteImage(req.params.id))
@@ -500,6 +550,9 @@ apiRoutes.delete("/calendar/images/:id", VerifyToken, async function (req, res, 
     }
 });
 
+/**
+ * Ladda upp bild till bildbanken
+ */
 apiRoutes.post("/calendar/uploadfile", async function (req, res) {
     try {
         let targetFile = req.files.imgFile;
@@ -524,6 +577,10 @@ apiRoutes.post("/calendar/uploadfile", async function (req, res) {
     }
 });
 
+/**
+ * Hantera scanning av qr-kod
+ * Sparar info om scanningen och skickar användare vidare till URL
+ */
 apiRoutes.get("/qrcode/:eventid", async function (req, res) {
     try {
         if (req.params.eventid) {
@@ -847,6 +904,7 @@ apiRoutes.get("/qrcodetracking/:fromdate/:todate", async function (req, res) {
     }
 });
 
+//Hämta dagens wifi
 apiRoutes.get("/dailywifi", async function (req, res, next) {
     try {
         let lang = req.query.lang || 'en'
@@ -858,6 +916,7 @@ apiRoutes.get("/dailywifi", async function (req, res, next) {
     }
 });
 
+//Skapa pdf för dagens Wwfi
 apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
     try {
 
@@ -870,8 +929,12 @@ apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
     }
 });
 
+/**
+ * Hämta besöksdata från IMAS Api
+ */
 apiRoutes.get("/imas/realtime", eventController.getImasRealtime);
 
+//Skapa sida för att visa besöksdata på skärmar/kioskdatorer etc
 apiRoutes.get("/imas/smartsignpage", async function (req, res) {
     try {
         let kiosk
@@ -885,6 +948,9 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 
 });
 
+/**
+ * Skapa sida för att visa besöksdata i CMS polopoly
+ */
 apiRoutes.get("/imas/polopoly", async function (req, res) {
     try {
         let serverurl
@@ -896,6 +962,9 @@ apiRoutes.get("/imas/polopoly", async function (req, res) {
 
 });
 
+/**
+ * Skapa bild för besöksdata(används inte)
+ */
 apiRoutes.get("/imas/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getImasAsImage();
@@ -909,6 +978,9 @@ apiRoutes.get("/imas/image", async function (req, res, next) {
     }
 });
 
+/**
+ * Skapa bild för att visa aktuell timmes bokningsläge för grupprum (används inte)
+ */
 apiRoutes.get("/grb/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getGrbAsImage();
@@ -928,6 +1000,9 @@ apiRoutes.get("/grb/image", async function (req, res, next) {
     }
 });
 
+/**
+ * Skapa bild för att visa bokningsläge för timeedit (används inte)
+ */
 apiRoutes.get("/timeedit/image", async function (req, res, next) {
     try {
         let pageimage = await eventController.getTimeeditAsImage();
@@ -941,6 +1016,9 @@ apiRoutes.get("/timeedit/image", async function (req, res, next) {
     }
 });
 
+/**
+ * Skapa sida för att visa aktuell timmes bokningsläge för grupprum
+ */
 apiRoutes.get("/grb/smartsignpage", async function (req, res) {
     try {
         let kiosk
@@ -954,6 +1032,9 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
 
 });
 
+/**
+ * Skapa sida för att visa bokningsläge för timeedit
+ */
 apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
     try {
         let kiosk
@@ -965,6 +1046,9 @@ apiRoutes.get("/timeedit/smartsignpage", async function (req, res) {
 
 });
 
+/**
+ * Skapa sida för att visa vad som händer i biblioteket idag(från timeedit och outlookkalender)
+ */
 apiRoutes.get("/librarytoday/smartsignpage", async function (req, res) {
     try {
         let kiosk
@@ -976,6 +1060,9 @@ apiRoutes.get("/librarytoday/smartsignpage", async function (req, res) {
 
 });
 
+/**
+ * Skapa sida för att visa dagens bokningar i ångdomen
+ */
 apiRoutes.get("/angdomen/smartsignpage", async function (req, res) {
     try {
         let kiosk
@@ -987,6 +1074,9 @@ apiRoutes.get("/angdomen/smartsignpage", async function (req, res) {
 
 });
 
+/**
+ * Skapa sida för att visa öppettider
+ */
 apiRoutes.get("/openinghours/smartsignpage", async function (req, res) {
     try {
         let kiosk
@@ -998,8 +1088,14 @@ apiRoutes.get("/openinghours/smartsignpage", async function (req, res) {
 
 });
 
+/**
+ * Hämtar bokningar från kalender i outlook/exchange
+ */
 apiRoutes.get("/outlook/calendaritems/emailaddress/:emailaddress", eventController.getExchangeCalendarItems);
 
+/**
+ * Hämtar miljövariabler
+ */
 apiRoutes.get('/env', (req, res) => {
     res.json({
         bookingsystem_external_api_serverurl : process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL,
@@ -1007,18 +1103,30 @@ apiRoutes.get('/env', (req, res) => {
     });
 });
 
+/**
+ * Sätt sökväg för Api
+ */
 app.use(process.env.APIROUTESPATH, apiRoutes);
 
+/**
+ * Skapa webserver
+ */
 const server = app.listen(process.env.PORT || 3002, function () {
     const port = server.address().port;
     console.log(new Date().toLocaleString());
     console.log("App now running on port", port);
 });
 
+/**
+ * Skapa socketserver
+ */
 const io = socketIo(server, {path: process.env.SOCKETIOPATH})
 
 const sockets = {}
 
+/**
+ * Initera session för socker
+ */
 io.on("connection", (socket) => {
     socket.on("connectInit", (sessionId) => {
         sockets[sessionId] = socket.id

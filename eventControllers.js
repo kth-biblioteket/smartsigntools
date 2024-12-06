@@ -210,6 +210,11 @@ async function logout(req, res) {
     .json({ message: "Success" });
 }
 
+/**
+ * Används inte
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function slideshow(req, res) {
     try {
         res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -289,6 +294,11 @@ async function slideshow(req, res) {
     }
 }
 
+/**
+ * Används inte
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function slideshowimages(req, res) {
     try {
         res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -368,6 +378,10 @@ async function slideshowimages(req, res) {
     }
 }
 
+/**
+ * Används inte
+ * @returns 
+ */
 async function readAllPublished() {
     try {
         result = await eventModel.readAllPublished()
@@ -1317,6 +1331,12 @@ async function generateCalendarPage(req, events_id, html_template = 'templates/s
     }
 };
 
+/**
+ * Används inte
+ * @param {*} type 
+ * @param {*} req 
+ * @returns 
+ */
 async function generatePublishedPages(type, req) {
     try {
         //Hämta alla som är publicerade med eventtid från idag och framåt
@@ -1396,6 +1416,11 @@ async function generatePublishedPages(type, req) {
     }
 };
 
+/**
+ * Används inte
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function generatePublishedPageAsImage(req, res) {
     try {
         let published_as_image = req.query.published_as_image || req.body.published_as_image
@@ -1414,6 +1439,11 @@ async function generatePublishedPageAsImage(req, res) {
     }
 }
 
+/**
+ * Används inte
+ * @param {*} req 
+ * @param {*} res 
+ */
 async function getPublishedPageAsImage(req, res) {
     try {
         const eventimage = fs.readFileSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT))
@@ -1546,7 +1576,7 @@ async function generateQrCodeGeneral(id) {
     }
 }
 
-async function generatePdfPage(id, format='A4', orientation='portrait', template_ver='v1') {
+async function generatePage(id, type='pdf', format='A4', orientation='portrait', template_ver='v1') {
     try {
         let calendarpagehtml = "";
         //Ta bort nuvarande pdf
@@ -1576,7 +1606,7 @@ async function generatePdfPage(id, format='A4', orientation='portrait', template
                 pdfpath = `publishedevents/pdf/smartsign_landscape.pdf`
             }
         }
-        let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), format, template, orientation);
+        let pdf = await getPage(id, type, path.join(__dirname, pdfpath), format, template, orientation);
         return pdf;
 
     } catch (err) {
@@ -1729,7 +1759,7 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
 
 }
 
-async function savePageAsPdf(events_id, pdffullpath, format='screen', template, orientation) {
+async function getPage(events_id, type, pdffullpath, format='screen', template, orientation) {
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--font-render-hinting=medium'] },);
     try {
         const page = await browser.newPage();
@@ -1747,28 +1777,43 @@ async function savePageAsPdf(events_id, pdffullpath, format='screen', template, 
 
         await page.goto(process.env.SERVERURL + 'smartsigntools/api/v1/calendar/event/' + events_id + '?template=' + template + '&format=' + format + '&orientation=' + orientation, { waitUntil: 'networkidle0' })
 
-        let pdf
-        if (format=='A4') {
-            pdf = await page.pdf({
-                path: pdffullpath,
-                printBackground: true,
-                format: 'A4',
-                landscape: orientation == 'landscape' ? true : false,
-                margin: { top: 0, right: 0, bottom: 0, left: 0 },
-            });
+        let page_to_return
+
+        if (type == 'pdf') {
+            if (format=='A4') {
+                page_to_return = await page.pdf({
+                    path: pdffullpath,
+                    printBackground: true,
+                    format: 'A4',
+                    landscape: orientation == 'landscape' ? true : false,
+                    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+                });
+            } else {
+                page_to_return = await page.pdf({
+                    path: pdffullpath,
+                    printBackground: true,
+                    width: width,
+                    height: height,
+                    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+                });
+            }
         } else {
-            pdf = await page.pdf({
-                path: pdffullpath,
-                printBackground: true,
+            let deviceScaleFactor = parseInt(process.env.DEVICESCALEFACTOR) || 1
+            await page.setViewport({
                 width: width,
                 height: height,
-                margin: { top: 0, right: 0, bottom: 0, left: 0 },
+                deviceScaleFactor: deviceScaleFactor,
+            });
+            let quality = parseInt(process.env.SCREENSHOT_QUALITY) || 100;
+            page_to_return = await page.screenshot({
+                type: type,
+                quality: quality
             });
         }
 
         await page.close();
 
-        return pdf;
+        return page_to_return;
 
     }
     catch (error) {
@@ -1824,6 +1869,15 @@ async function saveWifiPageAsPdf(pdffullpath, format, template) {
 
 }
 
+/**
+ * används inte
+ * @param {*} events_id 
+ * @param {*} html 
+ * @param {*} template 
+ * @param {*} format 
+ * @param {*} orientation 
+ * @returns 
+ */
 async function getPageAsImage(events_id, html, template = 'templates/smartsign_template_screen.html', format='screen', orientation = 'portrait') {
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
@@ -1873,6 +1927,10 @@ async function getPageAsImage(events_id, html, template = 'templates/smartsign_t
 
 }
 
+/**
+ * Används inte
+ * @returns 
+ */
 async function getImasAsImage() {
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
@@ -1910,6 +1968,10 @@ async function getImasAsImage() {
 
 }
 
+/**
+ * Används inte
+ * @returns 
+ */
 async function getGrbAsImage() {
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
@@ -1947,6 +2009,10 @@ async function getGrbAsImage() {
 
 }
 
+/**
+ * Används inte
+ * @returns 
+ */
 async function getTimeeditAsImage() {
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] },);
     try {
@@ -2158,10 +2224,10 @@ module.exports = {
     generateQrCode,
     generateQrCodeGeneral,
     generateDailyWiFiPage,
-    generatePdfPage,
+    generatePage,
     generatePdfPageDailyWifi,
     savePageAsImage,
-    savePageAsPdf,
+    getPage,
     getPageAsImage,
     getImasAsImage,
     getGrbAsImage,
