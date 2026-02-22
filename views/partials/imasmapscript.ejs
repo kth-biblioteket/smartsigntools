@@ -1,0 +1,274 @@
+<script defer>
+
+    /**
+     *
+     *  
+     * 
+     */
+
+    let smartsignconfig = JSON.parse('<%- JSON.stringify(smartsignconfig) %>')
+
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+
+    var urlparameters = getUrlVars();
+    if (urlparameters.debug == 'true') {
+        $('.App-footer').html('<div>Debug mode</div>');
+        $('.App').css('border', '1px solid');
+    }
+
+    function responseChanged(newResponse, oldResponse) {
+        if (!oldResponse) return true; // första gången
+
+        return newResponse.zones.some((zone, i) => {
+            const oldZone = oldResponse.zones[i];
+            return zone.inside !== oldZone.inside; // jämför bara värdet
+        });
+    }
+    /**
+     * 
+     * Funktion som anropar Imas Api
+     * 
+     * @param {*} site 
+     * @param {*} siteid 
+     * @param {*} availableseats 
+     * @param {*} sitename 
+     */
+
+    let lastOccupancyData = null;
+    function getVisitors() {
+        var html = '';
+        var urlparameters = getUrlVars();
+        $.ajax({
+            cache: false,
+            url: '<%= smartsignconfig.serverurl %>smartsigntools/api/v1/imas/realtime',
+
+            success: function (response) {
+
+                // Om servern returnerar en sträng med error istället för JSON
+                if (typeof response === "string" && response.includes("401")) {
+                    console.error("Unauthorized – stoppar uppdatering");
+                    return;
+                }
+                if (response.status === 401) {
+                    console.error("Unauthorized – stoppar uppdatering");
+                    return;
+                }
+
+                if (responseChanged(response.data, lastOccupancyData)) {
+                    lastOccupancyData = response.data; // uppdatera cache
+                } else {
+                    console.log("Inga ändringar i occupancy – uppdaterar ej SVG");
+                    return;
+                }
+                // Kolla om parametern "map" finns och är "true"
+
+                // Access the SVG content
+                svgDocFloor2 = floor2Object.contentDocument;
+
+                if (svgDocFloor2) {
+                    let occupancyrate = 0;
+                    let colorclass = 'green';
+                    let over50 = ''
+                    response.data.zones.forEach(function (element) {
+
+                        switch (element.name) {
+                            case "Hela Biblioteket":
+                                setOccupancyText("wsF4171", element, svgDocFloor2, -24, 45, 0, 16, "#ffffff");
+                                break;
+                            case "Ångdomen":
+                                setOccupancyText("wsF4205", element, svgDocFloor2, -28, 0, 0, 14, "#ffffff");
+                                break;
+                            default:
+                                break;
+                        };
+                    });
+
+                } else {
+                    console.error('Failed to load the SVG document.');
+                }
+
+                // Övre plan
+                // Access the SVG content
+                svgDocFloor3 = floor3Object.contentDocument;
+
+                if (svgDocFloor3) {
+                    //Norra galleriet
+                    response.data.zones.forEach(function (element) {
+                        switch (element.name) {
+                            case "Norra Galleriet":
+                                setOccupancyText("wsF4313", element, svgDocFloor3, -11, 26, 65, 14, "#ffffff");
+                                break;
+                            case "Sydöstra Galleriet":
+                                setOccupancyText("wsF4300", element, svgDocFloor3, -43, 50, -80, 12, "#ffffff");
+                                break;
+                            case "Södra Galleriet":
+                                setOccupancyText("wsF4286", element, svgDocFloor3, -38, 18, -80, 12, "#ffffff");
+                                break;
+                            default:
+                                break;
+                        };
+                    });
+
+                } else {
+                    console.error('Failed to load the SVG document.');
+                }
+            },
+
+            error: function () {
+            },
+            complete: function () {
+                setTimeout(getVisitors, 10000);
+            }
+
+        });
+    }
+
+    function setOccupancyText(locationId, element, svgDoc, x, y, angle, fontSize, fontColor) {
+        const location = svgDoc.getElementById(locationId);
+        let colorclass = 'green';
+        let over50 = '';
+
+        let occupancyrate = 0;
+        if (element.inside <= 0) {
+            occupancyrate = 0;
+
+        } else {
+            occupancyrate = Math.round(100 * element.inside / element.threshold);
+        }
+
+        if (occupancyrate > 100) {
+            occupancyrate = 100
+        }
+        //Ändra färg beroende på beläggning
+        colorclass = 'green';
+        over50 = ''
+
+        if (occupancyrate > 50 && occupancyrate < 85) {
+            colorclass = 'orange';
+            over50 = 'over50'
+        }
+        if (occupancyrate > 85) {
+            colorclass = 'red';
+            over50 = 'over50'
+        }
+        // Ta bort gamla text-element för den zonen
+        const svg = svgDoc.querySelector("svg"); // hela SVG:n
+        svg.querySelectorAll(`text[data-zone="${element.name}"]`).forEach(t => t.remove());
+
+        addSvgText(svgDoc, element.name + "\n" + occupancyrate + "%\n" + element.inside + "/" + element.threshold, x, y, angle, fontSize, fontColor, element.name);
+        location.setAttribute("fill", colorclass);
+    }
+
+    function addSvgText(svgDoc, textValue, x, y, rotation = 0, pixelSize = 12, fillcolor = "#000000", zoneName = null) {
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+        const svg = svgDoc.querySelector("svg");
+        const svgHeight = svg.viewBox.baseVal.height || svg.getBoundingClientRect().height;
+        const screenHeight = svg.getBoundingClientRect().height;
+
+        // Omvandla pixelstorlek till SVG-koordinater
+        const svgFontSize = pixelSize * (svgHeight / screenHeight);
+
+        text.setAttribute("x", x);
+        text.setAttribute("y", y);
+        text.setAttribute("text-anchor", "middle"); // centrera horisontellt
+        text.setAttribute("dominant-baseline", "middle"); // centrera vertikalt (först raden)
+        text.setAttribute("transform", `rotate(${rotation}, ${x}, ${y})`);
+        text.setAttribute(
+            "style",
+            `font-size:${svgFontSize}px;
+      font-family:Figtree;
+      fill:${fillcolor};
+      stroke:${fillcolor};
+      stroke-width:0;
+      font-weight:500`
+        );
+
+        // Lägg till id eller data-zone så vi kan referera till det senare
+        if (zoneName) {
+            text.setAttribute("data-zone", zoneName);
+        }
+
+        // Hantera flera rader (radbrytningar)
+        const lines = textValue.split(/\r?\n/);
+        // Justera vertikal förskjutning så att blocket blir centrerat kring y
+        const totalLines = lines.length;
+        const lineSpacing = 1.2; // em
+        const startDy = -(totalLines - 1) / 2 * lineSpacing; // fördela rader jämnt runt mitten
+
+
+        lines.forEach((line, index) => {
+            const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+            tspan.setAttribute("x", x);
+            tspan.setAttribute("dy", `${index === 0 ? startDy : lineSpacing}em`);
+            tspan.textContent = line;
+            text.appendChild(tspan);
+        });
+
+        svg.appendChild(text); // ✅ Lägg till direkt i SVG-elementet
+    }
+
+
+
+    /**
+    * 
+    * Funktion som anropar Imas Api
+    * 
+    * @param {*} site 
+    * @param {*} siteid 
+    * @param {*} availableseats 
+    * @param {*} sitename 
+    */
+
+    function loadSvgMaps() {
+        html = `<div style="display:flex;width:100%">
+                <div style="flex:1">
+                    <object style="transform: rotate(0deg) scale(1);width: 100%;height: 700px" id="floor2Map" type="image/svg+xml" data="/smartsigntools/api/v1/floorsvg/65">Your browser does not support SVGs.</object>
+                    <div style="color: 000;text-align: center;">Floor2 (entrance)</div>
+                </div>
+                <div style="flex:1">
+                    <object style="transform: rotate(0deg) scale(1);width: 100%;height: 700px;" id="floor3Map" type="image/svg+xml" data="/smartsigntools/api/v1/floorsvg/66">Your browser does not support SVGs.</object>
+                    <div style="color: 000;text-align: center;">Floor3</div>
+                </div>
+            </div>`
+        //uppdatera html
+        $(".App-content").html(html);
+        $("#floor2Map").on("load", function () {
+            //Tillfällig borttagning av grupprumsnamn
+
+            floor2Object = document.getElementById("floor2Map");
+            const group = floor2Object.contentDocument.getElementById("svgDrawingGroup");
+            const textElements = group.querySelectorAll("text");
+            textElements.forEach(text => text.remove());
+            const rectElements = group.querySelectorAll("rect");
+            rectElements.forEach(text => text.remove());
+        });
+        $("#floor3Map").on("load", function () {
+            //Tillfällig borttagning av grupprumsnamn
+
+            floor3Object = document.getElementById("floor3Map");
+            const group = floor3Object.contentDocument.getElementById("svgDrawingGroup");
+            const textElements = group.querySelectorAll("text");
+            textElements.forEach(text => text.remove());
+            const rectElements = group.querySelectorAll("rect");
+            rectElements.forEach(text => text.remove());
+        });
+    }
+
+
+    var html = '';
+    var urlparameters = getUrlVars();
+    let floor2Object;
+    let floor3Object;
+    loadSvgMaps();
+
+
+    setTimeout(getVisitors, 100);
+
+</script>

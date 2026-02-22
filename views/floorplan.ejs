@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/smartsigntools/css/grb_style.css">
+</head>
+<body>
+    <h1><%= title %></h1>
+
+    <div class="controls">
+        <label for="floorSelect">Välj våning:</label>
+        <select id="floorSelect" onchange="changeFloor(this.value)">
+            <option value="">-- Välj --</option>
+            <% availableFloors.forEach(floorId => { %>
+                <option value="<%= floorId %>">Våning <%= floorId %></option>
+            <% }) %>
+        </select>
+        
+        <button onclick="syncNow()" id="syncBtn">Synka ritningar nu</button>
+    </div>
+
+    <div id="map-container" style="height:700px">
+        <p>Välj en våning i listan ovan för att visa ritningen.</p>
+    </div>
+
+    <script src="/smartsigntools/js/floormap.js"></script>
+</body>
+</html>

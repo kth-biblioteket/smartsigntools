@@ -1,3 +1,4 @@
+.vscode
 node_modules
 *.log
 .env
@@ -14,11 +15,14 @@ imagebank/*.jpg
 imagebank/*.jpeg
 imagebank/*.png
 imagebank/*.jfif
-*.db
+imagebank/svg_cache/*.svg
 test.js
 frame*.png
 dev
 pdfjs
 docker-compose-dev.yml
-Dockerfile-dev
+Dockerfile-dev*
 package-dev.json
+test*.js
+test*.html
+settings.json

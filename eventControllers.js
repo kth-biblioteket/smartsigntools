@@ -6,11 +6,13 @@ const Parser = require('rss-parser');
 const axios = require('axios')
 const cheerio = require('cheerio');
 const fs = require("fs");
+const fsp = require("fs").promises;
 const path = require('path');
 const puppeteer = require('puppeteer');
 const QRCode = require("qrcode");
 const sharp = require("sharp");
 const ews = require('ews-javascript-api');
+const { JSDOM } = require('jsdom');
 
 
 // Funktion som visar som genererar ett 
@@ -1869,6 +1871,21 @@ async function saveWifiPageAsPdf(pdffullpath, format, template) {
 
 }
 
+async function getFloorSvg(id) {
+    let FloorPlan = await eventModel.readFloorPlan(id);
+    if (!FloorPlan || FloorPlan.length === 0) {
+        return { status: "error", message: "Floor plan not found" };
+    }
+
+    try {
+        const filePath = path.join(__dirname, '/imagebank/svg_cache', FloorPlan[0].file_path);
+        const svgContent = fs.readFileSync(filePath, 'utf8');
+        return { status: "ok", svgContent: svgContent };
+    } catch (error) {
+        return { status: "error", message: "Error reading SVG file: " + error.message };
+    }
+}
+
 /**
  * används inte
  * @param {*} events_id 
@@ -2051,40 +2068,208 @@ async function getTimeeditAsImage() {
 
 }
 
-async function getImasRealtime(req, res) {
-    try {
-        token = await axios.post(`https://api.imas.net/account/login`, {
-            'UserName' : process.env.IMAS_USER,
-            'password' : process.env.IMAS_PASSWORD
-        })
-        
-        let todaysdate = new Date()
-        
-        imasopenedhours = await axios.get(`https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${todaysdate.toLocaleDateString()}`,
-        {
-            headers: {
-                'User' : process.env.IMAS_USER,
-                'X-Auth-Token' : token.data
-            }
-        })
-        
-        //Hämta realtidsvärden om biblioteket är öppet
-        if ((new Date() > new Date(imasopenedhours.data.from) && new Date() < new Date(imasopenedhours.data.until))) {
-            exportrealtimevalues = await axios.get(`https://api.imas.net/export/exportrealtimevalues?id=KTHBIB`,
-            {
-                headers: {
-                    'User' : process.env.IMAS_USER,
-                    'X-Auth-Token' : token.data
-                }
-            })
-            res.send(exportrealtimevalues.data)
-        } else {
-            res.send({"location": "closed"})
+let tokenQueue = Promise.resolve(); // används för att köa token-hämtning
+
+async function getImasToken() {
+    // Lägg login i kö för att undvika parallella token-anrop
+    let token;
+    await (tokenQueue = tokenQueue.then(async () => {
+        const res = await axios.post(`https://api.imas.net/account/login`, {
+            UserName: process.env.IMAS_USER,
+            password: process.env.IMAS_PASSWORD
+        });
+        token = res.data; // API returnerar token som token.data'
+    }));
+    return token;
+}
+
+async function getImasRealtime(retries = 3, delay = 500) {
+    console.log("Fetching IMAS realtime data from cache...");
+    console.log(realtimeCache);
+    return realtimeCache;
+}
+
+function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = false, offsetX = 0, offsetY = 0) {
+    const path = svgDoc.getElementById(pathId);
+    const targetGroup = svgDoc.getElementById('workspacesFrontGroup');
+
+    if (path && targetGroup) {
+        const bbox = { x: 0, y: 0, width: 0, height: 0 };
+        //const bbox = path.getBBox();
+        const svgNS = "http://www.w3.org/2000/svg";
+
+        const dAttr = path.getAttribute('d');
+        if (dAttr) {
+            const coords = dAttr.split(/[ ,/LzMz]/).filter(Boolean);
+            bbox.x = parseFloat(coords[0]) || 0;
+            bbox.y = parseFloat(coords[1]) || 0;
         }
-    } catch (err) {
-        res.send(err.message)
+
+        const padding = 0.8;
+
+        if (filter === true) {
+            // 1. Skapa filtret (endast om det inte redan finns i SVG:n)
+            if (!svgDoc.getElementById('bg-highlight')) {
+                const defs = svgDoc.querySelector('defs') || svgDoc.insertBefore(svgDoc.createElementNS(svgNS, 'defs'), svgDoc.firstChild);
+                const filter = svgDoc.createElementNS(svgNS, 'filter');
+                filter.setAttribute('id', 'bg-highlight');
+                filter.setAttribute('x', '0');
+                filter.setAttribute('y', '0');
+                filter.setAttribute('width', '1');
+                filter.setAttribute('height', '1');
+
+                filter.innerHTML = `
+                <feFlood flood-color="#f5f5f5" result="bg" />
+                <feMerge>
+                    <feMergeNode in="bg" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>`;
+                defs.appendChild(filter);
+            }
+        }
+
+        let textX, textY, anchor;
+        // Beräkna position baserat på önskat läge
+        // Kom ihåg: I en 90-graders roterad grupp är -Y = höger, +Y = vänster, +X = ner, -X = upp
+        switch (position) {
+            case 'right':
+                textX = bbox.x + (bbox.width / 2) + offsetX;
+                textY = bbox.y - padding + offsetY;
+                anchor = "start"; // Växer åt höger (visuellt)
+                baseline = "central"; // Centrerad längs bordets långsida
+                break;
+            case 'left':
+                textX = bbox.x + (bbox.width / 2) + offsetX;
+                textY = bbox.y + bbox.height + padding + offsetY;
+                anchor = "end";
+                baseline = "central"; // Centrerad längs bordets långsida
+                break;
+            case 'top':
+                textX = bbox.x - padding + offsetX;
+                textY = bbox.y + (bbox.height / 2) + offsetY;
+                anchor = "middle";
+                // Eftersom texten är roterad -90 grader, blir "text-top" 
+                // den sida som pekar bort från bordet när den ligger ovanför.
+                baseline = "text-top";
+                break;
+            case 'bottom':
+                textX = bbox.x + bbox.width + padding + offsetX;
+                textY = bbox.y + (bbox.height / 2) + offsetY;
+                anchor = "middle";
+                // "hanging" gör att textens ovankant fäster vid punkten,
+                // vilket knuffar ner den under bordet.
+                baseline = "hanging";
+                break;
+            default:
+                textX = bbox.x + (bbox.width / 2) + offsetX;
+                textY = bbox.y - padding + offsetY;
+                anchor = "start";
+                baseline = "central";
+        }
+
+        const newText = svgDoc.createElementNS(svgNS, "text");
+        newText.setAttribute("x", textX);
+        newText.setAttribute("y", textY);
+        newText.setAttribute("dominant-baseline", baseline);
+        newText.setAttribute("text-anchor", anchor);
+        newText.setAttribute("transform", `rotate(-90, ${textX}, ${textY})`);
+
+        // Applicera filtret här för bakgrundsfärgen
+        if (filter === true) {
+            newText.setAttribute("filter", "url(#bg-highlight)");
+        }
+
+        newText.style.fontFamily = "Figtree, sans-serif";
+        newText.style.fontWeight = "700";
+        newText.style.fontSize = "3.68px";
+        newText.style.fill = "#000000";
+        newText.style.stroke = "none";
+        //newText.style.strokeWidth = "1px"
+
+        const newTspan = svgDoc.createElementNS(svgNS, "tspan");
+        newTspan.setAttribute("x", textX);
+        newTspan.setAttribute("y", textY);
+        newTspan.textContent = labelText;
+
+        newText.appendChild(newTspan);
+        targetGroup.appendChild(newText);
     }
 }
+    
+
+async function updateOpenedHoursCache() {
+    try {
+        const today = new Date().toISOString().slice(0, 10);
+        const authToken = await getImasToken();
+
+        const res = await axios.get(
+            `https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${today}`,
+            {
+                headers: { User: process.env.IMAS_USER, "X-Auth-Token": authToken },
+                timeout: 5000
+            }
+        );
+        openedHoursCache = res.data || { from: null, until: null };
+        lastOpenedHoursUpdate = new Date();
+    } catch (err) {
+        console.error("IMAS opened hours update failed:", err.message);
+    }
+}
+
+async function updateRealtimeCache() {
+    try {
+        const now = new Date();
+        const isOpen = openedHoursCache.from && openedHoursCache.until &&
+                       now > new Date(openedHoursCache.from) &&
+                       now < new Date(openedHoursCache.until);
+
+        if (!isOpen) {
+            // Biblioteket är stängt → uppdatera cache med location: closed
+            realtimeCache = { location: "closed", data: [], lastUpdated: now };
+            return;
+        }
+        const authToken = await getImasToken(); // token måste hämtas varje gång
+        const res = await axios.get(
+            "https://api.imas.net/export/exportrealtimevalues?id=KTHBIB",
+            {
+                headers: { User: process.env.IMAS_USER, "X-Auth-Token": authToken },
+                timeout: 5000
+            }
+        );
+
+        realtimeCache = {
+            location: "open",
+            data: res.data || [],
+            lastUpdated: now
+        };
+
+    } catch (err) {
+        console.error("IMAS realtime update failed:", err.message);
+        realtimeCache.lastUpdated = new Date();
+    }
+}
+
+let openedHoursCache = { from: null, until: null };
+let realtimeCache = [];
+
+async function startCaches() {
+    // Hämta öppettider först
+    await updateOpenedHoursCache();
+
+    // Sedan hämta realtidsdata
+    await updateRealtimeCache();
+
+    console.log("IMAS caches initialized.");
+    console.log("Opened hours:", openedHoursCache);
+    console.log("Realtime data:", realtimeCache);
+
+    // Starta intervall efter att initial cache är klar
+    setInterval(updateRealtimeCache, 30000);
+    setInterval(updateOpenedHoursCache, 60*60*1000);
+}
+
+startCaches();
+
 
 async function getExchangeCalendarItems(req, res) {
 
@@ -2228,6 +2413,7 @@ module.exports = {
     generatePdfPageDailyWifi,
     savePageAsImage,
     getPage,
+    getFloorSvg,
     getPageAsImage,
     getImasAsImage,
     getGrbAsImage,

@@ -1156,6 +1156,20 @@ const readDailyWiFiCode = () => {
     })
 };
 
+//Hämta daglig wifi-kod
+const readFloorPlan = (id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT file_path FROM floor_plans WHERE floor_id = ?`;
+        database.db.query(database.mysql.format(sql,[id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
 module.exports = {
     readEvents,
     readEventsByDate,
@@ -1223,5 +1237,6 @@ module.exports = {
     createQrCodeGeneral,
     updateQrCodeGeneral,
     deleteQrCodeGeneral,
-    readDailyWiFiCode
+    readDailyWiFiCode,
+    readFloorPlan
 };

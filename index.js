@@ -10,11 +10,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require('cors')
 const fs = require("fs");
+const fsp = require("fs").promises;
 const path = require('path');
 const eventController = require('./eventControllers');
 const fileUpload = require('express-fileupload');
 const { randomUUID } = require('crypto');
 const cookieParser = require("cookie-parser");
+const sharp = require("sharp");
 
 const app = express();
 
@@ -29,6 +31,7 @@ app.use(fileUpload({
 app.use(cookieParser());
 
 const socketIo = require("socket.io");
+const { controllers } = require('chart.js');
 
 app.set("view engine", "ejs");
 
@@ -932,7 +935,14 @@ apiRoutes.get("/dailywifi/pdf", async function (req, res, next) {
 /**
  * Hämta besöksdata från IMAS Api
  */
-apiRoutes.get("/imas/realtime", eventController.getImasRealtime);
+apiRoutes.get("/imas/realtime",  async function (req, res, next) {
+    try {
+        let realTimeData = await eventController.getImasRealtime();
+        res.send(realTimeData)
+    } catch(err) {
+        res.send(err.message)
+    }
+});
 
 //Skapa sida för att visa besöksdata på skärmar/kioskdatorer etc
 apiRoutes.get("/imas/smartsignpage", async function (req, res) {
@@ -942,6 +952,20 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
         let serverurl
         req.query.internal == 'true' ? serverurl = process.env.SERVERURL : serverurl = process.env.EXTERNALSERVERURL;
         res.render('imas', {smartsignconfig: {"kiosk" : kiosk, "serverurl" : serverurl, "lang": req.query.lang || 'sv'}});
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
+//Skapa sida för att visa besöksdata på skärmar/kioskdatorer etc
+apiRoutes.get("/imasmap/smartsignpage", async function (req, res) {
+    try {
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        let serverurl
+        req.query.internal == 'true' ? serverurl = process.env.SERVERURL : serverurl = process.env.EXTERNALSERVERURL;
+        res.render('imasmap', {smartsignconfig: {"kiosk" : kiosk, "serverurl" : serverurl, "lang": req.query.lang || 'sv'}});
     } catch(err) {
         res.send(err.message)
     }
@@ -976,6 +1000,30 @@ apiRoutes.get("/imas/image", async function (req, res, next) {
     } catch(err) {
         res.send(err.message)
     }
+});
+
+apiRoutes.get('/floorsvg/:id', async (req, res) => {
+    const floorId = req.params.id;
+
+    const response = await eventController.getFloorSvg(floorId);
+    if (response.status === 'error') {
+        return res.status(404).json({ error: response.message });
+    }
+    res.set('Content-Type', 'image/svg+xml');
+    res.send(response.svgContent);
+});
+
+//Testsida
+apiRoutes.get('/ritning', (req, res) => {
+    // Hämta floors från din .env (t.ex. "64,65,66")
+    const floorConfig = process.env.FLOOR_IDS || "";
+    const floorList = floorConfig.split(',').map(id => id.trim()).filter(id => id !== "");
+
+    // Här väljer vi vilken fil i /views som ska visas (utan .ejs filändelse)
+    res.render('floorplan', { 
+        availableFloors: floorList,
+        title: "Bokningsöversikt Biblioteket"
+    });
 });
 
 /**
@@ -1026,6 +1074,39 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
         let bookingystemapiserverurl
         req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
         res.render('grb', {smartsignconfig: {"kiosk" : kiosk, "bookingystemapiserverurl" : bookingystemapiserverurl,}});
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
+/**
+ * Skapa sida för att visa aktuell timmes bokningsläge för grupprum
+ */
+apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
+    try {
+        let map
+        let kiosk
+        let hidelogo
+        let hidekthname
+        let bookingystemapiserverurl
+        let titleimageclass
+        titleimageclass = req.query.titleimageclass || 'titleimage';
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        req.query.hidelogo == 'true' ? hidelogo = true : hidelogo = false;
+        req.query.hidekthname == 'true' ? hidekthname = true : hidekthname = false;
+        req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
+   
+        res.render('grbmap', {
+            smartsignconfig: {
+                "kiosk" : kiosk, 
+                "bookingystemapiserverurl" : bookingystemapiserverurl,
+                "titleimageclass": titleimageclass,
+                "titleimagesrc": "" + process.env.GRB_SMARTSIGN_TITLEIMG_SRC + "",
+                "hidelogo": hidelogo,
+                "hidekthname": hidekthname
+            }
+        });
     } catch(err) {
         res.send(err.message)
     }

@@ -22,7 +22,21 @@ services:
       - "/local/docker/smartsigntools/publishedevents:/app/publishedevents"
     networks:
       - "apps-net"
-
+  smartsigntools-worker:
+    container_name: "smartsigntools-worker"
+    image: ghcr.io/kth-biblioteket/smartsigntools:${REPO_TYPE}
+    command: node worker.js
+    restart: "always"
+    environment:
+      TZ: ${TZ}
+    env_file:
+      - ./smartsigntools.env
+    volumes:
+      - "/local/docker/smartsigntools/imagebank:/app/imagebank"
+    networks:
+      - "apps-net"
+    depends_on:
+      - smartsigntools-db
   smartsigntools-db:
     container_name: smartsigntools-db
     image: mysql:8.0
