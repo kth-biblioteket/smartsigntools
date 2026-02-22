@@ -1,4 +1,4 @@
-FROM node:16.13.2
+FROM node:21-bullseye
 
 ## Updated Puppeteer dependencies for Debian Bullseye
 RUN apt-get update && \
