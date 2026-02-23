@@ -1,0 +1,49 @@
+{
+  "statusConfig": {
+    "free":          { "color": "#0DE47E", "cssClass": "white" },
+    "tentative":     { "color": "#dfa539", "cssClass": "yellow" },
+    "tobeconfirmed": { "color": "#dfa539", "cssClass": "orange" },
+    "confirmed":     { "color": "#e24646", "cssClass": "red" },
+    "unavailable":   { "color": "grey",    "cssClass": "grey" }
+  },
+  "defaultColor": "#6298D2",
+  "floors": [
+    {
+      "id": "floor2",
+      "label": "Floor 2 (Entrance)",
+      "svgUrl": "/smartsigntools/api/v1/floorsvg/65",
+      "rooms": [
+        { "id": "wsF4103", "number": "01", "label": "x", "pos": "left", "filter": true },
+        { "id": "wsF4104", "number": "0", "label": "0", "pos": "right", "offX": 1 },
+        { "id": "wsF4168", "number": "1", "label": "1", "pos": "right", "offX": 1 },
+        { "id": "wsF4213", "number": "2", "label": "2", "pos": "right", "offX": 1 },
+        { "id": "wsF4215", "number": "3", "label": "3", "pos": "right", "offX": 1 },
+        { "id": "wsF4216", "number": "8", "label": "5", "pos": "left", "offX": 1.5 },
+        { "id": "wsF4135", "number": "7", "label": "6", "pos": "left", "offX": 1.5 },
+        { "id": "wsF4136", "number": "6", "label": "7", "pos": "left", "offX": 1.5 },
+        { "id": "wsF4134", "number": "5", "label": "8", "pos": "left", "offX": 1.5 },
+        { "id": "wsF4140", "number": "9", "label": "9", "pos": "right", "offX": -1 },
+        { "id": "wsF4139", "number": "10", "label": "10", "pos": "right", "offX": -1 },
+        { "id": "wsF23173", "number": "11", "label": "11", "pos": "right", "offX": -1 },
+        { "id": "wsF23172", "number": "12", "label": "12", "pos": "right", "offX": -1 },
+        { "id": "wsF23171", "number": "13", "label": "13", "pos": "right", "offX": -1 },
+        { "id": "wsF4181", "number": "14", "label": "14", "pos": "left", "filter": true },
+        { "id": "wsF4115", "number": "15", "label": "15", "pos": "top", "filter": true, "offX": -1 }
+      ]
+    },
+    {
+      "id": "floor3",
+      "label": "Floor 3",
+      "svgUrl": "/smartsigntools/api/v1/floorsvg/66",
+      "rooms": [
+        { "id": "wsF4285", "number": "16", "label": "16", "pos": "right", "offX": 1 },
+        { "id": "wsF4278", "number": "A", "label": "A", "pos": "top", "offX": 4 },
+        { "id": "wsF4277", "number": "B", "label": "B", "pos": "top", "offX": 4 },
+        { "id": "wsF4279", "number": "C", "label": "C", "pos": "top", "offX": 4 },
+        { "id": "wsF4277", "isSpecial": true },
+        { "id": "wsF4278", "isSpecial": true },
+        { "id": "wsF4279", "isSpecial": true }
+      ]
+    }
+  ]
+}

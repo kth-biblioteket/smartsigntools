@@ -2,15 +2,13 @@
 /**
  * KONFIGURATION OCH STATUS-MAPPNING
  */
-const STATUS_CONFIG = {
-    'free':          { color: '#0DE47E', cssClass: 'white' },
-    'tentative':     { color: '#dfa539', cssClass: 'yellow' },
-    'tobeconfirmed': { color: '#dfa539', cssClass: 'orange' },
-    'confirmed':     { color: '#e24646', cssClass: 'red' },
-    'unavailable':   { color: 'grey',    cssClass: 'grey' }
-};
 
-const DEFAULT_COLOR = "#6298D2";
+const CONFIG = <%- JSON.stringify(smartsignconfig.mapconfig) %>;
+
+const STATUS_CONFIG = CONFIG.statusConfig;
+
+const DEFAULT_COLOR = CONFIG.defaultColor || "#cccccc";
+
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 // Globala inställningar från URL
@@ -21,21 +19,22 @@ const shouldGetStatus = urlParams.get('bookingstatus') !== 'false';
 let mapsLoaded = 0;
 const totalMaps = 2; // Vi har två kartor (floor2 och floor3)
 
-$(document).ready(function () {
-    if (shouldGetStatus) {
-        // Vi anropar INTE getRoomAvailability här direkt.
-        // Istället sätter vi bara upp strukturen.
+$(document).ready(async function () {
+    try {
+        // 2. Om vi är i kartläge, förbered SVG:er
         if (isMapMode) {
-            setupMapStructure();
-        } else {
-            // Om vi inte kör kart-läge (box-vy), kör direkt
-            getRoomAvailability();
+            await loadAndSetupMaps();
         }
 
-        // Starta intervallet som vanligt för framtida uppdateringar
-        setInterval(getRoomAvailability, 300000);
-    } else {
-        renderInitialUI([]);
+        // 3. Om vi ska visa status, starta hämtningsloopen
+        if (shouldGetStatus) {
+            getRoomAvailability();
+            setInterval(getRoomAvailability, 300000);
+        } else {
+            renderInitialUI([]);
+        }
+    } catch (err) {
+        console.error("Kunde inte initiera applikationen:", err);
     }
 });
 
@@ -67,90 +66,77 @@ function getRoomAvailability() {
         });
 }
 
+/** --- KART-LADDNING (FETCH) --- **/
+async function loadAndSetupMaps() {
+    let html = '';
+    
+    // Generera containrar dynamiskt baserat på hur många våningar som finns i JSON
+    CONFIG.floors.forEach((floor, index) => {
+        const isRight = index % 2 !== 0 ? 'floor-plan-right' : '';
+        html += `
+            <div class="floor-plan ${isRight}">
+                <div id="${floor.id}Container" class="map-container">Laddar ${floor.label}...</div>
+                <div class="floor-label">${floor.label}</div>
+                ${index === 0 ? `
+                <div class="booking-footer">
+                    <div class="qr-container">
+                        <img src="https://apps.lib.kth.se/smartsigntools/api/v1/qrcode/general/generate/233" class="qr-code">
+                    </div>
+                    <div class="booking-callout">
+                        <div class="book-here-text">Book here</div>
+                        <svg class="curved-arrow" viewBox="0 0 100 100">
+                            <path d="M10,10 Q60,10 90,80" stroke="black" fill="none" stroke-width="5" stroke-linecap="round" />
+                            <path d="M70,65 L90,80 L90,55" stroke="black" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>` : ''}
+            </div>`;
+    });
+    
+    $("#map-section").html(html);
+
+    try {
+        const svgRequests = CONFIG.floors.map(floor => fetch(floor.svgUrl).then(r => r.text()));
+        const svgs = await Promise.all(svgRequests);
+
+        CONFIG.floors.forEach((floor, i) => {
+            document.getElementById(`${floor.id}Container`).innerHTML = svgs[i];
+        });
+        
+        console.log("Alla kartor injicerade från konfigurationsfil.");
+    } catch (err) {
+        console.error("Fel vid hämtning av SVG:er:", err);
+    }
+}
+
 /**
  * RENDERINGSLOGIK
  */
 function renderInitialUI(rooms) {
     if (isMapMode) {
-        if ($("#floor2Map").length === 0) {
-            setupMapStructure();
-        }
         updateMapColors(rooms);
     } else {
         generateBoxes(rooms);
     }
 }
 
-function setupMapStructure() {
-    const html = `
-        <div class="floor-plan">
-            <div class="map-container">
-                <object id="floor2Map" type="image/svg+xml" data="/smartsigntools/api/v1/floorsvg/65"></object>
-            </div>
-            <div class="floor-label">Floor 2 (Entrance)</div>
-            <div class="booking-footer">
-                <div class="qr-container">
-                    <img src="https://apps.lib.kth.se/smartsigntools/api/v1/qrcode/general/generate/233" class="qr-code">
-                </div>
-                <div class="booking-callout">
-                    <div class="book-here-text">Book here</div>
-                    <svg class="curved-arrow" viewBox="0 0 100 100">
-                        <path d="M10,10 Q60,10 90,80" stroke="black" fill="none" stroke-width="5" stroke-linecap="round" />
-                        <path d="M70,65 L90,80 L90,55" stroke="black" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-        <div class="floor-plan floor-plan-right">
-            <div class="map-container">
-                <object id="floor3Map" type="image/svg+xml" data="/smartsigntools/api/v1/floorsvg/66"></object>
-            </div>
-            <div class="floor-label">Floor 3</div>
-        </div>`;
-    
-    $("#map-section").html(html);
-
-    // Lyssna på laddning av kartor
-    $("#floor2Map, #floor3Map").on("load", function() {
-        mapsLoaded++;
-        // Kör bara API-anropet när SISTA kartan har laddats klart
-        if (mapsLoaded === totalMaps) {
-            console.log("Alla kartor laddade. Hämtar data...");
-            getRoomAvailability();
-        }
-    });
-}
-
 function updateMapColors(rooms) {
-    const floorConfigs = [
-        { selector: "#floor2Map", rooms: getFloor2Configs() },
-        { selector: "#floor3Map", rooms: getFloor3Configs() }
-    ];
-
-    floorConfigs.forEach(floor => {
-        const svgObj = $(floor.selector)[0];
-        if (!svgObj || !svgObj.contentDocument) return;
-        const svgDoc = svgObj.contentDocument;
+    CONFIG.floors.forEach(floor => {
+        const $container = $(`#${floor.id}Container`);
+        if (!$container.length) return;
 
         floor.rooms.forEach(conf => {
-            const el = svgDoc.getElementById(conf.id);
+            const el = $container.find("#" + conf.id)[0];
             if (!el) return;
 
-            // Hitta status för rummet
             const roomData = rooms.find(r => r.room_name === conf.number);
-            let color = DEFAULT_COLOR;
-            
-            if (conf.isSpecial) {
-                color = "#DEF0FF";
-            } else if (roomData) {
-                color = STATUS_CONFIG[roomData.status]?.color || DEFAULT_COLOR;
-            }
+            let color = conf.isSpecial ? "#DEF0FF" : (CONFIG.statusConfig[roomData?.status]?.color || CONFIG.defaultColor);
 
             el.setAttribute("fill", color);
             
-            // Rita etikett om den inte redan finns
-            if (conf.label && !svgDoc.getElementById("label-" + conf.id)) {
-                addRoomLabel(svgDoc, conf);
+            // Etikett-logik
+            if (conf.label && !$container.find("#label-" + conf.id).length) {
+                addRoomLabel(el, conf, $container.find("svg")[0]);
             }
         });
     });
@@ -159,26 +145,39 @@ function updateMapColors(rooms) {
 /**
  * SKAPA ETIKETTER I SVG
  */
-function addRoomLabel(svgDoc, conf) {
-    const path = svgDoc.getElementById(conf.id);
-    const targetGroup = svgDoc.getElementById('workspacesFrontGroup');
-    if (!path || !targetGroup) return;
+function addRoomLabel(pathEl, conf, svgElement) {
+    //const path = svgDoc.getElementById(conf.id);
+    const targetGroup = svgElement.getElementById('workspacesFrontGroup') || svgElement;
+    //if (!path || !targetGroup) return;
 
-    const bbox = path.getBBox();
+    //const bbox = path.getBBox();
+    const bbox = pathEl.getBBox();
     const padding = 0.8;
     const offsetX = conf.offX || 0;
     const offsetY = conf.offY || 0;
 
     // Filter-hantering (endast en gång per SVG)
-    if (conf.filter && !svgDoc.getElementById('bg-highlight')) {
-        let defs = svgDoc.documentElement.querySelector('defs') || 
-                   svgDoc.documentElement.insertBefore(svgDoc.createElementNS(SVG_NS, 'defs'), svgDoc.documentElement.firstChild);
+    if (conf.filter && !svgElement.getElementById('bg-highlight')) {
+        let defs = svgElement.querySelector('defs');
+        if (!defs) {
+            defs = document.createElementNS(SVG_NS, 'defs');
+            svgElement.insertBefore(defs, svgElement.firstChild);
+        }
         
-        const filter = svgDoc.createElementNS(SVG_NS, 'filter');
+        const filter = document.createElementNS(SVG_NS, 'filter');
         filter.setAttribute('id', 'bg-highlight');
-        filter.setAttribute('x', '0'); filter.setAttribute('y', '0');
-        filter.setAttribute('width', '1'); filter.setAttribute('height', '1');
-        filter.innerHTML = `<feFlood flood-color="#f5f5f5" result="bg" /><feMerge><feMergeNode in="bg" /><feMergeNode in="SourceGraphic" /></feMerge>`;
+        filter.setAttribute('x', '-0.05'); // Lite marginal för bakgrunden
+        filter.setAttribute('y', '-0.05');
+        filter.setAttribute('width', '1.1');
+        filter.setAttribute('height', '1.1');
+        
+        // feFlood skapar färgen, feMerge lägger texten ovanpå färgen
+        filter.innerHTML = `
+            <feFlood flood-color="#f5f5f5" result="bg" />
+            <feMerge>
+                <feMergeNode in="bg" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>`;
         defs.appendChild(filter);
     }
 
@@ -210,28 +209,28 @@ function addRoomLabel(svgDoc, conf) {
             anchor = "start"; baseline = "central";
     }
 
-    const newText = svgDoc.createElementNS(SVG_NS, "text");
+    const newText = document.createElementNS(SVG_NS, "text");
     newText.setAttribute("id", "label-" + conf.id);
     newText.setAttribute("x", textX);
     newText.setAttribute("y", textY);
     newText.setAttribute("dominant-baseline", baseline);
     newText.setAttribute("text-anchor", anchor);
     newText.setAttribute("transform", `rotate(-90, ${textX}, ${textY})`);
-    if (conf.filter) newText.setAttribute("filter", "url(#bg-highlight)");
+    
+    // Applicera filtret om conf.filter är true
+    if (conf.filter) {
+        newText.setAttribute("filter", "url(#bg-highlight)");
+    }
 
     Object.assign(newText.style, {
         fontFamily: "Figtree, sans-serif",
         fontWeight: "700",
         fontSize: "3.68px",
-        fill: "#000000"
+        fill: "#000000",
+        pointerEvents: "none"
     });
 
-    const tspan = svgDoc.createElementNS(SVG_NS, "tspan");
-    tspan.setAttribute("x", textX);
-    tspan.setAttribute("y", textY);
-    tspan.textContent = conf.label;
-
-    newText.appendChild(tspan);
+    newText.textContent = conf.label;
     targetGroup.appendChild(newText);
 }
 
@@ -242,59 +241,14 @@ function generateBoxes(rooms) {
     if (!rooms.length) return;
     
     let html = '<div style="display:flex; flex-wrap:wrap; width:100%;">';
-    const itemsPerCol = Math.ceil(rooms.length / 3);
-    
-    rooms.forEach((room, index) => {
-        const cssClass = STATUS_CONFIG[room.status]?.cssClass || 'white';
-        // Skapa kolumn-brytning var n:e element om man vill köra float, 
-        // men flex-wrap är oftast stabilare i Smartsign
+    rooms.forEach(room => {
+        const cssClass = CONFIG.statusConfig[room.status]?.cssClass || 'white';
         html += `<div class="${cssClass} Smartsign-item flex-container" style="width:31%; margin:1%;">
                     <div>${room.room_name}</div>
                  </div>`;
     });
-    
     html += '</div>';
     $("#grouprooms").html(html);
 }
 
-/**
- * RUMS-KONFIGURATIONER
- */
-function getFloor2Configs() {
-    return [
-        { id: "wsF4103", number: "01", label: "x",  pos: 'left', filter: true  },
-        { id: "wsF4099", number: "02", label: "x",  pos: 'left', filter: true  },
-        { id: "wsF4100", number: "03", label: "x",  pos: 'left', filter: true  },
-        { id: "wsF4104", number: "0", label: "0",  pos: 'right', offX: 1 },
-        { id: "wsF4168", number: "1", label: "1",  pos: 'right', offX: 1 },
-        { id: "wsF4213", number: "2", label: "2",  pos: 'right', offX: 1 },
-        { id: "wsF4215", number: "3", label: "3",  pos: 'right', offX: 1 },
-        { id: "wsF4216", number: "8", label: "5",  pos: 'left',  offX: 1.5 },
-        { id: "wsF4135", number: "7", label: "6",  pos: 'left',  offX: 1.5 },
-        { id: "wsF4136", number: "6", label: "7", pos: 'left',  offX: 1.5 },
-        { id: "wsF4134", number: "5", label: "8", pos: 'left',  offX: 1.5 },
-        { id: "wsF4141", number: "012", label: "x", pos: 'right', offX: -1 },
-        { id: "wsF4140", number: "9", label: "9", pos: 'right', offX: -1 },
-        { id: "wsF4139", number: "10", label: "10", pos: 'right', offX: -1 },
-        { id: "wsF23173", number: "11", label: "11", pos: 'right', offX: -1 },
-        { id: "wsF23172", number: "12", label: "12", pos: 'right', offX: -1 },
-        { id: "wsF23171", number: "13", label: "13", pos: 'right', offX: -1 },
-        { id: "wsF4180", number: "018", label: "x", pos: 'right', filter: true },
-        { id: "wsF4181", number: "14", label: "14", pos: 'left', filter: true },
-        { id: "wsF4115", number: "15", label: "15", pos: 'top', filter: true, offX: -1 }
-    ];
-}
-
-function getFloor3Configs() {
-    return [
-        { id: "wsF4285", number: "16", label: "16",  pos: 'right', offX: 1 },
-        { id: "wsF4278", number: "A", label: "A",  pos: 'top', offX: 4  },
-        { id: "wsF4277", number: "B", label: "B",  pos: 'top', offX: 4  },
-        { id: "wsF4279", number: "C", label: "C",  pos: 'top', offX: 4 },
-        // Special-element utan nummer men med färg:
-        { id: "wsF4277", isSpecial: true },
-        { id: "wsF4278", isSpecial: true },
-        { id: "wsF4279", isSpecial: true }
-    ];
-}
 </script>

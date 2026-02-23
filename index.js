@@ -1097,6 +1097,10 @@ apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
         req.query.hidekthname == 'true' ? hidekthname = true : hidekthname = false;
         req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
    
+        const configPath = path.join(__dirname, './config.json'); 
+        const rawConfig = fs.readFileSync(configPath, 'utf8');
+        const mapconfig = JSON.parse(rawConfig);
+
         res.render('grbmap', {
             smartsignconfig: {
                 "kiosk" : kiosk, 
@@ -1104,7 +1108,8 @@ apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
                 "titleimageclass": titleimageclass,
                 "titleimagesrc": "" + process.env.GRB_SMARTSIGN_TITLEIMG_SRC + "",
                 "hidelogo": hidelogo,
-                "hidekthname": hidekthname
+                "hidekthname": hidekthname,
+                "mapconfig": mapconfig
             }
         });
     } catch(err) {
