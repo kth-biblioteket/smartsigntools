@@ -8,6 +8,7 @@
   },
   "defaultColor": "#6298D2",
   "dropinColor": "#DEF0FF",
+  "grouproomsqrcodeid": 314,
   "floors": [
     {
       "id": "floor2",
