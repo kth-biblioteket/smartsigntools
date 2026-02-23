@@ -1,523 +1,300 @@
 <script defer>
-    let params
-    let map
+/**
+ * KONFIGURATION OCH STATUS-MAPPNING
+ */
+const STATUS_CONFIG = {
+    'free':          { color: '#0DE47E', cssClass: 'white' },
+    'tentative':     { color: '#dfa539', cssClass: 'yellow' },
+    'tobeconfirmed': { color: '#dfa539', cssClass: 'orange' },
+    'confirmed':     { color: '#e24646', cssClass: 'red' },
+    'unavailable':   { color: 'grey',    cssClass: 'grey' }
+};
 
-    $(document).ready(function () {
-        // Hämta den aktuella URL:en
-        const url = window.location.href;
+const DEFAULT_COLOR = "#6298D2";
+const SVG_NS = "http://www.w3.org/2000/svg";
 
-        // Skapa ett URLSearchParams-objekt från URL:ens query-del
-        params = new URLSearchParams(new URL(url).search);
+// Globala inställningar från URL
+const urlParams = new URLSearchParams(window.location.search);
+const isMapMode = urlParams.get('map') === 'true';
+const shouldGetStatus = urlParams.get('bookingstatus') !== 'false';
 
-        // Hämta en specifik parameter
-        map = params.get('map');
-        getbookingstatus = params.get('bookingstatus') || 'true';
+let mapsLoaded = 0;
+const totalMaps = 2; // Vi har två kartor (floor2 och floor3)
 
-        var counter = 10;
-        function addZero(i) {
-            if (i < 10) {
-                i = "0" + i;
-            }
-            return i;
-        }
-
-        /**
-         * 
-         * Funktion som anropar MRBS Api
-         * 
-         */
-        function getroomAvailability(area_id) {
-            //Hämta aktuell och nästa timme
-            var d = new Date();
-            var currenthour = addZero(d.getHours());
-            d.setHours(d.getHours() + 1);
-            var nextthour = addZero(d.getHours());
-            //uppdatera html
-            let statusclass = "statustext"
-            if (map === 'true') {
-                statusclass = "mapstatustext"
-            }
-            $("#App-content").html(`<div class="${statusclass}">Status ${currenthour}:00 - ${nextthour}:00</div>`);
-            //$("#App-content").html('<h4>Lässtudio / Reading Studio</h4>');
-            var currenttimestamp = Math.floor(Date.now() / 1000);
-            var nexthourtimestamp = currenttimestamp + 3600;
-            //currenttimestamp = 1521299582;
-            var html = '';
-            $.ajax({
-                url: '<%= smartsignconfig.bookingystemapiserverurl %>v1/roomsavailability/grouprooms/1/' + currenttimestamp,
-            });
-            //hämta ny data efter x millisekunder
-            //setTimeout(function(){ getroomAvailability(area_id) }, 5000);
-        }
-
-        //Hämta rumstatus för aktuell timme och area
-        if (getbookingstatus === 'true') {
-            getroomAvailability(1);
+$(document).ready(function () {
+    if (shouldGetStatus) {
+        // Vi anropar INTE getRoomAvailability här direkt.
+        // Istället sätter vi bara upp strukturen.
+        if (isMapMode) {
+            setupMapStructure();
         } else {
-            if (map === 'true') {
-                generateMap([]);
-            } else {
-                generateboxes([]);
-            }
+            // Om vi inte kör kart-läge (box-vy), kör direkt
+            getRoomAvailability();
         }
-    });
 
-    /**
-     * 
-     * Funktion för att hantera fel
-     * 
-     */
-    $(document).ajaxError(function (event, jqxhr, settings) {
-        if (settings.url.indexOf("roomsavailability") != -1) {
-        }
-    });
-
-    function createRect(svgDoc, svgId, attributes) {
-        const svg = svgDoc.getElementById(svgId);
-        const svgns = "http://www.w3.org/2000/svg";
-        const rect = document.createElementNS(svgns, "rect");
-        for (let key in attributes) {
-            rect.setAttribute(key, attributes[key]);
-        }
-        svg.appendChild(rect);
+        // Starta intervallet som vanligt för framtida uppdateringar
+        setInterval(getRoomAvailability, 300000);
+    } else {
+        renderInitialUI([]);
     }
+});
 
-    function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = false, offsetX = 0, offsetY = 0) {
-        const path = svgDoc.getElementById(pathId);
-        const targetGroup = svgDoc.getElementById('workspacesFrontGroup');
-
-        if (path && targetGroup) {
-            const bbox = path.getBBox();
-            const svgNS = "http://www.w3.org/2000/svg";
-            const padding = 0.8;
-
-            if (filter === true) {
-                // 1. Skapa filtret (endast om det inte redan finns i SVG:n)
-                if (!svgDoc.getElementById('bg-highlight')) {
-                    const defs = svgDoc.querySelector('defs') || svgDoc.insertBefore(document.createElementNS(svgNS, 'defs'), svgDoc.firstChild);
-                    const filter = document.createElementNS(svgNS, 'filter');
-                    filter.setAttribute('id', 'bg-highlight');
-                    filter.setAttribute('x', '0');
-                    filter.setAttribute('y', '0');
-                    filter.setAttribute('width', '1');
-                    filter.setAttribute('height', '1');
-
-                    filter.innerHTML = `
-                    <feFlood flood-color="#f5f5f5" result="bg" />
-                    <feMerge>
-                        <feMergeNode in="bg" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>`;
-                    defs.appendChild(filter);
-                }
-            }
-
-            let textX, textY, anchor;
-            // Beräkna position baserat på önskat läge
-            // Kom ihåg: I en 90-graders roterad grupp är -Y = höger, +Y = vänster, +X = ner, -X = upp
-            switch (position) {
-                case 'right':
-                    textX = bbox.x + (bbox.width / 2) + offsetX;
-                    textY = bbox.y - padding + offsetY;
-                    anchor = "start"; // Växer åt höger (visuellt)
-                    baseline = "central"; // Centrerad längs bordets långsida
-                    break;
-                case 'left':
-                    textX = bbox.x + (bbox.width / 2) + offsetX;
-                    textY = bbox.y + bbox.height + padding + offsetY;
-                    anchor = "end";
-                    baseline = "central"; // Centrerad längs bordets långsida
-                    break;
-                case 'top':
-                    textX = bbox.x - padding + offsetX;
-                    textY = bbox.y + (bbox.height / 2) + offsetY;
-                    anchor = "middle";
-                    // Eftersom texten är roterad -90 grader, blir "text-top" 
-                    // den sida som pekar bort från bordet när den ligger ovanför.
-                    baseline = "text-top";
-                    break;
-                case 'bottom':
-                    textX = bbox.x + bbox.width + padding + offsetX;
-                    textY = bbox.y + (bbox.height / 2) + offsetY;
-                    anchor = "middle";
-                    // "hanging" gör att textens ovankant fäster vid punkten,
-                    // vilket knuffar ner den under bordet.
-                    baseline = "hanging";
-                    break;
-                default:
-                    textX = bbox.x + (bbox.width / 2) + offsetX;
-                    textY = bbox.y - padding + offsetY;
-                    anchor = "start";
-                    baseline = "central";
-            }
-
-            const newText = document.createElementNS(svgNS, "text");
-            newText.setAttribute("x", textX);
-            newText.setAttribute("y", textY);
-            newText.setAttribute("dominant-baseline", baseline);
-            newText.setAttribute("text-anchor", anchor);
-            newText.setAttribute("transform", `rotate(-90, ${textX}, ${textY})`);
-
-            // Applicera filtret här för bakgrundsfärgen
-            if (filter === true) {
-                newText.setAttribute("filter", "url(#bg-highlight)");
-            }
-
-            newText.style.fontFamily = "Figtree, sans-serif";
-            newText.style.fontWeight = "700";
-            newText.style.fontSize = "3.68px";
-            newText.style.fill = "#000000";
-            newText.style.stroke = "none";
-            //newText.style.strokeWidth = "1px"
-
-            const newTspan = document.createElementNS(svgNS, "tspan");
-            newTspan.setAttribute("x", textX);
-            newTspan.setAttribute("y", textY);
-            newTspan.textContent = labelText;
-
-            newText.appendChild(newTspan);
-            targetGroup.appendChild(newText);
-        }
-    }
+/**
+ * HÄMTA DATA FRÅN API
+ */
+function getRoomAvailability() {
+    const d = new Date();
+    const currentHour = String(d.getHours()).padStart(2, '0');
+    const nextHour = String(d.getHours() + 1).padStart(2, '0');
     
-    function rotateSvgCorrectly(svgDoc, svgId) {
-        const svg = svgDoc.getElementById(svgId);
-        if (!svg) return;
+    // Uppdatera Header-status
+    const statusClass = isMapMode ? "mapstatustext" : "statustext";
+    $("#App-content").html(`<div class="${statusClass}">Status ${currentHour}:00 - ${nextHour}:00</div>`);
 
-        // 1. Hämta nuvarande viewBox-värden
-        const vb = svg.viewBox.baseVal;
-        const oldX = vb.x;
-        const oldY = vb.y;
-        const oldWidth = vb.width;
-        const oldHeight = vb.height;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    // URL baserad på din miljö-variabel
+    const apiUrl = `<%= smartsignconfig.bookingystemapiserverurl %>v1/roomsavailability/grouprooms/1/${currentTimestamp}`;
 
-        // 2. Skapa en ny stående viewBox (Byt plats på bredd och höjd)
-        // Formel för att centrera: nyMinX = oldMinY, nyMinY = -(oldMinX + oldWidth)
-        const newViewBox = `${oldY} ${-(oldX + oldWidth)} ${oldHeight} ${oldWidth}`;
-        svg.setAttribute('viewBox', newViewBox);
-
-        // 3. Skapa en grupp-tagg (<g>) och flytta allt innehåll in i den
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.setAttribute("transform", "rotate(90 0 0)");
-
-        // Flytta alla barn-element till gruppen
-        while (svg.firstChild) {
-            g.appendChild(svg.firstChild);
-        }
-
-        // Lägg tillbaka gruppen i SVG:n
-        svg.appendChild(g);
-
-        // 4. Ta bort eventuell CSS-rotation som stör layouten
-        svg.style.transform = "none";
-
-        // --- TA BORT SPECIFIK FYLLNADSFÄRG (#0DE47E) ---
-        // Vi letar i hela SVG:n efter element med just den färgen
-        const coloredElements = svg.querySelectorAll('[fill="#0DE47E"], [style*="fill: #0DE47E"]');
-        
-        coloredElements.forEach(el => {
-            // Vi tar bort attributet eller ändrar det till 'none' eller 'inherit'
-            // så att din beläggnings-logik kan ta över sen.
-            el.removeAttribute('fill');
-            el.style.fill = ""; 
-            
-            // Tips: Lägg till en klass så du enkelt hittar rummen sen
-            el.classList.add('room-area');
+    $.getJSON(apiUrl)
+        .done(data => {
+            const roomsFiltered = data.filter(room => room.disabled !== 1);
+            renderInitialUI(roomsFiltered);
+        })
+        .fail(err => {
+            console.error("Kunde inte hämta rumsstatus:", err);
+            // Om API misslyckas, rendera tom vy eller felmeddelande
+            renderInitialUI([]);
         });
+}
+
+/**
+ * RENDERINGSLOGIK
+ */
+function renderInitialUI(rooms) {
+    if (isMapMode) {
+        if ($("#floor2Map").length === 0) {
+            setupMapStructure();
+        }
+        updateMapColors(rooms);
+    } else {
+        generateBoxes(rooms);
     }
+}
 
-    function generateMap(roomsfiltered) {
-        html = `<div class="floor-plan">
-                    <div class="map-container">
-                        <object id="floor2Map" type="image/svg+xml"
-                            data="http://localhost:96/smartsigntools/api/v1/floorsvg/65">Your browser does not support
-                            SVGs.
-                        </object>
-                    </div>
-                        <div class="floor-label">Floor2 (entrance)</div>
-                        <div style="display: flex; justify-content: left;"></div>
-
-                        <div class="booking-footer">
-                            <div class="qr-container">
-                            <img src="https://apps.lib.kth.se/smartsigntools/api/v1/qrcode/general/generate/233" alt="QR Code"
-                                class="qr-code">
-                            </div>
-
-                            <div class="booking-callout">
-                            <div class="book-here-text">Book here</div>
-
-                            <svg class="curved-arrow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10,10 Q60,10 90,80" stroke="black" stroke-width="5" stroke-linecap="round" fill="none"></path>
-                                <path d="M70,65 L90,80 L90,55" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-                            </svg>
-
-                            <!--svg class="curved-arrow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10,10 Q60,10 50,80" stroke="black" stroke-width="5" stroke-linecap="round" fill="none"></path>
-                                <path d="M40,65 L50,80 L65,70" stroke="black" stroke-width="4" stroke-linecap="round"
-                                stroke-linejoin="round" fill="none"></path>
-                            </svg-->
-                            </div>
-                        </div>
+function setupMapStructure() {
+    const html = `
+        <div class="floor-plan">
+            <div class="map-container">
+                <object id="floor2Map" type="image/svg+xml" data="http://localhost:96/smartsigntools/api/v1/floorsvg/65"></object>
+            </div>
+            <div class="floor-label">Floor 2 (Entrance)</div>
+            <div class="booking-footer">
+                <div class="qr-container">
+                    <img src="https://apps.lib.kth.se/smartsigntools/api/v1/qrcode/general/generate/233" class="qr-code">
                 </div>
+                <div class="booking-callout">
+                    <div class="book-here-text">Book here</div>
+                    <svg class="curved-arrow" viewBox="0 0 100 100">
+                        <path d="M10,10 Q60,10 90,80" stroke="black" fill="none" stroke-width="5" stroke-linecap="round" />
+                        <path d="M70,65 L90,80 L90,55" stroke="black" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="floor-plan floor-plan-right">
+            <div class="map-container">
+                <object id="floor3Map" type="image/svg+xml" data="http://localhost:96/smartsigntools/api/v1/floorsvg/66"></object>
+            </div>
+            <div class="floor-label">Floor 3</div>
+        </div>`;
+    
+    $("#map-section").html(html);
 
-                <div class="floor-plan floor-plan-right">
-                    <div class="map-container">
-                        <object
-                            id="floor3Map" type="image/svg+xml"
-                            data="http://localhost:96/smartsigntools/api/v1/floorsvg/66">Your browser does not support
-                            SVGs.
-                        </object>
-                    </div>
-                        <div class="floor-label">Floor3</div>
-                </div>`
-        //uppdatera html
-        $("#map-section").html(html);
-        //Statusfärger mapping
-        const statusColors = {
-            'free': '#0DE47E',
-            'tentative': '#dfa539',
-            'tobeconfirmed': '#dfa539',
-            'confirmed': '#e24646',
-            'unavailable': 'grey'
-        };
-        $("#floor2Map").on("load", function () {
-            // Access the SVG content
-            const svgDoc = this.contentDocument;
-
-            if (!svgDoc) {
-                console.error('Failed to load the SVG document.');
-                return;
-            }
-
-            
-
-            const rect1 = createRect(svgDoc, 'svgDrawing', {
-                "id": "rect2638",
-                "width": "4.7730517",
-                "height": "4.2896671",
-                "x": "-18.671761",
-                "y": "21.880999",
-                "transform": "rotate(-78.993219)",
-                "ry": "0",
-                "style": "display:inline;fill:#f6f6f6;fill-opacity:1;stroke-width:0"
-            });
-
-            // 3. Data för den andra rektangeln (rect2639)
-            const rect2 = createRect(svgDoc, 'svgDrawing', {
-                "id": "rect2639",
-                "width": "0.51482395",
-                "height": "2.5165987",
-                "x": "-12.874211",
-                "y": "22.55566",
-                "transform": "rotate(-80.001197)",
-                "style": "fill:#f6f6f6;fill-opacity:1;stroke-width:0"
-            });
-
-            //rotateSvgCorrectly(svgDoc, 'svgDrawing');
-
-// 4. Lägg till dem i SVG:n
-//svgDoc.appendChild(rect1);
-//svgDoc.appendChild(rect2);
-
-            // 1. Definitioner av alla rum och deras etikett-inställningar
-            
-            const roomConfigs = [
-                { id: "wsF4103", number: "01", label: "x",  pos: 'left', filter: true  },
-                { id: "wsF4099", number: "02", label: "x",  pos: 'left', filter: true  },
-                { id: "wsF4100", number: "03", label: "x",  pos: 'left', filter: true  },
-                { id: "wsF4104", number: "0", label: "0",  pos: 'right', offX: 1 },
-                { id: "wsF4168", number: "1", label: "1",  pos: 'right', offX: 1 },
-                { id: "wsF4213", number: "2", label: "2",  pos: 'right', offX: 1 },
-                { id: "wsF4215", number: "3", label: "3",  pos: 'right', offX: 1 },
-                { id: "wsF4216", number: "8", label: "5",  pos: 'left',  offX: 1.5 },
-                { id: "wsF4135", number: "7", label: "6",  pos: 'left',  offX: 1.5 },
-                { id: "wsF4136", number: "6", label: "7", pos: 'left',  offX: 1.5 },
-                { id: "wsF4134", number: "5", label: "8", pos: 'left',  offX: 1.5 },
-                { id: "wsF4141", number: "012", label: "x", pos: 'right', offX: -1 },
-                { id: "wsF4140", number: "9", label: "9", pos: 'right', offX: -1 },
-                { id: "wsF4139", number: "10", label: "10", pos: 'right', offX: -1 },
-                { id: "wsF23173", number: "11", label: "11", pos: 'right', offX: -1 },
-                { id: "wsF23172", number: "12", label: "12", pos: 'right', offX: -1 },
-                { id: "wsF23171", number: "13", label: "13", pos: 'right', offX: -1 },
-                { id: "wsF4180", number: "018", label: "x", pos: 'right', filter: true },
-                { id: "wsF4181", number: "14", label: "14", pos: 'left', filter: true },
-                { id: "wsF4115", number: "15", label: "15", pos: 'top', filter: true, offX: -1 }
-            ];
-
-            // En hjälp-lista för att snabbt hitta rums-element via rumsnummer (case 1, 2, 3...)
-            const roomRefs = {};
-
-            // 2. Applicera grundinställningar och rita etiketter
-            roomConfigs.forEach(conf => {
-                const el = svgDoc.getElementById(conf.id);
-                if (el) {
-                    el.setAttribute("fill", "#6298D2"); // Standardfärg
-                    roomRefs[conf.number] = el; // Spara referens: roomRefs["5"] = elementet wsF4168
-                    
-                    addRoomLabel(
-                        svgDoc, 
-                        conf.id, 
-                        conf.label, 
-                        conf.pos, 
-                        conf.filter || false, 
-                        conf.offX || 0, 
-                        conf.offY || 0
-                    );
-                }
-            });
-
-            // 4. Uppdatera färger baserat på bokningsstatus
-            if (roomsfiltered.length === 0) {
-                console.warn('No room data available to update colors.');
-            } else {
-                roomsfiltered.forEach(function (element) {
-                    const color = statusColors[element.status] || "#6298D2";
-                    const roomEl = roomRefs[element.room_name];
-                    
-                    if (roomEl) {
-                        roomEl.setAttribute("fill", color);
-                    }
-                });
-            }
-
-        });
-        $("#floor3Map").on("load", function () {
-            // Access the SVG content
-            const svgDoc = this.contentDocument;
-
-            if (!svgDoc) {
-                console.error('Failed to load the SVG document.');
-                return;
-            }
-
-            // 1. Definitioner av alla rum och deras etikett-inställningar
-            const roomConfigs = [
-                { id: "wsF4285", number: "16", label: "16",  pos: 'right', offX: 1 },
-                { id: "wsF4278", number: "A", label: "A",  pos: 'top', offX: 4  },
-                { id: "wsF4277", number: "B", label: "B",  pos: 'top', offX: 4  },
-                { id: "wsF4279", number: "C", label: "C",  pos: 'top', offX: 4 },
-            ];
-
-            // En hjälp-lista för att snabbt hitta rums-element via rumsnummer (case 1, 2, 3...)
-            const roomRefs = {};
-
-            // 2. Applicera grundinställningar och rita etiketter
-            roomConfigs.forEach(conf => {
-                const el = svgDoc.getElementById(conf.id);
-                if (el) {
-                    el.setAttribute("fill", "#6298D2"); // Standardfärg
-                    roomRefs[conf.number] = el; // Spara referens: roomRefs["5"] = elementet wsF4168
-                    
-                    addRoomLabel(
-                        svgDoc, 
-                        conf.id, 
-                        conf.label, 
-                        conf.pos, 
-                        conf.filter || false, 
-                        conf.offX || 0, 
-                        conf.offY || 0
-                    );
-                }
-            });
-
-            // Specialfall: Rum utan etikett men som ska färgas
-            roomRefs["special1"] = svgDoc.getElementById("wsF4277");
-            if(roomRefs["special1"]) roomRefs["special1"].setAttribute("fill", "#DEF0FF");
-            roomRefs["special2"] = svgDoc.getElementById("wsF4278");
-            if(roomRefs["special2"]) roomRefs["special2"].setAttribute("fill", "#DEF0FF");
-            roomRefs["special3"] = svgDoc.getElementById("wsF4279");
-            if(roomRefs["special3"]) roomRefs["special3"].setAttribute("fill", "#DEF0FF");
-
-            // 4. Uppdatera färger baserat på bokningsstatus
-            roomsfiltered.forEach(function (element) {
-                const color = statusColors[element.status] || "#6298D2";
-                const roomEl = roomRefs[element.room_name];
-                
-                if (roomEl) {
-                    roomEl.setAttribute("fill", color);
-                }
-            });
-        });
-
-    }
-
-    function generateboxes(roomsfiltered) {
-        //Lägg rummen i 3 kolumner
-            html = '<div style="float:left;width:33.33%">'; //Första kolumnen
-            //Hur många rader ska varje kolumn innehålla
-            rows = Math.ceil((roomsfiltered.length)/3);
-            i = 0;
-            roomsfiltered.forEach(function(element) {
-                console.log(element)
-                if(element.status == 'free'){
-                    colorclass = "white"
-                }
-                if(element.status == 'tentative'){
-                    colorclass = "yellow"
-                }
-                if(element.status == 'tobeconfirmed'){
-                    colorclass = "orange"
-                }
-                if(element.status == 'confirmed'){
-                    colorclass = "red"
-                }
-                if(element.status == 'unavailable'){
-                    colorclass = "grey"
-                }
-                if(i==rows) {
-                    //Nästa kolumn
-                    html += '</div><div style="float:left;width:33.33%">'
-                    i=0;
-                }
-                i++;
-                html += '<div class="' + colorclass +' Smartsign-item flex-container"><div>'  + element.room_name + '</div></div>';
-            }); 
-            html += '</div>';
-            //uppdatera html
-            $("#grouprooms").html(html);
-        //}
-        //Lässtudio
-        if (settings.url.indexOf("area_id=4") != -1) {
-            html = '';
-            jqxhr.responseJSON.forEach(function(element) {
-                if(element.status == 'free'){
-                    colorclass = "green"
-                }
-                if(element.status == 'tentative'){
-                    colorclass = "yellow"
-                }
-                if(element.status == 'tobeconfirmed'){
-                    colorclass = "orange"
-                }
-                if(element.status == 'confirmed'){
-                    colorclass = "red"
-                }
-                if(element.status == 'unavailable'){
-                    colorclass = "grey"
-                }
-                
-                html += '<div class="' + colorclass +' Smartsign-item flex-container"><div>' + element.room_name + '</div></div>';
-            });
-            //uppdatera html
-            $("#readingstudios").html(html);
+    // Lyssna på laddning av kartor
+    $("#floor2Map, #floor3Map").on("load", function() {
+        mapsLoaded++;
+        // Kör bara API-anropet när SISTA kartan har laddats klart
+        if (mapsLoaded === totalMaps) {
+            console.log("Alla kartor laddade. Hämtar data...");
+            getRoomAvailability();
         }
-    }
-    /**
-     * 
-     * Funktion som hanterar svaret från MRBS Api
-     * 
-     */
-    $(document).ajaxSuccess(function (event, jqxhr, settings) {
-        //Grupprum 
-        //if (settings.url.indexOf("area_id=1") != -1) {
-        var roomsfiltered = jqxhr.responseJSON.filter(function (room) {
-            return room.disabled !== 1
-        });
-
-        if (map === 'true') {
-                generateMap(roomsfiltered);
-            } else {
-                generateboxes(roomsfiltered);
-            }
     });
+}
+
+function updateMapColors(rooms) {
+    const floorConfigs = [
+        { selector: "#floor2Map", rooms: getFloor2Configs() },
+        { selector: "#floor3Map", rooms: getFloor3Configs() }
+    ];
+
+    floorConfigs.forEach(floor => {
+        const svgObj = $(floor.selector)[0];
+        if (!svgObj || !svgObj.contentDocument) return;
+        const svgDoc = svgObj.contentDocument;
+
+        floor.rooms.forEach(conf => {
+            const el = svgDoc.getElementById(conf.id);
+            if (!el) return;
+
+            // Hitta status för rummet
+            const roomData = rooms.find(r => r.room_name === conf.number);
+            let color = DEFAULT_COLOR;
+            
+            if (conf.isSpecial) {
+                color = "#DEF0FF";
+            } else if (roomData) {
+                color = STATUS_CONFIG[roomData.status]?.color || DEFAULT_COLOR;
+            }
+
+            el.setAttribute("fill", color);
+            
+            // Rita etikett om den inte redan finns
+            if (conf.label && !svgDoc.getElementById("label-" + conf.id)) {
+                addRoomLabel(svgDoc, conf);
+            }
+        });
+    });
+}
+
+/**
+ * SKAPA ETIKETTER I SVG
+ */
+function addRoomLabel(svgDoc, conf) {
+    const path = svgDoc.getElementById(conf.id);
+    const targetGroup = svgDoc.getElementById('workspacesFrontGroup');
+    if (!path || !targetGroup) return;
+
+    const bbox = path.getBBox();
+    const padding = 0.8;
+    const offsetX = conf.offX || 0;
+    const offsetY = conf.offY || 0;
+
+    // Filter-hantering (endast en gång per SVG)
+    if (conf.filter && !svgDoc.getElementById('bg-highlight')) {
+        let defs = svgDoc.documentElement.querySelector('defs') || 
+                   svgDoc.documentElement.insertBefore(svgDoc.createElementNS(SVG_NS, 'defs'), svgDoc.documentElement.firstChild);
+        
+        const filter = svgDoc.createElementNS(SVG_NS, 'filter');
+        filter.setAttribute('id', 'bg-highlight');
+        filter.setAttribute('x', '0'); filter.setAttribute('y', '0');
+        filter.setAttribute('width', '1'); filter.setAttribute('height', '1');
+        filter.innerHTML = `<feFlood flood-color="#f5f5f5" result="bg" /><feMerge><feMergeNode in="bg" /><feMergeNode in="SourceGraphic" /></feMerge>`;
+        defs.appendChild(filter);
+    }
+
+    let textX, textY, anchor, baseline;
+    switch (conf.pos) {
+        case 'right':
+            textX = bbox.x + (bbox.width / 2) + offsetX;
+            textY = bbox.y - padding + offsetY;
+            anchor = "start"; baseline = "central";
+            break;
+        case 'left':
+            textX = bbox.x + (bbox.width / 2) + offsetX;
+            textY = bbox.y + bbox.height + padding + offsetY;
+            anchor = "end"; baseline = "central";
+            break;
+        case 'top':
+            textX = bbox.x - padding + offsetX;
+            textY = bbox.y + (bbox.height / 2) + offsetY;
+            anchor = "middle"; baseline = "text-top";
+            break;
+        case 'bottom':
+            textX = bbox.x + bbox.width + padding + offsetX;
+            textY = bbox.y + (bbox.height / 2) + offsetY;
+            anchor = "middle"; baseline = "hanging";
+            break;
+        default:
+            textX = bbox.x + (bbox.width / 2) + offsetX;
+            textY = bbox.y - padding + offsetY;
+            anchor = "start"; baseline = "central";
+    }
+
+    const newText = svgDoc.createElementNS(SVG_NS, "text");
+    newText.setAttribute("id", "label-" + conf.id);
+    newText.setAttribute("x", textX);
+    newText.setAttribute("y", textY);
+    newText.setAttribute("dominant-baseline", baseline);
+    newText.setAttribute("text-anchor", anchor);
+    newText.setAttribute("transform", `rotate(-90, ${textX}, ${textY})`);
+    if (conf.filter) newText.setAttribute("filter", "url(#bg-highlight)");
+
+    Object.assign(newText.style, {
+        fontFamily: "Figtree, sans-serif",
+        fontWeight: "700",
+        fontSize: "3.68px",
+        fill: "#000000"
+    });
+
+    const tspan = svgDoc.createElementNS(SVG_NS, "tspan");
+    tspan.setAttribute("x", textX);
+    tspan.setAttribute("y", textY);
+    tspan.textContent = conf.label;
+
+    newText.appendChild(tspan);
+    targetGroup.appendChild(newText);
+}
+
+/**
+ * BOX-VY (När map=false)
+ */
+function generateBoxes(rooms) {
+    if (!rooms.length) return;
+    
+    let html = '<div style="display:flex; flex-wrap:wrap; width:100%;">';
+    const itemsPerCol = Math.ceil(rooms.length / 3);
+    
+    rooms.forEach((room, index) => {
+        const cssClass = STATUS_CONFIG[room.status]?.cssClass || 'white';
+        // Skapa kolumn-brytning var n:e element om man vill köra float, 
+        // men flex-wrap är oftast stabilare i Smartsign
+        html += `<div class="${cssClass} Smartsign-item flex-container" style="width:31%; margin:1%;">
+                    <div>${room.room_name}</div>
+                 </div>`;
+    });
+    
+    html += '</div>';
+    $("#grouprooms").html(html);
+}
+
+/**
+ * RUMS-KONFIGURATIONER
+ */
+function getFloor2Configs() {
+    return [
+        { id: "wsF4103", number: "01", label: "x",  pos: 'left', filter: true  },
+        { id: "wsF4099", number: "02", label: "x",  pos: 'left', filter: true  },
+        { id: "wsF4100", number: "03", label: "x",  pos: 'left', filter: true  },
+        { id: "wsF4104", number: "0", label: "0",  pos: 'right', offX: 1 },
+        { id: "wsF4168", number: "1", label: "1",  pos: 'right', offX: 1 },
+        { id: "wsF4213", number: "2", label: "2",  pos: 'right', offX: 1 },
+        { id: "wsF4215", number: "3", label: "3",  pos: 'right', offX: 1 },
+        { id: "wsF4216", number: "8", label: "5",  pos: 'left',  offX: 1.5 },
+        { id: "wsF4135", number: "7", label: "6",  pos: 'left',  offX: 1.5 },
+        { id: "wsF4136", number: "6", label: "7", pos: 'left',  offX: 1.5 },
+        { id: "wsF4134", number: "5", label: "8", pos: 'left',  offX: 1.5 },
+        { id: "wsF4141", number: "012", label: "x", pos: 'right', offX: -1 },
+        { id: "wsF4140", number: "9", label: "9", pos: 'right', offX: -1 },
+        { id: "wsF4139", number: "10", label: "10", pos: 'right', offX: -1 },
+        { id: "wsF23173", number: "11", label: "11", pos: 'right', offX: -1 },
+        { id: "wsF23172", number: "12", label: "12", pos: 'right', offX: -1 },
+        { id: "wsF23171", number: "13", label: "13", pos: 'right', offX: -1 },
+        { id: "wsF4180", number: "018", label: "x", pos: 'right', filter: true },
+        { id: "wsF4181", number: "14", label: "14", pos: 'left', filter: true },
+        { id: "wsF4115", number: "15", label: "15", pos: 'top', filter: true, offX: -1 }
+    ];
+}
+
+function getFloor3Configs() {
+    return [
+        { id: "wsF4285", number: "16", label: "16",  pos: 'right', offX: 1 },
+        { id: "wsF4278", number: "A", label: "A",  pos: 'top', offX: 4  },
+        { id: "wsF4277", number: "B", label: "B",  pos: 'top', offX: 4  },
+        { id: "wsF4279", number: "C", label: "C",  pos: 'top', offX: 4 },
+        // Special-element utan nummer men med färg:
+        { id: "wsF4277", isSpecial: true },
+        { id: "wsF4278", isSpecial: true },
+        { id: "wsF4279", isSpecial: true }
+    ];
+}
 </script>
