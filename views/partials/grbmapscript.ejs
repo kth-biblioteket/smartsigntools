@@ -130,7 +130,7 @@ function updateMapColors(rooms) {
             if (!el) return;
 
             const roomData = rooms.find(r => r.room_name === conf.number);
-            let color = conf.isSpecial ? "#DEF0FF" : (CONFIG.statusConfig[roomData?.status]?.color || CONFIG.defaultColor);
+            let color = conf.dropin ? CONFIG.dropinColor : (CONFIG.statusConfig[roomData?.status]?.color || CONFIG.defaultColor);
 
             el.setAttribute("fill", color);
             

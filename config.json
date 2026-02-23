@@ -7,13 +7,14 @@
     "unavailable":   { "color": "grey",    "cssClass": "grey" }
   },
   "defaultColor": "#6298D2",
+  "dropinColor": "#DEF0FF",
   "floors": [
     {
       "id": "floor2",
       "label": "Floor 2 (Entrance)",
       "svgUrl": "/smartsigntools/api/v1/floorsvg/65",
       "rooms": [
-        { "id": "wsF4103", "number": "01", "label": "x", "pos": "left", "filter": true },
+        { "id": "wsF4103", "number": "01", "label": "Q", "pos": "left", "filter": true },
         { "id": "wsF4104", "number": "0", "label": "0", "pos": "right", "offX": 1 },
         { "id": "wsF4168", "number": "1", "label": "1", "pos": "right", "offX": 1 },
         { "id": "wsF4213", "number": "2", "label": "2", "pos": "right", "offX": 1 },
@@ -37,12 +38,9 @@
       "svgUrl": "/smartsigntools/api/v1/floorsvg/66",
       "rooms": [
         { "id": "wsF4285", "number": "16", "label": "16", "pos": "right", "offX": 1 },
-        { "id": "wsF4278", "number": "A", "label": "A", "pos": "top", "offX": 4 },
-        { "id": "wsF4277", "number": "B", "label": "B", "pos": "top", "offX": 4 },
-        { "id": "wsF4279", "number": "C", "label": "C", "pos": "top", "offX": 4 },
-        { "id": "wsF4277", "isSpecial": true },
-        { "id": "wsF4278", "isSpecial": true },
-        { "id": "wsF4279", "isSpecial": true }
+        { "id": "wsF4278", "number": "A", "label": "A", "pos": "top", "offX": 4 , "dropin": true },
+        { "id": "wsF4277", "number": "B", "label": "B", "pos": "top", "offX": 4, "dropin": true },
+        { "id": "wsF4279", "number": "C", "label": "C", "pos": "top", "offX": 4, "dropin": true }
       ]
     }
   ]
