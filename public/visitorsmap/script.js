@@ -14,7 +14,7 @@ async function getVisitors() {
     try {
         const res = await fetch(url);
         let realtime = await res.json();
-        if (urlParams.debug == 'true') {
+        if (urlParams.get('debug') == 'true') {
             realtime.location = "open";
             realtime.data = {
                 "location": {

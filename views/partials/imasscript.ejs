@@ -1370,12 +1370,12 @@
       url: '<%= smartsignconfig.serverurl %>smartsigntools/api/v1/imas/realtime',
       //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
-        showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
-        showVisitors(response, 'gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium');
-        showVisitors(response, 'gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 40, 'gauge-header-medium');
-        showVisitors(response, 'gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 20, 'gauge-header-medium');
-        showVisitors(response, 'gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 30, 'gauge-header-medium');
-        showVisitors(response, 'gaugeOM', 'Newton', 'Newton', 'Newton', 15, 'gauge-header-medium');          
+        showVisitors(response.data, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
+        showVisitors(response.data, 'gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium');
+        showVisitors(response.data, 'gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 40, 'gauge-header-medium');
+        showVisitors(response.data, 'gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 20, 'gauge-header-medium');
+        showVisitors(response.data, 'gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 30, 'gauge-header-medium');
+        showVisitors(response.data, 'gaugeOM', 'Newton', 'Newton', 'Newton', 15, 'gauge-header-medium');          
       },
   
       error: function(){
