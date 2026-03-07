@@ -1370,12 +1370,12 @@
       url: '<%= smartsignconfig.serverurl %>smartsigntools/api/v1/imas/realtime',
       //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
-        showVisitors(response.data, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
-        showVisitors(response.data, 'gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium');
-        showVisitors(response.data, 'gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 40, 'gauge-header-medium');
-        showVisitors(response.data, 'gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 20, 'gauge-header-medium');
-        showVisitors(response.data, 'gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 30, 'gauge-header-medium');
-        showVisitors(response.data, 'gaugeOM', 'Newton', 'Newton', 'Newton', 15, 'gauge-header-medium');          
+        showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
+        showVisitors(response, 'gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium');
+        showVisitors(response, 'gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 40, 'gauge-header-medium');
+        showVisitors(response, 'gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 20, 'gauge-header-medium');
+        showVisitors(response, 'gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 30, 'gauge-header-medium');
+        showVisitors(response, 'gaugeOM', 'Newton', 'Newton', 'Newton', 15, 'gauge-header-medium');          
       },
   
       error: function(){
@@ -1406,8 +1406,8 @@
   function showVisitors(response, site, sitename, sitename_sv, sitename_en, maxoccupancy, gaugeclass) {
     var sitenameheader
     if(response.location == "closed" ) {
-      response.zones = {}
-      response.zones.length = 0
+      response.data.zones = {}
+      response.data.zones.length = 0
     } 
     if (smartsignconfig.lang.indexOf('en')!= -1) {
       sitenameheader = sitename_en
@@ -1482,10 +1482,10 @@
           var over50 = '';
           var currentInside = null;
           var currentThreshold = null;
-          for (var i = 0; i < response.zones.length; i++) {
-            if (response.zones[i].name == sitename) {
-              currentInside = response.zones[i].inside
-              currentThreshold = response.zones[i].threshold
+          for (var i = 0; i < response.data.zones.length; i++) {
+            if (response.data.zones[i].name == sitename) {
+              currentInside = response.data.zones[i].inside
+              currentThreshold = response.data.zones[i].threshold
             }
           }
     
