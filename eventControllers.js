@@ -2068,6 +2068,30 @@ async function getTimeeditAsImage() {
 
 }
 
+async function getAppSettings(id) {
+    let appSettings = await eventModel.readAppSettings(id);
+    
+    if (!appSettings || appSettings.length === 0) {
+        return { status: "error", message: "App settings not found" };
+    }
+
+    try {
+        const rawData = appSettings[0].config;
+        
+        const parsedConfig = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+
+        return { 
+            status: "ok", 
+            appsettings: {
+                ...appSettings[0],
+                config: parsedConfig
+            }
+        };
+    } catch (error) {
+        return { status: "error", message: "Error parsing app settings JSON: " + error.message };
+    }
+}
+
 let tokenQueue = Promise.resolve(); // används för att köa token-hämtning
 
 async function getImasToken() {
@@ -2084,8 +2108,6 @@ async function getImasToken() {
 }
 
 async function getImasRealtime(retries = 3, delay = 500) {
-    console.log("Fetching IMAS realtime data from cache...");
-    console.log(realtimeCache);
     return realtimeCache;
 }
 
@@ -2195,13 +2217,20 @@ function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = fa
         targetGroup.appendChild(newText);
     }
 }
-    
 
 async function updateOpenedHoursCache() {
-    try {
-        const today = new Date().toISOString().slice(0, 10);
-        const authToken = await getImasToken();
+    const today = new Date().toISOString().slice(0, 10);
 
+   if (openedHoursCache.date === today && lastOpenedHoursUpdate) {
+        const timeSinceUpdate = Date.now() - lastOpenedHoursUpdate.getTime();
+        if (timeSinceUpdate < 3600000) {
+            return;
+        }
+    }
+
+    try {
+        console.log("Hämtar nya öppettider från IMAS, klockan...", new Date().toLocaleTimeString('sv-SE'));
+        const authToken = await getImasToken();
         const res = await axios.get(
             `https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${today}`,
             {
@@ -2209,10 +2238,13 @@ async function updateOpenedHoursCache() {
                 timeout: 5000
             }
         );
-        openedHoursCache = res.data || { from: null, until: null };
-        lastOpenedHoursUpdate = new Date();
+
+        if (res.data) {
+            openedHoursCache = { ...res.data, date: today };
+            lastOpenedHoursUpdate = new Date();
+        }
     } catch (err) {
-        console.error("IMAS opened hours update failed:", err.message);
+        console.error("Kunde inte uppdatera öppettider:", err.message);
     }
 }
 
@@ -2224,7 +2256,7 @@ async function updateRealtimeCache() {
                        now < new Date(openedHoursCache.until);
 
         if (!isOpen) {
-            // Biblioteket är stängt → uppdatera cache med location: closed
+            console.log("Biblioteket stängt... Openhours:", openedHoursCache);
             realtimeCache = { location: "closed", data: [], lastUpdated: now };
             return;
         }
@@ -2253,17 +2285,14 @@ let openedHoursCache = { from: null, until: null };
 let realtimeCache = [];
 
 async function startCaches() {
-    // Hämta öppettider först
-    await updateOpenedHoursCache();
+   await updateOpenedHoursCache();
 
-    // Sedan hämta realtidsdata
     await updateRealtimeCache();
 
     console.log("IMAS caches initialized.");
     console.log("Opened hours:", openedHoursCache);
     console.log("Realtime data:", realtimeCache);
 
-    // Starta intervall efter att initial cache är klar
     setInterval(updateRealtimeCache, 30000);
     setInterval(updateOpenedHoursCache, 60*60*1000);
 }
@@ -2418,6 +2447,7 @@ module.exports = {
     getImasAsImage,
     getGrbAsImage,
     getTimeeditAsImage,
+    getAppSettings,
     saveWifiPageAsPdf,
     getImasRealtime,
     getExchangeCalendarItems,

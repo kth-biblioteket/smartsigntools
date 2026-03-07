@@ -1,48 +1,188 @@
 {
-  "statusConfig": {
-    "free":          { "color": "#0DE47E", "cssClass": "white" },
-    "tentative":     { "color": "#dfa539", "cssClass": "yellow" },
-    "tobeconfirmed": { "color": "#dfa539", "cssClass": "orange" },
-    "confirmed":     { "color": "#e24646", "cssClass": "red" },
-    "unavailable":   { "color": "grey",    "cssClass": "grey" }
-  },
-  "defaultColor": "#6298D2",
-  "dropinColor": "#DEF0FF",
-  "grouproomsqrcodeid": 314,
-  "floors": [
-    {
-      "id": "floor2",
-      "label": "Floor 2 (Entrance)",
-      "svgUrl": "/smartsigntools/api/v1/floorsvg/65",
-      "rooms": [
-        { "id": "wsF4103", "number": "01", "label": "Q", "pos": "left", "filter": true },
-        { "id": "wsF4104", "number": "0", "label": "0", "pos": "right", "offX": 1 },
-        { "id": "wsF4168", "number": "1", "label": "1", "pos": "right", "offX": 1 },
-        { "id": "wsF4213", "number": "2", "label": "2", "pos": "right", "offX": 1 },
-        { "id": "wsF4215", "number": "3", "label": "3", "pos": "right", "offX": 1 },
-        { "id": "wsF4216", "number": "8", "label": "5", "pos": "left", "offX": 1.5 },
-        { "id": "wsF4135", "number": "7", "label": "6", "pos": "left", "offX": 1.5 },
-        { "id": "wsF4136", "number": "6", "label": "7", "pos": "left", "offX": 1.5 },
-        { "id": "wsF4134", "number": "5", "label": "8", "pos": "left", "offX": 1.5 },
-        { "id": "wsF4140", "number": "9", "label": "9", "pos": "right", "offX": -1 },
-        { "id": "wsF4139", "number": "10", "label": "10", "pos": "right", "offX": -1 },
-        { "id": "wsF23173", "number": "11", "label": "11", "pos": "right", "offX": -1 },
-        { "id": "wsF23172", "number": "12", "label": "12", "pos": "right", "offX": -1 },
-        { "id": "wsF23171", "number": "13", "label": "13", "pos": "right", "offX": -1 },
-        { "id": "wsF4181", "number": "14", "label": "14", "pos": "left", "filter": true },
-        { "id": "wsF4115", "number": "15", "label": "15", "pos": "top", "filter": true, "offX": -1 }
-      ]
+    "floors": [
+        {
+            "id": "floor2",
+            "label": "Floor 2 (Entrance)",
+            "rooms": [
+                {
+                    "id": "wsF4103",
+                    "pos": "left",
+                    "label": "X",
+                    "labelbgcolor": "#e9ecee",
+                    "filter": true,
+                    "number": "01"
+                },
+                {
+                    "id": "wsF4104",
+                    "pos": "right",
+                    "offX": 1,
+                    "label": "0",
+                    "number": "0"
+                },
+                {
+                    "id": "wsF4168",
+                    "pos": "right",
+                    "offX": 1,
+                    "label": "1",
+                    "number": "1"
+                },
+                {
+                    "id": "wsF4213",
+                    "pos": "right",
+                    "offX": 1,
+                    "label": "2",
+                    "number": "2"
+                },
+                {
+                    "id": "wsF4215",
+                    "pos": "right",
+                    "offX": 1,
+                    "label": "3",
+                    "number": "3"
+                },
+                {
+                    "id": "wsF4216",
+                    "pos": "left",
+                    "offX": 1.5,
+                    "label": "5",
+                    "number": "8"
+                },
+                {
+                    "id": "wsF4135",
+                    "pos": "left",
+                    "offX": 1.5,
+                    "label": "6",
+                    "number": "7"
+                },
+                {
+                    "id": "wsF4136",
+                    "pos": "left",
+                    "offX": 1.5,
+                    "label": "7",
+                    "number": "6"
+                },
+                {
+                    "id": "wsF4134",
+                    "pos": "left",
+                    "offX": 1.5,
+                    "label": "8",
+                    "number": "5"
+                },
+                {
+                    "id": "wsF4140",
+                    "pos": "right",
+                    "offX": -1,
+                    "label": "9",
+                    "number": "9"
+                },
+                {
+                    "id": "wsF4139",
+                    "pos": "right",
+                    "offX": -1,
+                    "label": "10",
+                    "number": "10"
+                },
+                {
+                    "id": "wsF23173",
+                    "pos": "right",
+                    "offX": -1,
+                    "label": "11",
+                    "number": "11"
+                },
+                {
+                    "id": "wsF23172",
+                    "pos": "right",
+                    "offX": -1,
+                    "label": "12",
+                    "number": "12"
+                },
+                {
+                    "id": "wsF23171",
+                    "pos": "right",
+                    "offX": -1,
+                    "label": "13",
+                    "number": "13"
+                },
+                {
+                    "id": "wsF4181",
+                    "pos": "left",
+                    "label": "14",
+                    "filter": true,
+                    "number": "14"
+                },
+                {
+                    "id": "wsF4115",
+                    "pos": "top",
+                    "offX": -1,
+                    "label": "15",
+                    "filter": true,
+                    "number": "15"
+                }
+            ],
+            "svgUrl": "/smartsigntools/api/v1/floorsvg/65"
+        },
+        {
+            "id": "floor3",
+            "label": "Floor 3",
+            "rooms": [
+                {
+                    "id": "wsF4285",
+                    "pos": "right",
+                    "offX": 1,
+                    "label": "16",
+                    "number": "16"
+                },
+                {
+                    "id": "wsF4278",
+                    "pos": "top",
+                    "offX": 4,
+                    "label": "A",
+                    "dropin": true,
+                    "number": "A"
+                },
+                {
+                    "id": "wsF4277",
+                    "pos": "top",
+                    "offX": 4,
+                    "label": "B",
+                    "dropin": true,
+                    "number": "B"
+                },
+                {
+                    "id": "wsF4279",
+                    "pos": "top",
+                    "offX": 4,
+                    "label": "C",
+                    "dropin": true,
+                    "number": "C"
+                }
+            ],
+            "svgUrl": "/smartsigntools/api/v1/floorsvg/66"
+        }
+    ],
+    "dropinColor": "#DEF0FF",
+    "defaultColor": "#6298D2",
+    "statusConfig": {
+        "free": {
+            "color": "#0DE47E",
+            "cssClass": "white"
+        },
+        "confirmed": {
+            "color": "#e24646",
+            "cssClass": "red"
+        },
+        "tentative": {
+            "color": "#dfa539",
+            "cssClass": "yellow"
+        },
+        "unavailable": {
+            "color": "grey",
+            "cssClass": "grey"
+        },
+        "tobeconfirmed": {
+            "color": "#dfa539",
+            "cssClass": "orange"
+        }
     },
-    {
-      "id": "floor3",
-      "label": "Floor 3",
-      "svgUrl": "/smartsigntools/api/v1/floorsvg/66",
-      "rooms": [
-        { "id": "wsF4285", "number": "16", "label": "16", "pos": "right", "offX": 1 },
-        { "id": "wsF4278", "number": "A", "label": "A", "pos": "top", "offX": 4 , "dropin": true },
-        { "id": "wsF4277", "number": "B", "label": "B", "pos": "top", "offX": 4, "dropin": true },
-        { "id": "wsF4279", "number": "C", "label": "C", "pos": "top", "offX": 4, "dropin": true }
-      ]
-    }
-  ]
+    "grouproomsqrcodeid": 314
 }

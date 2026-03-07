@@ -11,7 +11,17 @@ const initDb = () => {
                 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );`,
 
-            
+            // Tabell för konfiguration
+            `CREATE TABLE IF NOT EXISTS app_settings (
+                id INT PRIMARY KEY,
+                config JSON NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            );`,
+
+            // Skapa en initial konfiguration om tabellen är tom (id 1)
+            // Vi använder INSERT IGNORE så att vi inte skriver över befintlig data vid omstart
+            `INSERT IGNORE INTO app_settings (id, config) 
+             VALUES (1, '{}');`,
             // Lägg till fler tabeller här efter behov...
         ];
 

@@ -52,22 +52,78 @@ const gaugePlugin = {
 async function getVisitors() {
     const url = `http://localhost:96/smartsigntools/api/v1/imas/realtime`;
     const sites = [
-        ['gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large'],
-        ['gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 30, 'gauge-header-medium'],
-        ['gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium'],
-        ['gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 20, 'gauge-header-medium'],
-        ['gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 40, 'gauge-header-medium'],
-        ['gaugeOM', 'Newton', 'Newton', 'Newton', 15, 'gauge-header-medium']
+        ['gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 'gauge-header-large'],
+        ['gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 'gauge-header-medium'],
+        ['gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 'gauge-header-medium'],
+        ['gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 'gauge-header-medium'],
+        ['gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 'gauge-header-medium'],
+        ['gaugeOM', 'Newton', 'Newton', 'Newton', 'gauge-header-medium']
     ];
     try {
         const res = await fetch(url);
         const data = await res.json();
+        const urlparameters = getUrlVars();
+        if (urlparameters.debug == 'true') {
+            data.location = "open";
+            data.data = {
+                "location": {
+                    "name": "Huvudbiblioteket",
+                    "inside": 46,
+                    "threshold": 0,
+                    "offlineDevices": true
+                },
+                "zones": [
+                    {
+                        "name": "Hela Biblioteket",
+                        "inside": 398,
+                        "threshold": 650,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Sydöstra Galleriet",
+                        "inside": 60,
+                        "threshold": 65,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Newton",
+                        "inside": 5,
+                        "threshold": 18,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Norra Galleriet",
+                        "inside": 77,
+                        "threshold": 80,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Ångdomen",
+                        "inside": 9,
+                        "threshold": 140,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Södra Galleriet",
+                        "inside": 14,
+                        "threshold": 35,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Test",
+                        "inside": 108,
+                        "threshold": 0,
+                        "offlineDevices": true
+                    }
+                ]
+            }
+        }
         sites.forEach(s => renderChart(data.data, ...s));
     } catch (e) { sites.forEach(s => renderChart(null, ...s)); }
 }
 
-function renderChart(response, id, sitename, sv, en, max, cssClass) {
-    const container = document.getElementById('just' + id);
+function renderChart(response, id, sitename, sv, en, cssClass) {
+    const container = document.getElementById(id);
     if (!container) return;
     const wrapper = container.closest('.gauge-unit');
     if (wrapper) wrapper.className = 'gauge-unit ' + cssClass;
@@ -77,7 +133,7 @@ function renderChart(response, id, sitename, sv, en, max, cssClass) {
     let val = 0;
     if (response?.zones) {
         const zone = response.zones.find(z => z.name === sitename);
-        val = Math.min(Math.round(((zone?.inside || 0) / (zone?.threshold || max)) * 100), 100);
+        val = Math.min(Math.round(((zone?.inside || 0) / (zone?.threshold)) * 100), 100);
     }
     let color = (val >= 95) ? '#d3554f' : (val >= 75) ? '#ecec56' : '#55a64b';
 

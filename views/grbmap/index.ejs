@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/maphead'); %>
+    <link rel="stylesheet" href="/smartsigntools/css/smartsign.css">
+    <style>
+      :root {
+        /*--free-color: <%= smartsignconfig.mapconfig.statusConfig.free.color %>;*/
+        --free-color: #0DE47E;
+        --not-confirmed-color: #d4a358;
+        --busy-color: #c54b4b;
+        --unavailable-color: #7d7d7d;
+        --closed-color: #6298D2;
+        --drop-in-color: #DEF0FF;
+        --text-main: #000000;
+      }
+    </style>
+    <link rel="stylesheet" href="/smartsigntools/grbmap/style.css">
+    <% if (smartsignconfig.kiosk) { %>
+    <link rel="stylesheet" href="/smartsigntools/grbmap/kioskstyle.css">
+    <% } %>
+</head>
+
+<body>
+  <div class="container App">
+    <div class="App-title App-padding">
+      <img src="<%=smartsignconfig.titleimagesrc %>" alt="Students studying" class="title-img">
+    </div>
+    <div id="App" class="content-padding">
+      <h1>Group study rooms</h1>
+      <div id="App-content" class="App-content content-padding"></div>
+
+      <div id="map-section" class="map-section">
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="box free"></div> Free
+        </div>
+        <div class="legend-item">
+          <div class="box not-confirmed"></div> Not confirmed
+        </div>
+        <div class="legend-item">
+          <div class="box busy"></div> Busy
+        </div>
+        <div class="legend-item">
+          <div class="box unavailable"></div> Unavailable
+        </div>
+        <div class="legend-item">
+          <div class="box closed"></div> Closed
+        </div>
+        <div class="legend-item">
+          <div class="box drop-in"></div> Drop-in
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.CONFIG = <%- JSON.stringify(smartsignconfig) %>;
+  </script>
+  <script src="/smartsigntools/grbmap/script.js?ver=3.5" defer></script>
+</body>
+
+</html>

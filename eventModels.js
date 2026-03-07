@@ -1170,6 +1170,20 @@ const readFloorPlan = (id) => {
     })
 };
 
+//Hämta app-inställningar
+const readAppSettings = (id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT config FROM app_settings WHERE id = ?`;
+        database.db.query(database.mysql.format(sql,[id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
 module.exports = {
     readEvents,
     readEventsByDate,
@@ -1238,5 +1252,6 @@ module.exports = {
     updateQrCodeGeneral,
     deleteQrCodeGeneral,
     readDailyWiFiCode,
-    readFloorPlan
+    readFloorPlan,
+    readAppSettings
 };

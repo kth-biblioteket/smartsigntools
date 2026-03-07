@@ -31,7 +31,7 @@ async function syncAllFloors() {
             console.log(`Hämtar våning ${floorId}...`);
 
             try {
-                const url = `https://kth.test.pythagoras.se/datamanager/rest/v1/floor/${floorId}/graphic?incWsComps=false&incFlComps=true&sWMulti=200`;
+                const url = `${process.env.PYTHAGORAS_API_URL}floor/${floorId}/graphic?incWsComps=false&incFlComps=true&sWMulti=200`;
                 const response = await axios.get(url, {
                     headers: { 'api_key': process.env.PYTHAGORAS_API_KEY_REF_READ },
                     timeout: 30000
@@ -136,5 +136,38 @@ async function syncAllFloors() {
     }
 }
 
+async function syncWagnerMap() {
+    console.log("Worker: Startar synkronisering av Wagner 3D-karta...");
+    const targetDir = '/app';
+    const fileName = 'kth_map_3d.json';
+
+    try {
+        
+        const response = await axios.post(process.env.WAGNERGUIDE_API_URL, {
+            CustomerUrlSlug: "kth",
+            MapUrlSlug: process.env.WAGNERGUIDE_MAP_URL_SLUG
+        }, {
+            timeout: 30000,
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.data) {
+            console.log("Worker: Data mottagen från Wagner. Skriver till fil...");
+            const finalPath = `${targetDir}/${fileName}`;
+            const jsonString = JSON.stringify(response.data, null, 2);
+            
+            await fs.writeFile(finalPath, jsonString);
+            
+            console.log(`Worker: SUCCESS! Sparade Wagner-fil i ${finalPath}`);
+        }
+    } catch (error) {
+        console.error("Worker: Fel vid hämtning av Wagner-karta:", error.message);
+    }
+}
+
 cron.schedule('0 3 * * *', syncAllFloors);
 syncAllFloors();
+
+// Schema för Wagner (Varje timme)
+cron.schedule('0 * * * *', syncWagnerMap);
+syncWagnerMap();

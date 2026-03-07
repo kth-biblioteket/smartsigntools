@@ -959,13 +959,24 @@ apiRoutes.get("/imas/smartsignpage", async function (req, res) {
 });
 
 //Skapa sida för att visa besöksdata på skärmar/kioskdatorer etc
-apiRoutes.get("/imasmap/smartsignpage", async function (req, res) {
+apiRoutes.get("/visitorsmap/smartsignpage", async function (req, res) {
     try {
         let kiosk
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
         let serverurl
         req.query.internal == 'true' ? serverurl = process.env.SERVERURL : serverurl = process.env.EXTERNALSERVERURL;
-        res.render('imasmap', {smartsignconfig: {"kiosk" : kiosk, "serverurl" : serverurl, "lang": req.query.lang || 'sv'}});
+
+        const result = await eventController.getAppSettings(1);
+        const mapconfig = result.appsettings.config;
+
+        res.render('visitorsmap/index', {
+            smartsignconfig: {
+                "kiosk" : kiosk, 
+                "serverurl" : serverurl, 
+                "lang": req.query.lang || 'sv',
+                "mapconfig": mapconfig
+            }
+        });
     } catch(err) {
         res.send(err.message)
     }
@@ -1096,12 +1107,12 @@ apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
         req.query.hidelogo == 'true' ? hidelogo = true : hidelogo = false;
         req.query.hidekthname == 'true' ? hidekthname = true : hidekthname = false;
         req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
-   
-        const configPath = path.join(__dirname, './config.json'); 
-        const rawConfig = fs.readFileSync(configPath, 'utf8');
-        const mapconfig = JSON.parse(rawConfig);
 
-        res.render('grbmap', {
+        const result = await eventController.getAppSettings(1);
+        const mapconfig = result.appsettings.config;
+
+
+        res.render('grbmap/index', {
             smartsignconfig: {
                 "kiosk" : kiosk, 
                 "bookingystemapiserverurl" : bookingystemapiserverurl,
@@ -1188,6 +1199,33 @@ apiRoutes.get('/env', (req, res) => {
         outlookcategories : process.env.OUTLOOKCATEGORIES
     });
 });
+
+apiRoutes.get('/wagner-map-json', async (req, res) => {
+    const filePath = '/app/kth_map_3d.json';
+
+    try {
+        
+        // Läs filen direkt från disk
+        const rawData = fs.readFileSync(filePath, 'utf8');
+        
+        // Parsa och skicka JSON
+        const data = JSON.parse(rawData);
+        res.json(data);
+
+    } catch (error) {
+        // Om filen inte finns (t.ex. workern har inte kört än)
+        if (error.code === 'ENOENT') {
+            console.warn("Wagner-cache saknas på disk. Försöker hämta live som fallback...");
+        }
+
+        console.error(`[Wagner Local Read Error] ${new Date().toISOString()}:`, error.message);
+        res.status(500).json({ 
+            error: "Internt fel vid läsning av kartdata",
+            message: error.message 
+        });
+    }
+});
+
 
 /**
  * Sätt sökväg för Api

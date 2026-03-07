@@ -1,34 +1,22 @@
-<script defer>
-/**
- * KONFIGURATION OCH STATUS-MAPPNING
- */
+const STATUS_CONFIG = CONFIG.mapconfig.statusConfig;
 
-const CONFIG = <%- JSON.stringify(smartsignconfig.mapconfig) %>;
-
-const STATUS_CONFIG = CONFIG.statusConfig;
-
-const DEFAULT_COLOR = CONFIG.defaultColor || "#cccccc";
+const DEFAULT_COLOR = CONFIG.mapconfig.defaultColor || "#cccccc";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-// Globala inställningar från URL
 const urlParams = new URLSearchParams(window.location.search);
-const isMapMode = urlParams.get('map') === 'true';
+
 const shouldGetStatus = urlParams.get('bookingstatus') !== 'false';
 
-let mapsLoaded = 0;
-const totalMaps = 2; // Vi har två kartor (floor2 och floor3)
+const bookingystemapiserverurl = CONFIG.bookingystemapiserverurl
 
-$(document).ready(async function () {
+document.addEventListener("DOMContentLoaded", async function () {
     try {
-        // 2. Om vi är i kartläge, förbered SVG:er
-        if (isMapMode) {
-            await loadAndSetupMaps();
-        }
+        await loadAndSetupMaps();
 
-        // 3. Om vi ska visa status, starta hämtningsloopen
         if (shouldGetStatus) {
             getRoomAvailability();
+            // Uppdatera var 5:e minut
             setInterval(getRoomAvailability, 300000);
         } else {
             renderInitialUI([]);
@@ -41,37 +29,36 @@ $(document).ready(async function () {
 /**
  * HÄMTA DATA FRÅN API
  */
-function getRoomAvailability() {
+async function getRoomAvailability() {
     const d = new Date();
     const currentHour = String(d.getHours()).padStart(2, '0');
     const nextHour = String(d.getHours() + 1).padStart(2, '0');
-    
-    // Uppdatera Header-status
-    const statusClass = isMapMode ? "mapstatustext" : "statustext";
-    $("#App-content").html(`<div class="${statusClass}">Status ${currentHour}:00 - ${nextHour}:00</div>`);
+
+    const appContent = document.getElementById("App-content");
+    if (appContent) {
+        appContent.innerHTML = `<div class="mapstatustext">Status ${currentHour}:00 - ${nextHour}:00</div>`;
+    }
 
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    // URL baserad på din miljö-variabel
-    const apiUrl = `<%= smartsignconfig.bookingystemapiserverurl %>v1/roomsavailability/grouprooms/1/${currentTimestamp}`;
+    const apiUrl = `${bookingystemapiserverurl}v1/roomsavailability/grouprooms/1/${currentTimestamp}`;
 
-    $.getJSON(apiUrl)
-        .done(data => {
-            const roomsFiltered = data.filter(room => room.disabled !== 1);
-            renderInitialUI(roomsFiltered);
-        })
-        .fail(err => {
-            console.error("Kunde inte hämta rumsstatus:", err);
-            // Om API misslyckas, rendera tom vy eller felmeddelande
-            renderInitialUI([]);
-        });
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        const roomsFiltered = data.filter(room => room.disabled !== 1);
+        renderInitialUI(roomsFiltered);
+    } catch (err) {
+        console.error("Kunde inte hämta rumsstatus:", err);
+        renderInitialUI([]);
+    }
 }
 
-/** --- KART-LADDNING (FETCH) --- **/
 async function loadAndSetupMaps() {
     let html = '';
     
-    // Generera containrar dynamiskt baserat på hur många våningar som finns i JSON
-    CONFIG.floors.forEach((floor, index) => {
+    CONFIG.mapconfig.floors.forEach((floor, index) => {
         const isRight = index % 2 !== 0 ? 'floor-plan-right' : '';
         html += `
             <div class="floor-plan ${isRight}">
@@ -80,7 +67,7 @@ async function loadAndSetupMaps() {
                 ${index === 0 ? `
                 <div class="booking-footer">
                     <div class="qr-container">
-                        <img src="/smartsigntools/api/v1/qrcode/general/generate/${CONFIG.grouproomsqrcodeid}" class="qr-code">
+                        <img src="/smartsigntools/api/v1/qrcode/general/generate/${CONFIG.mapconfig.grouproomsqrcodeid}" class="qr-code">
                     </div>
                     <div class="booking-callout">
                         <div class="book-here-text">Book here</div>
@@ -93,50 +80,52 @@ async function loadAndSetupMaps() {
             </div>`;
     });
     
-    $("#map-section").html(html);
+    const mapSection = document.getElementById("map-section");
+    if (mapSection) mapSection.innerHTML = html;
 
     try {
-        const svgRequests = CONFIG.floors.map(floor => fetch(floor.svgUrl).then(r => r.text()));
+        const svgRequests = CONFIG.mapconfig.floors.map(floor => fetch(floor.svgUrl).then(r => r.text()));
         const svgs = await Promise.all(svgRequests);
 
-        CONFIG.floors.forEach((floor, i) => {
-            document.getElementById(`${floor.id}Container`).innerHTML = svgs[i];
+        CONFIG.mapconfig.floors.forEach((floor, i) => {
+            const container = document.getElementById(`${floor.id}Container`);
+            if (container) container.innerHTML = svgs[i];
         });
         
-        console.log("Alla kartor injicerade från konfigurationsfil.");
     } catch (err) {
         console.error("Fel vid hämtning av SVG:er:", err);
     }
 }
 
-/**
- * RENDERINGSLOGIK
- */
 function renderInitialUI(rooms) {
-    if (isMapMode) {
-        updateMapColors(rooms);
-    } else {
-        generateBoxes(rooms);
-    }
+    updateMapColors(rooms);
 }
 
 function updateMapColors(rooms) {
-    CONFIG.floors.forEach(floor => {
-        const $container = $(`#${floor.id}Container`);
-        if (!$container.length) return;
+    CONFIG.mapconfig.floors.forEach(floor => {
+        const container = document.getElementById(`${floor.id}Container`);
+        if (!container) return;
 
         floor.rooms.forEach(conf => {
-            const el = $container.find("#" + conf.id)[0];
+            const el = container.querySelector("#" + conf.id);
             if (!el) return;
 
             const roomData = rooms.find(r => r.room_name === conf.number);
-            let color = conf.dropin ? CONFIG.dropinColor : (CONFIG.statusConfig[roomData?.status]?.color || CONFIG.defaultColor);
+            let color;
+            if (conf.dropin) {
+                color = CONFIG.mapconfig.dropinColor;
+            } else {
+                const statusColor = CONFIG.mapconfig.statusConfig[roomData?.status]?.color;
+                color = statusColor || CONFIG.mapconfig.defaultColor;
+            }
 
             el.setAttribute("fill", color);
             
-            // Etikett-logik
-            if (conf.label && !$container.find("#label-" + conf.id).length) {
-                addRoomLabel(el, conf, $container.find("svg")[0]);
+            if (conf.label && !container.querySelector("#label-" + conf.id)) {
+                const svgElement = container.querySelector("svg");
+                if (svgElement) {
+                    addRoomLabel(el, conf, svgElement);
+                }
             }
         });
     });
@@ -173,7 +162,7 @@ function addRoomLabel(pathEl, conf, svgElement) {
         
         // feFlood skapar färgen, feMerge lägger texten ovanpå färgen
         filter.innerHTML = `
-            <feFlood flood-color="#f5f5f5" result="bg" />
+            <feFlood flood-color="#e9ecee" result="bg" />
             <feMerge>
                 <feMergeNode in="bg" />
                 <feMergeNode in="SourceGraphic" />
@@ -242,13 +231,12 @@ function generateBoxes(rooms) {
     
     let html = '<div style="display:flex; flex-wrap:wrap; width:100%;">';
     rooms.forEach(room => {
-        const cssClass = CONFIG.statusConfig[room.status]?.cssClass || 'white';
+        const cssClass = CONFIG.mapconfig.statusConfig[room.status]?.cssClass || 'white';
         html += `<div class="${cssClass} Smartsign-item flex-container" style="width:31%; margin:1%;">
                     <div>${room.room_name}</div>
                  </div>`;
     });
     html += '</div>';
-    $("#grouprooms").html(html);
+    const grouprooms = document.getElementById("grouprooms");
+    if (grouprooms) grouprooms.innerHTML = html;
 }
-
-</script>
