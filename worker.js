@@ -33,7 +33,7 @@ async function syncAllFloors() {
             try {
                 const url = `${process.env.PYTHAGORAS_API_URL}floor/${floorId}/graphic?incWsComps=false&incFlComps=true&sWMulti=200`;
                 const response = await axios.get(url, {
-                    headers: { 'api_key': process.env.PYTHAGORAS_API_KEY_REF_READ },
+                    headers: { 'api_key': process.env.PYTHAGORAS_API_KEY_READ },
                     timeout: 30000
                 });
 
