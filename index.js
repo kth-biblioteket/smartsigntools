@@ -1117,7 +1117,7 @@ apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
                 "kiosk" : kiosk, 
                 "bookingystemapiserverurl" : bookingystemapiserverurl,
                 "titleimageclass": titleimageclass,
-                "titleimagesrc": "" + process.env.GRB_SMARTSIGN_TITLEIMG_SRC + "",
+                "titleimagesrc": "" + process.env.GRB_SMARTSIGN_MAP_TITLEIMG_SRC + "",
                 "hidelogo": hidelogo,
                 "hidekthname": hidekthname,
                 "mapconfig": mapconfig
