@@ -58,8 +58,8 @@ function getUrlVars() {
   function showVisitors(response, site, sitename, sitename_sv, sitename_en, maxoccupancy, gaugeclass) {
     var sitenameheader
     if(response.location == "closed" ) {
-      response.zones = {}
-      response.zones.length = 0
+      response.data.zones = {}
+      response.data.zones.length = 0
     } 
     if ($('html').attr('lang').indexOf('en')!= -1) {
       sitenameheader = sitename_en
@@ -125,8 +125,8 @@ function getUrlVars() {
       var html = '';
       if(!response) {
         response = []
-        response.zones = {}
-        response.zones.length = 0
+        response.data.zones = {}
+        response.data.zones.length = 0
         //$("#" + site + 'header').html('<div class="content-header">Information unavailable</div>');
         //$('#just' + site).html('<div class="content-header">Information unavailable</div>');
       } else {
@@ -137,10 +137,10 @@ function getUrlVars() {
           var over50 = '';
           var currentInside = null;
           var currentThreshold = null;
-          for (var i = 0; i < response.zones.length; i++) {
-            if (response.zones[i].name == sitename) {
-              currentInside = response.zones[i].inside
-              currentThreshold = response.zones[i].threshold
+          for (var i = 0; i < response.data.zones.length; i++) {
+            if (response.data.zones[i].name == sitename) {
+              currentInside = response.data.zones[i].inside
+              currentThreshold = response.data.zones[i].threshold
             }
           }
     
