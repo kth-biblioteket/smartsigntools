@@ -2218,6 +2218,7 @@ function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = fa
     }
 }
 
+/*
 async function updateOpenedHoursCache() {
     const today = new Date().toISOString().slice(0, 10);
 
@@ -2247,19 +2248,20 @@ async function updateOpenedHoursCache() {
         console.error("Kunde inte uppdatera öppettider:", err.message);
     }
 }
+*/
 
 async function updateRealtimeCache() {
     try {
         const now = new Date();
-        const isOpen = openedHoursCache.from && openedHoursCache.until &&
-                       now > new Date(openedHoursCache.from) &&
-                       now < new Date(openedHoursCache.until);
+        //const isOpen = openedHoursCache.from && openedHoursCache.until &&
+        //               now > new Date(openedHoursCache.from) &&
+        //               now < new Date(openedHoursCache.until);
 
-        if (!isOpen) {
-            console.log("Biblioteket stängt... Openhours:", openedHoursCache);
-            realtimeCache = { location: "closed", data: [], lastUpdated: now };
-            return;
-        }
+        //if (!isOpen) {
+            //console.log("Biblioteket stängt... Openhours:", openedHoursCache);
+            //realtimeCache = { location: "closed", data: [], lastUpdated: now };
+            //return;
+        //}
         const authToken = await getImasToken(); // token måste hämtas varje gång
         const res = await axios.get(
             "https://api.imas.net/export/exportrealtimevalues?id=KTHBIB",
@@ -2281,20 +2283,20 @@ async function updateRealtimeCache() {
     }
 }
 
-let openedHoursCache = { from: null, until: null };
+//let openedHoursCache = { from: null, until: null };
 let realtimeCache = [];
 
 async function startCaches() {
-   await updateOpenedHoursCache();
+    //await updateOpenedHoursCache();
 
     await updateRealtimeCache();
 
     console.log("IMAS caches initialized.");
-    console.log("Opened hours:", openedHoursCache);
+    //console.log("Opened hours:", openedHoursCache);
     console.log("Realtime data:", realtimeCache);
 
     setInterval(updateRealtimeCache, 30000);
-    setInterval(updateOpenedHoursCache, 60*60*1000);
+    //setInterval(updateOpenedHoursCache, 60*60*1000);
 }
 
 startCaches();
