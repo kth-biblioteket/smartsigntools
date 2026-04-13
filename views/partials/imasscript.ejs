@@ -1370,6 +1370,61 @@
       url: '<%= smartsignconfig.serverurl %>smartsigntools/api/v1/imas/realtime',
       //url: 'https://apps.lib.kth.se/imas/imas.json?nocache=' + (new Date()).getTime(),
       success: function(response){
+        if (urlparameters.debug == 'true') {
+            response.location = "open";
+            response.data = {
+                "location": {
+                    "name": "Huvudbiblioteket",
+                    "inside": 46,
+                    "threshold": 0,
+                    "offlineDevices": true
+                },
+                "zones": [
+                    {
+                        "name": "Hela Biblioteket",
+                        "inside": 398,
+                        "threshold": 650,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Sydöstra Galleriet",
+                        "inside": 60,
+                        "threshold": 65,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Newton",
+                        "inside": 5,
+                        "threshold": 18,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Norra Galleriet",
+                        "inside": 77,
+                        "threshold": 80,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Ångdomen",
+                        "inside": 9,
+                        "threshold": 140,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Södra Galleriet",
+                        "inside": 14,
+                        "threshold": 35,
+                        "offlineDevices": true
+                    },
+                    {
+                        "name": "Test",
+                        "inside": 108,
+                        "threshold": 0,
+                        "offlineDevices": true
+                    }
+                ]
+            }
+        }
         showVisitors(response, 'gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 200, 'gauge-header-large');
         showVisitors(response, 'gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 50, 'gauge-header-medium');
         showVisitors(response, 'gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 40, 'gauge-header-medium');

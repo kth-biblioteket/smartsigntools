@@ -1,0 +1,145 @@
+body {
+    font-family: "Figtree", Arial, "Helvetica Neue", helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-main);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    max-width: 1080px;
+    width: 100%;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.title-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.App-title .titleimage:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+    opacity: 0.5;
+}
+
+.App-title .titleimage:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+    opacity: 0.5;
+}
+
+.kthname {
+    position: absolute;
+    top: 0px;
+    z-index: 1000;
+    color: #fff;
+    padding: 20px 40px 0px 0px;
+    font-size: 30px;
+    font-weight: 700;
+    right: 0px;
+}
+
+.kthlogo img {
+    width: 160px;
+    padding: 10px;
+}
+
+/* Title Section */
+h1 {
+    font-size: 110px;
+    margin: 0px 0px 0px 0px;
+    font-weight: 700;
+}
+
+.status-time {
+    font-size: 70px;
+    margin: 0px 0px 0px 10px;
+    font-weight: 700;
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 20px;
+}
+
+.gauge-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 30px;
+}
+
+.large-row {
+    margin-bottom: 0px;
+}
+
+.small-row {
+    max-width: 1000px;
+}
+
+.spacebetween {
+    justify-content: space-between;
+}
+
+.gauge-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gauge-unit.gauge-header-large {
+    width: 400px;
+}
+
+.gauge-unit.gauge-header-large canvas {
+    height: 210px !important;
+}
+
+.gauge-unit.gauge-header-large .header-text {
+    font-size: 46px;
+    font-weight: bold;
+}
+
+.gauge-unit.gauge-header-medium {
+    width: 350px;
+}
+
+.gauge-unit.gauge-header-medium canvas {
+    height: 170px !important;
+}
+
+.gauge-unit.gauge-header-medium .header-text {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.header-text {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.gaugecontainer {
+    width: 100%;
+}

@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="sv">
+
+<head>
+    <%- include('../partials/head'); %>
+        <style>
+            :root {
+                --primary: #0067b1;
+                --success: #28a745;
+                --bg-light: #f4f7f9;
+                --card-bg: #ffffff;
+                --border: #dce1e5;
+                --text: #333;
+            }
+
+            body {
+                font-family: 'Segoe UI', sans-serif;
+                background: var(--bg-light);
+                color: var(--text);
+                padding: 40px 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                color: var(--primary);
+                margin-bottom: 30px;
+                border-bottom: 3px solid var(--primary);
+                padding-bottom: 10px;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+                color: var(--primary);
+                margin-top: 0;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .section-card {
+                background: var(--card-bg);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 25px;
+                margin-bottom: 30px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            /* SITES / MÄTARE */
+            .site-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+            }
+
+            .site-card {
+                border: 1px solid var(--border);
+                padding: 15px;
+                border-radius: 8px;
+                background: #fafafa;
+                position: relative;
+            }
+
+            .site-card .input-group {
+                margin-bottom: 10px;
+            }
+
+            /* STATUS & FÄRGER */
+            .color-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .color-item {
+                border: 1px solid var(--border);
+                padding: 15px;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            /* GEMENSAMMA ELEMENT */
+            label {
+                font-size: 0.75rem;
+                font-weight: bold;
+                color: #666;
+                text-transform: uppercase;
+                display: block;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            select {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            input[type="color"] {
+                width: 100%;
+                height: 40px;
+                border: none;
+                cursor: pointer;
+                background: none;
+            }
+
+            /* TOGGLE SWITCH */
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+            }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 20px;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+
+            input:checked+.slider {
+                background-color: var(--success);
+            }
+
+            input:checked+.slider:before {
+                transform: translateX(20px);
+            }
+
+            .btn-save {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                padding: 15px 40px;
+                background: var(--success);
+                color: white;
+                border: none;
+                border-radius: 50px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+                z-index: 1000;
+                transition: transform 0.2s;
+            }
+
+            .btn-save:hover {
+                transform: scale(1.05);
+                background: #218838;
+            }
+
+            .floor-badge {
+                display: inline-block;
+                background: #eee;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                margin: 2px;
+            }
+        </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Admin: SmartSign Konfiguration</h1>
+
+        <form action="<%= apiPath %>/appsettings/update/1" method="POST">
+
+            <section class="section-card">
+                <h2>📊 Mätare & Displayer</h2>
+                <div class="site-grid">
+                    <% smartsignconfig.sites.forEach(function(site, index) { %>
+                        <div class="site-card">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <label>Status: <%= site[5] ? 'Aktiv' : 'Dold' %></label>
+                                <label class="switch">
+                                    <input type="checkbox" name="site_status_<%= index %>" <%=site[5] ? 'checked' : ''
+                                        %>>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <label>Internt ID</label>
+                                <input type="text" name="site_id_<%= index %>" value="<%= site[0] %>">
+                            </div>
+                            <div class="input-group">
+                                <label>Namn (SV)</label>
+                                <input type="text" name="site_name_sv_<%= index %>" value="<%= site[1] %>">
+                            </div>
+                            <div class="input-group">
+                                <label>Beskrivning (SV)</label>
+                                <input type="text" name="site_desc_sv_<%= index %>" value="<%= site[2] %>">
+                            </div>
+                            <div class="input-group">
+                                <label>Namn (EN)</label>
+                                <input type="text" name="site_name_en_<%= index %>" value="<%= site[3] %>">
+                            </div>
+                            <div class="input-group">
+                                <label>CSS Klass (Storlek)</label>
+                                <input type="text" name="site_css_<%= index %>" value="<%= site[4] %>">
+                            </div>
+                        </div>
+                        <% }); %>
+                </div>
+            </section>
+
+            <section class="section-card" style="border: 2px dashed var(--primary); background: #f0f7ff;">
+                <h2>➕ Lägg till ny mätare</h2>
+                <div class="site-grid">
+                    <div class="input-group"><label>Nytt ID</label><input type="text" name="new_id"
+                            placeholder="t.ex. gaugeNY"></div>
+                    <div class="input-group"><label>Namn SV</label><input type="text" name="new_name_sv"
+                            placeholder="t.ex. Entrén"></div>
+                    <div class="input-group"><label>Namn EN</label><input type="text" name="new_name_en"
+                            placeholder="t.ex. Entrance"></div>
+                    <div class="input-group">
+                        <label>Storlek</label>
+                        <select name="new_css">
+                            <option value="gauge-header-medium">Medium</option>
+                            <option value="gauge-header-large">Large</option>
+                            <option value="gauge-header-small">Small</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-card">
+                <h2>🎨 Design & System</h2>
+                <div class="color-grid">
+                    <div class="color-item">
+                        <label>Dropin-färg</label>
+                        <input type="color" name="dropinColor" value="<%= smartsignconfig.dropinColor %>">
+                        <input type="text" value="<%= smartsignconfig.dropinColor %>" disabled>
+                    </div>
+                    <div class="color-item">
+                        <label>Standard-färg</label>
+                        <input type="color" name="defaultColor" value="<%= smartsignconfig.defaultColor %>">
+                        <input type="text" value="<%= smartsignconfig.defaultColor %>" disabled>
+                    </div>
+                    <div class="color-item">
+                        <label>QR-kod ID (Grupprum)</label>
+                        <input type="number" name="grouproomsqrcodeid"
+                            value="<%= smartsignconfig.grouproomsqrcodeid %>">
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-card">
+                <h2>🚦 Status-färger</h2>
+                <div class="color-grid">
+                    <% Object.keys(smartsignconfig.statusConfig).forEach(status=> { %>
+                        <div class="color-item">
+                            <label>
+                                <%= status %>
+                            </label>
+                            <input type="color" name="status_color_<%= status %>"
+                                value="<%= smartsignconfig.statusConfig[status].color %>">
+                            <input type="text" name="status_class_<%= status %>"
+                                value="<%= smartsignconfig.statusConfig[status].cssClass %>" placeholder="CSS Klass">
+                        </div>
+                        <% }); %>
+                </div>
+            </section>
+
+            <section class="section-card">
+                <h2>🏢 Våningar & Rum</h2>
+                <% smartsignconfig.floors.forEach((floor, fIndex)=> { %>
+                    <div class="floor-container"
+                        style="margin-bottom: 40px; padding: 20px; border: 2px solid #eee; border-radius: 12px;">
+                        <div class="grid-2" style="margin-bottom: 20px;">
+                            <div class="input-group">
+                                <label>Våning Namn</label>
+                                <input type="text" name="floor_label_<%= fIndex %>" value="<%= floor.label %>">
+                            </div>
+                            <div class="input-group">
+                                <label>SVG Sökväg</label>
+                                <input type="text" name="floor_svg_<%= fIndex %>" value="<%= floor.svgUrl %>">
+                            </div>
+                        </div>
+
+                        <label
+                            style="margin-bottom: 10px; display: block; font-weight: bold;">Rumskonfiguration:</label>
+
+                        <div id="room-container-<%= fIndex %>"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                            <% floor.rooms.forEach((room, rIndex)=> { %>
+                                <div class="room-card"
+                                    style="background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; position: relative;">
+                                    <button type="button" onclick="this.parentElement.remove()"
+                                        style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem;"
+                                        title="Ta bort rum">&times;</button>
+
+                                    <div class="input-group">
+                                        <label>Rums-ID</label>
+                                        <input type="text" name="floor_<%= fIndex %>_room_id_<%= rIndex %>"
+                                            value="<%= room.id %>">
+                                    </div>
+
+                                    <div
+                                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                                        <div class="input-group">
+                                            <label>Etikett SV</label>
+                                            <input type="text" name="floor_<%= fIndex %>_room_label_<%= rIndex %>"
+                                                value="<%= room.label %>">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Nummer</label>
+                                            <input type="text" name="floor_<%= fIndex %>_room_number_<%= rIndex %>"
+                                                value="<%= room.number %>">
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px;">
+                                        <div class="input-group">
+                                            <label>Pos</label>
+                                            <select name="floor_<%= fIndex %>_room_pos_<%= rIndex %>">
+                                                <option value="left" <%=room.pos==='left' ? 'selected' : '' %>>Left
+                                                </option>
+                                                <option value="right" <%=room.pos==='right' ? 'selected' : '' %>>Right
+                                                </option>
+                                                <option value="top" <%=room.pos==='top' ? 'selected' : '' %>>Top
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>OffX</label>
+                                            <input type="number" step="0.1"
+                                                name="floor_<%= fIndex %>_room_offx_<%= rIndex %>"
+                                                value="<%= room.offX || 0 %>">
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Färg</label>
+                                            <input type="text" name="floor_<%= fIndex %>_room_bgcolor_<%= rIndex %>"
+                                                value="<%= room.labelbgcolor || '' %>" placeholder="red">
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 10px; display: flex; gap: 15px; font-size: 0.75rem;">
+                                        <label
+                                            style="display: flex; align-items: center; gap: 5px; text-transform: none; font-weight: normal; color: #555;">
+                                            <input type="checkbox" name="floor_<%= fIndex %>_room_filter_<%= rIndex %>"
+                                                <%=room.filter ? 'checked' : '' %>>
+                                            Filter
+                                        </label>
+                                        <label
+                                            style="display: flex; align-items: center; gap: 5px; text-transform: none; font-weight: normal; color: #555;">
+                                            <input type="checkbox" name="floor_<%= fIndex %>_room_dropin_<%= rIndex %>"
+                                                <%=room.dropin ? 'checked' : '' %>>
+                                            Drop-in
+                                        </label>
+                                    </div>
+                                </div>
+                                <% }); %>
+                        </div>
+
+                        <button type="button" onclick="addRoom(<%= fIndex %>)"
+                            style="margin-top: 15px; padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            + Lägg till rum på <%= floor.label %>
+                        </button>
+                    </div>
+                    <% }); %>
+            </section>
+
+            <script>
+                function addRoom(floorIndex) {
+                    const container = document.getElementById(`room-container-${floorIndex}`);
+                    const roomCount = container.getElementsByClassName('room-card').length;
+                    const newRoomHtml = `
+            <div class="room-card" style="background: #e9ecef; padding: 15px; border: 2px dashed #adb5bd; border-radius: 8px; position: relative;">
+                <button type="button" onclick="this.parentElement.remove()" style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem;">&times;</button>
+                <div class="input-group">
+                    <label>Rums-ID</label>
+                    <input type="text" name="floor_${floorIndex}_room_id_${roomCount}" placeholder="wsFXXXX">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
+                    <div class="input-group">
+                        <label>Etikett SV</label>
+                        <input type="text" name="floor_${floorIndex}_room_label_${roomCount}" placeholder="Namn">
+                    </div>
+                    <div class="input-group">
+                        <label>Nummer</label>
+                        <input type="text" name="floor_${floorIndex}_room_number_${roomCount}" placeholder="Nr">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px;">
+                    <div class="input-group">
+                        <label>Pos</label>
+                        <select name="floor_${floorIndex}_room_pos_${roomCount}">
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                            <option value="top">Top</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>OffX</label>
+                        <input type="number" step="0.1" name="floor_${floorIndex}_room_offx_${roomCount}" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Färg</label>
+                        <input type="text" name="floor_${floorIndex}_room_bgcolor_${roomCount}" placeholder="red">
+                    </div>
+                </div>
+
+                <div style="margin-top: 10px; display: flex; gap: 15px; font-size: 0.75rem;">
+                    <label style="display: flex; align-items: center; gap: 5px; text-transform: none; font-weight: normal; color: #555;">
+                        <input type="checkbox" name="floor_${floorIndex}_room_filter_${roomCount}">
+                        Filter
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; text-transform: none; font-weight: normal; color: #555;">
+                        <input type="checkbox" name="floor_${floorIndex}_room_dropin_${roomCount}">
+                        Drop-in
+                    </label>
+                </div>
+            </div>
+        `;
+                    container.insertAdjacentHTML('beforeend', newRoomHtml);
+                }
+            </script>
+
+            <button type="submit" class="btn-save">SPARA ALLA ÄNDRINGAR</button>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -1184,6 +1184,22 @@ const readAppSettings = (id) => {
     })
 };
 
+const updateAppSettings = (id, config) => {
+    return new Promise(function (resolve, reject) {
+        // Vi gör om objektet till en sträng innan vi skickar till MySQL
+        const jsonString = JSON.stringify(config);
+        const sql = `UPDATE app_settings SET config = ? WHERE id = ?`;
+        
+        database.db.query(database.mysql.format(sql, [jsonString, id]), (err, result) => {
+            if (err) {
+                console.error(err);
+                reject(err.message);
+            }
+            resolve(result);
+        });
+    });
+};
+
 module.exports = {
     readEvents,
     readEventsByDate,
@@ -1253,5 +1269,6 @@ module.exports = {
     deleteQrCodeGeneral,
     readDailyWiFiCode,
     readFloorPlan,
-    readAppSettings
+    readAppSettings,
+    updateAppSettings
 };

@@ -2071,24 +2071,111 @@ async function getTimeeditAsImage() {
 async function getAppSettings(id) {
     let appSettings = await eventModel.readAppSettings(id);
     
+    // Om raden inte finns alls
     if (!appSettings || appSettings.length === 0) {
-        return { status: "error", message: "App settings not found" };
+        return { 
+            status: "ok", 
+            appsettings: { id: id, config: { sites: [] } } 
+        };
     }
 
     try {
         const rawData = appSettings[0].config;
-        
-        const parsedConfig = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+        let parsedConfig = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+
+        // Om config finns men 'sites' saknas, lägg till en tom array
+        if (!parsedConfig.sites) {
+            parsedConfig.sites = [];
+        }
 
         return { 
             status: "ok", 
-            appsettings: {
-                ...appSettings[0],
-                config: parsedConfig
-            }
+            appsettings: { ...appSettings[0], config: parsedConfig }
         };
     } catch (error) {
-        return { status: "error", message: "Error parsing app settings JSON: " + error.message };
+        return { status: "error", message: "JSON-fel: " + error.message };
+    }
+}
+
+async function updateAppSettings(req, res) {
+    const id = req.params.id;
+    const apiPath = process.env.APIROUTESPATH || '';
+
+    try {
+        const result = await getAppSettings(id);
+        let config = result.appsettings.config;
+
+        // 1. Uppdatera Sites (som tidigare)
+        if (config.sites) {
+            config.sites = config.sites.map((site, index) => {
+                return [
+                    req.body[`site_id_${index}`] || site[0],
+                    req.body[`site_name_sv_${index}`] || site[1],
+                    req.body[`site_desc_sv_${index}`] || site[2],
+                    req.body[`site_name_en_${index}`] || site[3],
+                    req.body[`site_css_${index}`] || site[4],
+                    req.body[`site_status_${index}`] === 'on'
+                ];
+            });
+        }
+
+        // 2. Uppdatera Globala värden
+        config.dropinColor = req.body.dropinColor || config.dropinColor;
+        config.defaultColor = req.body.defaultColor || config.defaultColor;
+        config.grouproomsqrcodeid = parseInt(req.body.grouproomsqrcodeid) || config.grouproomsqrcodeid;
+
+        // 3. Uppdatera StatusConfig (Objekt-looping)
+        Object.keys(config.statusConfig).forEach(status => {
+            if (req.body[`status_color_${status}`]) {
+                config.statusConfig[status].color = req.body[`status_color_${status}`];
+            }
+            if (req.body[`status_class_${status}`]) {
+                config.statusConfig[status].cssClass = req.body[`status_class_${status}`];
+            }
+        });
+
+        /// 4. Uppdatera Floors & Rooms
+        if (config.floors && Array.isArray(config.floors)) {
+            config.floors = config.floors.map((floor, fIndex) => {
+                floor.label = req.body[`floor_label_${fIndex}`] || floor.label;
+                floor.svgUrl = req.body[`floor_svg_${fIndex}`] || floor.svgUrl;
+
+                // Skapa en ny array för rummen baserat på vad som skickades i formuläret
+                let updatedRooms = [];
+                
+                // Vi letar efter alla fält som ser ut som "floor_X_room_id_Y"
+                const roomKeys = Object.keys(req.body).filter(key => 
+                    key.startsWith(`floor_${fIndex}_room_id_`)
+                );
+
+                roomKeys.forEach(key => {
+                    const rIndex = key.split('_').pop(); // Hämta rIndex från slutet av namnet
+                    const prefix = `floor_${fIndex}_room_`;
+
+                    updatedRooms.push({
+                        id: req.body[`${prefix}id_${rIndex}`],
+                        label: req.body[`${prefix}label_${rIndex}`],
+                        number: req.body[`${prefix}number_${rIndex}`],
+                        pos: req.body[`${prefix}pos_${rIndex}`],
+                        offX: parseFloat(req.body[`${prefix}offx_${rIndex}`]) || 0,
+                        labelbgcolor: req.body[`${prefix}bgcolor_${rIndex}`] || undefined,
+                        filter: req.body[`${prefix}filter_${rIndex}`] === 'on',
+                        dropin: req.body[`${prefix}dropin_${rIndex}`] === 'on'
+                    });
+                });
+
+                floor.rooms = updatedRooms; // Ersätt den gamla rumslistan med den nya
+                return floor;
+            });
+        }
+
+        // 5. Spara
+        await eventModel.updateAppSettings(id, config);
+        res.redirect(`${apiPath}/appsettings?success=true`);
+
+    } catch (error) {
+        console.error("Update Error:", error);
+        res.status(500).send("Kunde inte spara inställningarna.");
     }
 }
 
@@ -2450,6 +2537,7 @@ module.exports = {
     getGrbAsImage,
     getTimeeditAsImage,
     getAppSettings,
+    updateAppSettings,
     saveWifiPageAsPdf,
     getImasRealtime,
     getExchangeCalendarItems,

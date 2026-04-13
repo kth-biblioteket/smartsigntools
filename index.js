@@ -983,6 +983,39 @@ apiRoutes.get("/visitorsmap/smartsignpage", async function (req, res) {
 
 });
 
+//Skapa sida för att visa besöksdata på skärmar/kioskdatorer etc
+apiRoutes.get("/visitorsgauge/smartsignpage", async function (req, res) {
+    try {
+        let kiosk
+        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
+        let serverurl
+        req.query.internal == 'true' ? serverurl = process.env.SERVERURL : serverurl = process.env.EXTERNALSERVERURL;
+
+        const result = await eventController.getAppSettings(1);
+        const appconfig = result.appsettings.config;
+
+        res.render('visitorsgauge/index', {
+            smartsignconfig: {
+                "kiosk" : kiosk, 
+                "serverurl" : serverurl, 
+                "lang": req.query.lang || 'sv',
+                "appconfig": appconfig,
+                "sites" : [
+                            ['gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 'gauge-header-large', false],
+                            ['gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 'gauge-header-medium', true],
+                            ['gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 'gauge-header-medium', true],
+                            ['gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 'gauge-header-medium', true],
+                            ['gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 'gauge-header-medium', false],
+                            ['gaugeOM', 'Newton', 'Newton', 'Newton', 'gauge-header-medium', true]
+                        ]
+            }
+        });
+    } catch(err) {
+        res.send(err.message)
+    }
+
+});
+
 /**
  * Skapa sida för att visa besöksdata i CMS polopoly
  */
@@ -1184,6 +1217,42 @@ apiRoutes.get("/openinghours/smartsignpage", async function (req, res) {
     }
 
 });
+
+/**
+ * Skapa sida för att hanetera appinställningar
+ */
+apiRoutes.get("/appsettings", async function (req, res) {
+    try {
+        // Vi utgår från att du vill hämta inställningarna för id 1
+        // (Du kan även hämta detta från req.query.id om det varierar)
+        const id = 1; 
+        const result = await eventController.getAppSettings(id);
+
+        const apiPath = process.env.APIROUTESPATH || '';
+        if (result.status === "ok") {
+            // Här renderar vi din ejs-fil (t.ex. 'admin_settings.ejs')
+            // Vi skickar med 'smartsignconfig' så att din loop i EJS fungerar
+            res.render("appsettings", { 
+                appsettings: result.appsettings,
+                smartsignconfig: result.appsettings.config, // För enkel åtkomst i EJS
+                apiPath: apiPath
+            });
+        } else {
+            // Om något gick fel i controllern (t.ex. hittade inte ID)
+            res.status(404).send(result.message);
+        }
+    } catch (error) {
+        console.error("Route error:", error);
+        res.status(500).send("Ett oväntat fel uppstod vid laddning av inställningar.");
+    }
+});
+
+apiRoutes.post('/appsettings/update/:id', async (req, res) => {
+    // Vi skickar bara vidare kontrollen till din controller-funktion
+    await eventController.updateAppSettings(req, res);
+});
+
+
 
 /**
  * Hämtar bokningar från kalender i outlook/exchange
