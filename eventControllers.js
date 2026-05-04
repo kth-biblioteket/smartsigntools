@@ -2330,6 +2330,7 @@ function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = fa
 
 async function updateRealtimeCache() {
     try {
+        const now = new Date();
 
         // 1. Hämta (eller återanvänd) dagens öppettider
         const hours = await getDailyOpenedHours();
@@ -2347,7 +2348,7 @@ async function updateRealtimeCache() {
             }
         }
 
-        const now = new Date();
+        
         const authToken = await getImasToken(); // token måste hämtas varje gång
 
         const res = await axios.get(
