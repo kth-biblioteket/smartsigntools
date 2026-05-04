@@ -2179,8 +2179,18 @@ async function updateAppSettings(req, res) {
     }
 }
 
-let tokenQueue = Promise.resolve(); // används för att köa token-hämtning
+//let tokenQueue = Promise.resolve(); // används för att köa token-hämtning
 
+async function getImasToken() {
+    // Ingen kö här - låt varje anrop vara självständigt
+    const res = await axios.post(`https://api.imas.net/account/login`, {
+        UserName: process.env.IMAS_USER,
+        password: process.env.IMAS_PASSWORD
+    }, { timeout: 7000 }); // Specifik timeout för login
+    
+    return res.data;
+}
+/*
 async function getImasToken() {
     // Lägg login i kö för att undvika parallella token-anrop
     let token;
@@ -2193,6 +2203,7 @@ async function getImasToken() {
     }));
     return token;
 }
+*/
 
 async function getImasRealtime(retries = 3, delay = 500) {
     return realtimeCache;
@@ -2354,7 +2365,7 @@ async function updateRealtimeCache() {
             "https://api.imas.net/export/exportrealtimevalues?id=KTHBIB",
             {
                 headers: { User: process.env.IMAS_USER, "X-Auth-Token": authToken },
-                timeout: 5000
+                timeout: 8000
             }
         );
 
@@ -2366,8 +2377,19 @@ async function updateRealtimeCache() {
 
     } catch (err) {
         console.error("IMAS realtime update failed:", err.message);
+
+        if (err.response && err.response.status === 401) {
+            console.error("Check IMAS_USER and IMAS_PASSWORD credentials.");
+        }
+        
         realtimeCache.lastUpdated = new Date();
     }
+}
+
+async function startPollingVisitData() {
+    await updateRealtimeCache();
+    // Vänta 30 sekunder EFTER att föregående anrop avslutats
+    setTimeout(startPollingVisitData, 30000);
 }
 
 //let openedHoursCache = { from: null, until: null };
@@ -2382,8 +2404,7 @@ async function startCaches() {
     //console.log("Opened hours:", openedHoursCache);
     console.log("Realtime data:", realtimeCache);
 
-    setInterval(updateRealtimeCache, 30000);
-    //setInterval(updateOpenedHoursCache, 60*60*1000);
+    startPollingVisitData();
 }
 
 startCaches();
