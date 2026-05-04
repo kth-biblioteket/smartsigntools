@@ -2179,34 +2179,46 @@ async function updateAppSettings(req, res) {
     }
 }
 
-//let tokenQueue = Promise.resolve(); // används för att köa token-hämtning
-
 async function getImasToken() {
-    // Ingen kö här - låt varje anrop vara självständigt
     const res = await axios.post(`https://api.imas.net/account/login`, {
         UserName: process.env.IMAS_USER,
         password: process.env.IMAS_PASSWORD
-    }, { timeout: 7000 }); // Specifik timeout för login
-    
+    }, { timeout: 7000 }); 
     return res.data;
 }
-/*
-async function getImasToken() {
-    // Lägg login i kö för att undvika parallella token-anrop
-    let token;
-    await (tokenQueue = tokenQueue.then(async () => {
-        const res = await axios.post(`https://api.imas.net/account/login`, {
-            UserName: process.env.IMAS_USER,
-            password: process.env.IMAS_PASSWORD
-        });
-        token = res.data; // API returnerar token som token.data'
-    }));
-    return token;
-}
-*/
 
 async function getImasRealtime(retries = 3, delay = 500) {
     return realtimeCache;
+}
+
+let currentHours = null;
+let lastHoursUpdate = null;
+
+async function getDailyOpenedHours() {
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // 1. Kolla först om vi kan använda cachen - gör ingenting annat om det matchar
+    if (currentHours && lastHoursUpdate === todayStr) {
+        return currentHours;
+    }
+
+    // 2. Endast om vi behöver hämta nytt: hämta token och gör API-anropet
+    console.log(`Fetching new opening hours for ${todayStr}...`);
+    try {
+        const authToken = await getImasToken();
+        
+        const res = await imasClient.get(
+            `https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${todayStr}`,
+            { headers: { User: process.env.IMAS_USER, "X-Auth-Token": authToken } }
+        );
+        
+        currentHours = res.data;
+        lastHoursUpdate = todayStr;
+        return currentHours;
+    } catch (err) {
+        console.error("Failed to fetch opening hours:", err.message);
+        return currentHours; 
+    }
 }
 
 function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = false, offsetX = 0, offsetY = 0) {
@@ -2316,51 +2328,28 @@ function addRoomLabel(svgDoc, pathId, labelText, position = 'right', filter = fa
     }
 }
 
-/*
-async function updateOpenedHoursCache() {
-    const today = new Date().toISOString().slice(0, 10);
-
-   if (openedHoursCache.date === today && lastOpenedHoursUpdate) {
-        const timeSinceUpdate = Date.now() - lastOpenedHoursUpdate.getTime();
-        if (timeSinceUpdate < 3600000) {
-            return;
-        }
-    }
-
-    try {
-        console.log("Hämtar nya öppettider från IMAS, klockan...", new Date().toLocaleTimeString('sv-SE'));
-        const authToken = await getImasToken();
-        const res = await axios.get(
-            `https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${today}`,
-            {
-                headers: { User: process.env.IMAS_USER, "X-Auth-Token": authToken },
-                timeout: 5000
-            }
-        );
-
-        if (res.data) {
-            openedHoursCache = { ...res.data, date: today };
-            lastOpenedHoursUpdate = new Date();
-        }
-    } catch (err) {
-        console.error("Kunde inte uppdatera öppettider:", err.message);
-    }
-}
-*/
-
 async function updateRealtimeCache() {
     try {
-        const now = new Date();
-        //const isOpen = openedHoursCache.from && openedHoursCache.until &&
-        //               now > new Date(openedHoursCache.from) &&
-        //               now < new Date(openedHoursCache.until);
 
-        //if (!isOpen) {
-            //console.log("Biblioteket stängt... Openhours:", openedHoursCache);
-            //realtimeCache = { location: "closed", data: [], lastUpdated: now };
-            //return;
-        //}
+        // 1. Hämta (eller återanvänd) dagens öppettider
+        const hours = await getDailyOpenedHours();
+
+        if (hours && hours.from && hours.until) {
+            const openFrom = new Date(hours.from);
+            const openUntil = new Date(hours.until);
+
+            // 2. Kontrollera om biblioteket är öppet JUST NU
+            const isOpen = now >= openFrom && now <= openUntil;
+
+            if (!isOpen) {
+                realtimeCache = { location: "closed", data: [], lastUpdated: now, hours };
+                return;
+            }
+        }
+
+        const now = new Date();
         const authToken = await getImasToken(); // token måste hämtas varje gång
+
         const res = await axios.get(
             "https://api.imas.net/export/exportrealtimevalues?id=KTHBIB",
             {
@@ -2372,7 +2361,8 @@ async function updateRealtimeCache() {
         realtimeCache = {
             location: "open",
             data: res.data || [],
-            lastUpdated: now
+            lastUpdated: now,
+            hours: hours
         };
 
     } catch (err) {
@@ -2381,7 +2371,7 @@ async function updateRealtimeCache() {
         if (err.response && err.response.status === 401) {
             console.error("Check IMAS_USER and IMAS_PASSWORD credentials.");
         }
-        
+
         realtimeCache.lastUpdated = new Date();
     }
 }
@@ -2392,18 +2382,12 @@ async function startPollingVisitData() {
     setTimeout(startPollingVisitData, 30000);
 }
 
-//let openedHoursCache = { from: null, until: null };
 let realtimeCache = [];
 
 async function startCaches() {
-    //await updateOpenedHoursCache();
-
     await updateRealtimeCache();
-
     console.log("IMAS caches initialized.");
-    //console.log("Opened hours:", openedHoursCache);
     console.log("Realtime data:", realtimeCache);
-
     startPollingVisitData();
 }
 
