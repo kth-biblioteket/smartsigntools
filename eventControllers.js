@@ -2335,6 +2335,11 @@ async function updateRealtimeCache() {
         // 1. Hämta (eller återanvänd) dagens öppettider
         const hours = await getDailyOpenedHours();
 
+        if (!hours || !hours.from || !hours.until) {
+            console.warn("Skipping realtime update because opening hours are unknown.");
+            return; 
+        }
+
         if (hours && hours.from && hours.until) {
             const openFrom = new Date(hours.from);
             const openUntil = new Date(hours.until);
