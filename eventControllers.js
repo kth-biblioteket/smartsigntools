@@ -2207,7 +2207,7 @@ async function getDailyOpenedHours() {
     try {
         const authToken = await getImasToken();
         
-        const res = await imasClient.get(
+        const res = await axios.get(
             `https://api.imas.net/export/getopenedhours?id=KTHBIB&date=${todayStr}`,
             { headers: { User: process.env.IMAS_USER, "X-Auth-Token": authToken } }
         );
