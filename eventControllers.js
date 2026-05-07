@@ -2372,7 +2372,7 @@ async function updateRealtimeCache() {
         };
 
     } catch (err) {
-        console.error("IMAS realtime update failed:", err.message);
+        console.error(now + " IMAS realtime update failed:", err.message);
 
         if (err.response && err.response.status === 401) {
             console.error("Check IMAS_USER and IMAS_PASSWORD credentials.");
