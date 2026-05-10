@@ -1196,8 +1196,10 @@ apiRoutes.get("/librarytoday/smartsignpage", async function (req, res) {
 apiRoutes.get("/angdomen/smartsignpage", async function (req, res) {
     try {
         let kiosk
+        let image
         req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        res.render('angdomen', {smartsignconfig: {"kiosk" : kiosk}});
+        req.query.image == 'true' ? image = true : image = false;
+        res.render('angdomen', {smartsignconfig: {"kiosk" : kiosk, "image": image}});
     } catch(err) {
         res.send(err.message)
     }
