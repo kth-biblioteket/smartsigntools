@@ -1001,11 +1001,11 @@ apiRoutes.get("/visitorsgauge/smartsignpage", async function (req, res) {
                 "lang": req.query.lang || 'sv',
                 "appconfig": appconfig,
                 "sites" : [
-                            ['gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 'gauge-header-large', false],
+                            ['gaugeHB', 'Hela Biblioteket', 'Hela biblioteket', 'KTH Library', 'gauge-header-large', true],
                             ['gaugeSOG', 'Sydöstra Galleriet', 'Sydöstra galleriet', 'South-East Gallery', 'gauge-header-medium', true],
                             ['gaugeNG', 'Norra Galleriet', 'Norra galleriet', 'North Gallery', 'gauge-header-medium', true],
                             ['gaugeSG', 'Södra Galleriet', 'Södra galleriet', 'South Gallery', 'gauge-header-medium', true],
-                            ['gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 'gauge-header-medium', false],
+                            ['gaugeANGDOMEN', 'Ångdomen', 'Ångdomen', 'Ångdomen', 'gauge-header-medium', true],
                             ['gaugeOM', 'Newton', 'Newton', 'Newton', 'gauge-header-medium', true]
                         ]
             }
