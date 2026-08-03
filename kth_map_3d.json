@@ -678,7 +678,7 @@
       "Id": 556,
       "Description": "KTH menu",
       "IsActive": true,
-      "ModifiedDate": "2026-03-05T09:29:00.2178137",
+      "ModifiedDate": "2026-05-11T06:38:16.8692805",
       "CreationDate": "2023-12-18T11:39:01.98",
       "MapId": 1628,
       "ButtonSections": [
@@ -686,7 +686,7 @@
           "Id": 913,
           "Index": 0,
           "ButtonsIsSortedAlphabetically": false,
-          "ModifiedDate": "2026-03-05T09:29:00.2057424",
+          "ModifiedDate": "2026-05-11T06:38:16.8611483",
           "CreationDate": "2023-12-18T11:39:01.983",
           "TextEN": "",
           "MenuId": 556,
@@ -704,7 +704,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2025-01-29T07:24:06.6213961",
               "CreationDate": "2023-12-18T11:39:01.983",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25718,
@@ -975,6 +979,27 @@
               }
             },
             {
+              "Id": 29866,
+              "IconColor": "rgb(0,0,0)",
+              "ParentButtonId": 28849,
+              "Index": 0,
+              "ButtonSectionId": 913,
+              "TextEN": "A",
+              "ShowIFrame": false,
+              "ShowIFrameInModal": false,
+              "SubButtonsIsSortedAlphabetically": false,
+              "UseCustomIcon": false,
+              "ModifiedDate": "2026-05-11T06:38:16.8048127",
+              "CreationDate": "2026-05-11T06:38:16.803",
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [
+                  "e56cbdc4-f70f-48d4-993a-29dfb9c8482b"
+                ],
+                "MapObjectGroupIds": []
+              }
+            },
+            {
               "Id": 25548,
               "IconUnicode": "checkbox-blank-circle",
               "IconColor": "rgb(0,127,174)",
@@ -1192,7 +1217,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-07T12:06:28.7155472",
               "CreationDate": "2024-03-22T11:57:32.297",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 26969,
@@ -1211,7 +1240,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-06-27T09:04:20.4991422",
               "CreationDate": "2024-06-27T08:50:53.987",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 28796,
@@ -1276,6 +1309,10 @@
               "ModifiedDate": "2023-12-18T11:39:01.984932",
               "CreationDate": "2023-12-18T11:39:01.983",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Map File Selector"
             },
             {
@@ -1320,7 +1357,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-08-16T08:52:54.7049778",
               "CreationDate": "2023-12-18T11:39:01.983",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25707,
@@ -1438,7 +1479,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:58:23.3567295",
               "CreationDate": "2024-03-22T12:00:28.563",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25551,
@@ -1560,7 +1605,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2023-12-18T11:39:01.9849141",
               "CreationDate": "2023-12-18T11:39:01.983",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25701,
@@ -1677,7 +1726,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-06-28T09:54:14.942829",
               "CreationDate": "2024-03-22T12:01:31.457",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25550,
@@ -1703,6 +1756,10 @@
                 "CustomerId": 96
               },
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Submenu"
             },
             {
@@ -1721,6 +1778,10 @@
               "ModifiedDate": "2025-02-10T09:44:28.4191054",
               "CreationDate": "2023-12-18T11:39:01.983",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Submenu"
             },
             {
@@ -1891,7 +1952,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-06-28T09:55:27.3710372",
               "CreationDate": "2024-03-22T12:02:07.887",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25556,
@@ -1909,6 +1974,10 @@
               "ModifiedDate": "2025-02-10T09:44:28.4191059",
               "CreationDate": "2023-12-18T11:39:01.983",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Submenu"
             },
             {
@@ -2085,7 +2154,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-06-28T09:57:02.8368936",
               "CreationDate": "2024-03-22T12:04:55.553",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25555,
@@ -2103,6 +2176,10 @@
               "ModifiedDate": "2025-02-10T09:44:28.4191058",
               "CreationDate": "2023-12-18T11:39:01.983",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Submenu"
             },
             {
@@ -2119,6 +2196,10 @@
               "ModifiedDate": "2025-02-10T09:44:28.4191055",
               "CreationDate": "2023-12-18T11:39:01.983",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Waypoint"
             },
             {
@@ -2266,7 +2347,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:36:39.3886836",
               "CreationDate": "2024-03-22T12:05:32.3",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25554,
@@ -2284,6 +2369,10 @@
               "ModifiedDate": "2025-02-10T09:44:28.4191057",
               "CreationDate": "2023-12-18T11:39:01.983",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Submenu"
             },
             {
@@ -2429,7 +2518,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:38:04.1087573",
               "CreationDate": "2024-03-22T12:21:18.133",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25669,
@@ -2574,7 +2667,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:39:34.2358834",
               "CreationDate": "2024-03-22T12:22:01.6",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25664,
@@ -2717,7 +2814,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-07T12:10:07.4685428",
               "CreationDate": "2024-03-22T12:22:47.667",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25657,
@@ -2862,7 +2963,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-06-28T10:00:45.3858302",
               "CreationDate": "2024-03-22T12:36:11.8",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25652,
@@ -2982,7 +3087,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-07T12:12:15.2182661",
               "CreationDate": "2024-03-22T12:40:14.477",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25677,
@@ -3153,7 +3262,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:52:44.2153018",
               "CreationDate": "2024-03-22T12:41:20.033",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25646,
@@ -3272,7 +3385,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-07T12:12:52.7275164",
               "CreationDate": "2024-03-22T12:42:25.647",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25643,
@@ -3391,7 +3508,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:53:49.9297659",
               "CreationDate": "2024-03-22T12:43:24.407",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25640,
@@ -3485,7 +3606,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:54:17.9257232",
               "CreationDate": "2024-03-22T12:43:54.64",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 28849,
@@ -3606,7 +3731,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:54:38.4415634",
               "CreationDate": "2024-03-22T12:44:33.52",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25634,
@@ -3701,7 +3830,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:56:00.4071916",
               "CreationDate": "2024-03-22T12:45:05.177",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25629,
@@ -3796,7 +3929,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:56:25.905692",
               "CreationDate": "2024-03-22T12:45:51.607",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25626,
@@ -3890,7 +4027,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:56:48.0799171",
               "CreationDate": "2024-03-22T12:46:37.27",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25627,
@@ -3987,7 +4128,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-07T12:14:46.6963116",
               "CreationDate": "2024-03-22T12:47:27.05",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25623,
@@ -4056,7 +4201,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:57:25.340045",
               "CreationDate": "2024-03-22T12:47:56.84",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25621,
@@ -4126,7 +4275,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:57:41.330034",
               "CreationDate": "2024-03-22T12:48:33.977",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25619,
@@ -4197,7 +4350,11 @@
               "UseCustomIcon": false,
               "ModifiedDate": "2024-05-03T07:58:02.0359367",
               "CreationDate": "2024-03-22T12:49:15.647",
-              "SubMenuButtons": []
+              "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              }
             },
             {
               "Id": 25617,
@@ -5812,7 +5969,7 @@
           "Id": 912,
           "Index": 1,
           "ButtonsIsSortedAlphabetically": false,
-          "ModifiedDate": "2026-03-05T09:29:00.2061088",
+          "ModifiedDate": "2026-05-11T06:38:16.8612162",
           "CreationDate": "2023-12-18T11:39:01.983",
           "MenuId": 556,
           "MenuButtons": [
@@ -6129,7 +6286,7 @@
           "Id": 927,
           "Index": 2,
           "ButtonsIsSortedAlphabetically": false,
-          "ModifiedDate": "2026-03-05T09:29:00.2061557",
+          "ModifiedDate": "2026-05-11T06:38:16.8612297",
           "CreationDate": "2024-04-03T08:33:48.21",
           "MenuId": 556,
           "MenuButtons": [
@@ -6148,6 +6305,10 @@
               "ModifiedDate": "2026-01-09T09:46:33.0964793",
               "CreationDate": "2026-01-09T09:46:33.097",
               "SubMenuButtons": [],
+              "AnimationsDTO": {
+                "MapObjectNames": [],
+                "MapObjectGroupIds": []
+              },
               "ButtonTypeName": "Link button"
             }
           ],
@@ -6158,7 +6319,7 @@
           "Id": 1004,
           "Index": 3,
           "ButtonsIsSortedAlphabetically": false,
-          "ModifiedDate": "2026-03-05T09:29:00.2061741",
+          "ModifiedDate": "2026-05-11T06:38:16.8612421",
           "CreationDate": "2026-01-09T09:46:33.05",
           "TextEN": "",
           "MenuId": 556,
