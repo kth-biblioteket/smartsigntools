@@ -221,7 +221,11 @@ function updateMapColors(rooms) {
 
             el.setAttribute("fill", color);
             
-            if (conf.label && !container.querySelector("#label-" + conf.id)) {
+            const oldLabel = container.querySelector("#label-" + conf.id);
+            if (oldLabel) {
+                oldLabel.remove();  // <- Den ena raden som behövs
+            }
+            if (conf.label) {
                 const svgElement = container.querySelector("svg");
                 if (svgElement) {
                     addRoomLabel(el, conf, svgElement);
