@@ -6,15 +6,16 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 const urlParams = new URLSearchParams(window.location.search);
 
-const CONFIG = {
-    UPDATE_INTERVAL_MS: 300000,  // 5 minutes
-    REQUEST_TIMEOUT_MS: 10000,
+// CONFIG för API-anrop och timeouts
+const API_CONFIG = {
+    UPDATE_INTERVAL_MS: 300000,  // 5 minuter
+    REQUEST_TIMEOUT_MS: 10000,   // 10 sekunder
     MAX_RETRIES: 3,
-    RETRY_DELAY_MS: 2000
+    RETRY_DELAY_MS: 2000,
+    SVG_LOAD_TIMEOUT_MS: 10000   // 10 sekunder per SVG
 };
 
 const shouldGetStatus = urlParams.get('bookingstatus') !== 'false';
-
 const bookingystemapiserverurl = CONFIG.bookingystemapiserverurl
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -23,19 +24,23 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (shouldGetStatus) {
             getRoomAvailability();
-            setInterval(getRoomAvailability, CONFIG.UPDATE_INTERVAL_MS);
+            setInterval(getRoomAvailability, API_CONFIG.UPDATE_INTERVAL_MS);
         } else {
             renderInitialUI([]);
         }
     } catch (err) {
-        console.error("Kunde inte initiera applikationen:", err);
+        console.error("[INIT ERROR]", {
+            message: err.message,
+            timestamp: new Date().toISOString()
+        });
+        showErrorMessage("Kunde inte initiera applikationen:");
     }
 });
 
 /**
- * HÄMTA DATA FRÅN API
+ * HÄMTA DATA FRÅN API - Med retry-logik och timeout
  */
-async function getRoomAvailability() {
+async function getRoomAvailability(retryCount = 0) {
     const d = new Date();
     const currentHour = String(d.getHours()).padStart(2, '0');
     const nextHour = String(d.getHours() + 1).padStart(2, '0');
@@ -49,28 +54,74 @@ async function getRoomAvailability() {
     const apiUrl = `${bookingystemapiserverurl}v1/roomsavailability/grouprooms/1/${currentTimestamp}`;
 
     try {
-        const response = await fetch(apiUrl);
+        // AbortController för timeout-skydd
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.REQUEST_TIMEOUT_MS);
+
+        const response = await fetch(apiUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            throw new Error(`API returned ${response.status}`);
+            throw new Error(`API returned status ${response.status}`);
         }
         
         const data = await response.json();
-        renderInitialUI(data.filter(room => room.disabled !== 1));
+        if (!Array.isArray(data)) {
+            throw new Error('Invalid API response format');
+        }
+
+        const roomsFiltered = data.filter(room => room.disabled !== 1);
+        renderInitialUI(roomsFiltered);
+        
     } catch (err) {
-        console.error("Failed to fetch room availability:", err);
-        showErrorMessage(`Unable to load room availability: ${err.message}`);
-        renderInitialUI([]);
+        console.error(`[API ERROR] Attempt ${retryCount + 1}/${API_CONFIG.MAX_RETRIES}`, {
+            message: err.message,
+            url: apiUrl,
+            timestamp: new Date().toISOString()
+        });
+
+        // Retry-logik
+        if (retryCount < API_CONFIG.MAX_RETRIES - 1) {
+            console.log(`[RETRY] Retrying in ${API_CONFIG.RETRY_DELAY_MS}ms...`);
+            setTimeout(() => getRoomAvailability(retryCount + 1), API_CONFIG.RETRY_DELAY_MS);
+        } else {
+            // Efter alla retry-försök misslyckades
+            console.error("[CRITICAL] All retry attempts failed");
+            showErrorMessage(`Unable to load room availability: ${err.message}`);
+            renderInitialUI([]);
+        }
     }
 }
 
+/**
+ * Visa felmeddelande till användare
+ */
 function showErrorMessage(message) {
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-banner';
-    errorDiv.textContent = message;
-    document.body.insertBefore(errorDiv, document.body.firstChild);
-    setTimeout(() => errorDiv.remove(), 5000);
+    errorDiv.innerHTML = `
+        <div style="padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; 
+                    border-radius: 4px; color: #721c24; font-weight: 500;">
+            ${message}
+        </div>`;
+    
+    const appContent = document.getElementById("App-content");
+    if (appContent) {
+        appContent.innerHTML = '';
+        appContent.appendChild(errorDiv);
+    }
+    
+    // Automatisk borttagning efter 8 sekunder
+    setTimeout(() => {
+        if (errorDiv.parentNode) {
+            errorDiv.parentNode.removeChild(errorDiv);
+        }
+    }, 8000);
 }
 
+/**
+ * Ladda SVG-filer med timeout och graceful fallback
+ */
 async function loadAndSetupMaps() {
     let html = '';
     
@@ -100,16 +151,49 @@ async function loadAndSetupMaps() {
     if (mapSection) mapSection.innerHTML = html;
 
     try {
-        const svgRequests = CONFIG.mapconfig.floors.map(floor => fetch(floor.svgUrl).then(r => r.text()));
+        // Parallell SVG-laddning med timeout-skydd för varje floor
+        const svgRequests = CONFIG.mapconfig.floors.map((floor, index) => 
+            Promise.race([
+                fetch(floor.svgUrl).then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.text();
+                }),
+                new Promise((_, reject) => 
+                    setTimeout(() => {
+                        reject(new Error(`Timeout loading ${floor.id}`));
+                    }, API_CONFIG.SVG_LOAD_TIMEOUT_MS)
+                )
+            ]).catch(err => {
+                console.error(`[SVG LOAD ERROR] Floor: ${floor.id}`, {
+                    message: err.message,
+                    url: floor.svgUrl,
+                    timestamp: new Date().toISOString()
+                });
+                // Graceful fallback: returna placeholder SVG
+                return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                    <rect width="100" height="100" fill="#f0f0f0"/>
+                    <text x="50" y="50" text-anchor="middle" dy=".3em" fill="#999" font-size="12">
+                        Failed to load floor plan
+                    </text>
+                </svg>`;
+            })
+        );
+        
         const svgs = await Promise.all(svgRequests);
 
         CONFIG.mapconfig.floors.forEach((floor, i) => {
             const container = document.getElementById(`${floor.id}Container`);
-            if (container) container.innerHTML = svgs[i];
+            if (container) {
+                container.innerHTML = svgs[i];
+            }
         });
         
     } catch (err) {
-        console.error("Fel vid hämtning av SVG:er:", err);
+        console.error("[CRITICAL SVG ERROR]", {
+            message: err.message,
+            timestamp: new Date().toISOString()
+        });
+        showErrorMessage("Failed to load floor maps. Please refresh the page.");
     }
 }
 
@@ -151,11 +235,7 @@ function updateMapColors(rooms) {
  * SKAPA ETIKETTER I SVG
  */
 function addRoomLabel(pathEl, conf, svgElement) {
-    //const path = svgDoc.getElementById(conf.id);
     const targetGroup = svgElement.getElementById('workspacesFrontGroup') || svgElement;
-    //if (!path || !targetGroup) return;
-
-    //const bbox = path.getBBox();
     const bbox = pathEl.getBBox();
     const padding = 0.8;
     const offsetX = conf.offX || 0;
