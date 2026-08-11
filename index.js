@@ -1140,7 +1140,6 @@ apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
         const hidelogo = req.query.hidelogo === 'true';
         const hidekthname = req.query.hidekthname === 'true';
 
-        titleimageclass = req.query.titleimageclass || 'titleimage';
         req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
 
         const result = await eventController.getAppSettings(1);
