@@ -1223,7 +1223,7 @@ apiRoutes.get("/openinghours/smartsignpage", async function (req, res) {
 /**
  * Skapa sida för att hanetera appinställningar
  */
-apiRoutes.get("/appsettings", async function (req, res) {
+apiRoutes.get("/appsettings", VerifyToken, async function (req, res) {
     try {
         // Vi utgår från att du vill hämta inställningarna för id 1
         // (Du kan även hämta detta från req.query.id om det varierar)
@@ -1249,7 +1249,7 @@ apiRoutes.get("/appsettings", async function (req, res) {
     }
 });
 
-apiRoutes.post('/appsettings/update/:id', async (req, res) => {
+apiRoutes.post('/appsettings/update/:id', VerifyToken, async (req, res) => {
     // Vi skickar bara vidare kontrollen till din controller-funktion
     await eventController.updateAppSettings(req, res);
 });
