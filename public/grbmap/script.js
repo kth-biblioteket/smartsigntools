@@ -6,6 +6,13 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 const urlParams = new URLSearchParams(window.location.search);
 
+const CONFIG = {
+    UPDATE_INTERVAL_MS: 300000,  // 5 minutes
+    REQUEST_TIMEOUT_MS: 10000,
+    MAX_RETRIES: 3,
+    RETRY_DELAY_MS: 2000
+};
+
 const shouldGetStatus = urlParams.get('bookingstatus') !== 'false';
 
 const bookingystemapiserverurl = CONFIG.bookingystemapiserverurl
@@ -16,8 +23,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         if (shouldGetStatus) {
             getRoomAvailability();
-            // Uppdatera var 5:e minut
-            setInterval(getRoomAvailability, 300000);
+            setInterval(getRoomAvailability, CONFIG.UPDATE_INTERVAL_MS);
         } else {
             renderInitialUI([]);
         }
@@ -44,15 +50,25 @@ async function getRoomAvailability() {
 
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) {
+            throw new Error(`API returned ${response.status}`);
+        }
         
         const data = await response.json();
-        const roomsFiltered = data.filter(room => room.disabled !== 1);
-        renderInitialUI(roomsFiltered);
+        renderInitialUI(data.filter(room => room.disabled !== 1));
     } catch (err) {
-        console.error("Kunde inte hämta rumsstatus:", err);
+        console.error("Failed to fetch room availability:", err);
+        showErrorMessage(`Unable to load room availability: ${err.message}`);
         renderInitialUI([]);
     }
+}
+
+function showErrorMessage(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-banner';
+    errorDiv.textContent = message;
+    document.body.insertBefore(errorDiv, document.body.firstChild);
+    setTimeout(() => errorDiv.remove(), 5000);
 }
 
 async function loadAndSetupMaps() {

@@ -1129,21 +1129,22 @@ apiRoutes.get("/grb/smartsignpage", async function (req, res) {
  */
 apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
     try {
-        let map
-        let kiosk
-        let hidelogo
-        let hidekthname
         let bookingystemapiserverurl
-        let titleimageclass
+
+        const ALLOWED_TITLE_CLASSES = ['titleimage', 'titleimage-dark', 'titleimage-light'];
+        const titleimageclass = ALLOWED_TITLE_CLASSES.includes(req.query.titleimageclass) 
+            ? req.query.titleimageclass 
+            : 'titleimage';
+
+        const kiosk = req.query.kiosk === 'true';  // Enklare
+        const hidelogo = req.query.hidelogo === 'true';
+        const hidekthname = req.query.hidekthname === 'true';
+
         titleimageclass = req.query.titleimageclass || 'titleimage';
-        req.query.kiosk == 'true' ? kiosk = true : kiosk = false;
-        req.query.hidelogo == 'true' ? hidelogo = true : hidelogo = false;
-        req.query.hidekthname == 'true' ? hidekthname = true : hidekthname = false;
         req.query.internal == 'true' ? bookingystemapiserverurl = process.env.BOOKINGSYSTEM_API_SERVERURL : bookingystemapiserverurl = process.env.BOOKINGSYSTEM_EXTERNAL_API_SERVERURL;
 
         const result = await eventController.getAppSettings(1);
         const mapconfig = result.appsettings.config;
-
 
         res.render('grbmap/index', {
             smartsignconfig: {
@@ -1157,7 +1158,11 @@ apiRoutes.get("/grbmap/smartsignpage", async function (req, res) {
             }
         });
     } catch(err) {
-        res.send(err.message)
+        console.error('[ERROR] /grbmap/smartsignpage:', err);
+        res.status(500).json({ 
+            error: 'Failed to load group rooms map',
+            status: 'error'
+        });
     }
 
 });
