@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ångdomen - Skärm</title>
+    <!-- Figtree typsnitt -->
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide ikoner -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Figtree', sans-serif; }
+        
+        body { 
+            background-color: #f5f5f5; 
+            color: #001a57; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Fast behållare som simulerar skärmen 1080x1920 */
+        .screen {
+            width: 1080px;
+            height: 1920px;
+            background-color: #def0ff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Övre sektion med bakgrundsfärg #def0ff */
+        .header-section { 
+            background-color: #def0ff; 
+            padding: 100px 80px 60px 80px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: stretch; 
+        }
+
+        .header-content-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; 
+        }
+
+        h1 { 
+            font-size: 11rem; 
+            font-weight: 700; 
+            margin-bottom: 40px; 
+            white-space: nowrap; 
+            text-align: center;
+            width: 100%;
+        }
+
+        .info-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .info-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 45px; 
+            text-align: left;
+            width: 100%;
+        }
+
+        .info-row svg,
+        .info-row i {
+            width: 110px !important;
+            height: 110px !important;
+            stroke-width: 2.2;
+            flex-shrink: 0;
+            display: inline-block;
+        }
+
+        .info-text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-text { 
+            font-size: 3.2rem; 
+            font-weight: 700; 
+            line-height: 1.2;
+            white-space: nowrap; 
+        }
+
+        .sub-text { 
+            font-size: 2.9rem; 
+            font-weight: 600; 
+            color: #004691; 
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        /* Undre sektion med bakgrundsfärg #def0ff */
+        .booking-section { 
+            flex: 1;
+            padding: 40px 80px 50px 80px; 
+            background: #def0ff; 
+            border-radius: 0; 
+            margin-top: -40px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .room-image-container { 
+            width: 100%; 
+            height: 320px; 
+            border-radius: 24px; 
+            overflow: hidden;
+            margin-bottom: 25px; 
+            border: 2px solid rgba(0, 26, 87, 0.1);
+            flex-shrink: 0;
+        }
+
+        .room-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .section-title { 
+            font-size: 2.5rem;
+            margin-bottom: 15px; 
+            font-weight: 700; 
+            flex-shrink: 0;
+            color: #001a57;
+            display: flex;
+            gap: 15px;
+            align-items: baseline;
+        }
+
+        .section-title-en {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #004691;
+        }
+
+        /* Ren bokningslista */
+        .booking-list { 
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            max-height: 480px;
+            padding-right: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-item { 
+            padding: 14px 20px; 
+            border-bottom: 1px solid rgba(0, 26, 87, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        /* När ingen aktiv bokning finns - ta bort vänster-padding */
+        .booking-list.no-active-booking .booking-item {
+            padding: 14px 20px 14px 0;
+        }
+
+        /* Highlight för bokningen som pågår just nu */
+        .booking-item.active {
+            background-color: #b3d7ff;
+            border-bottom-color: transparent;
+        }
+
+        .booking-title {
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            color: #004791;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* "NU"-taggen - bara synlig för aktiva bokningar */
+        .booking-title .nu-tag {
+            display: none;
+            background-color: #001a57;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Bara aktiva bokningar visar "NU" */
+        .booking-item.active .booking-title .nu-tag {
+            display: inline-block;
+        }
+        
+        .booking-time { 
+            font-size: 1.7rem; 
+            font-weight: 600; 
+            color: #004791;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .booking-item.active .booking-time {
+            color: #001a57;
+        }
+
+        .no-bookings {
+            font-size: 1.5rem;
+            color: #334d75;
+            margin-top: 5px;
+        }
+
+        /* QR-kod sektion längst ner — alltid som sidfot, oavsett antal bokningar */
+        .qr-footer {
+            margin-top: auto;
+            border-top: 2px solid rgba(0, 26, 87, 0.1);
+            padding-top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .qr-text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .qr-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #001a57;
+        }
+
+        .qr-subtitle {
+            font-size: 2.0rem;
+            font-weight: 600;
+            color: #004691;
+        }
+
+        .qr-code-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Pil placerad i flödet mellan text och QR-kod, inte absolut positionerad */
+        .arrow-container {
+            flex-shrink: 0;
+            width: 100px;
+            height: 40px;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .arrow-container svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: #001a57;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: arrow-nudge 1.8s ease-in-out infinite;
+        }
+
+        /* Enkel, återhållsam rörelse: pilen glider en liten bit åt höger och tillbaka */
+        @keyframes arrow-nudge {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(8px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="screen">
+        <!-- Övre sektion -->
+        <div class="header-section">
+            <div class="header-content-wrapper">
+                <h1>Ångdomen</h1>
+                
+                <div class="info-container">
+                    <div class="info-row">
+                        <i data-lucide="users"></i>
+                        <div class="info-text-group">
+                            <span class="info-text">Lokal för grupparbete</span>
+                            <span class="sub-text">Room for group work</span>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <i data-lucide="volume-2"></i>
+                        <div class="info-text-group">
+                            <span class="info-text">Normal samtalston</span>
+                            <span class="sub-text">Normal sound level</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Undre sektion -->
+        <div class="booking-section">
+            <div class="room-image-container" id="room-image-container">
+                <img src="images/angdomen.webp" alt="Bild på Ångdomen">
+            </div>
+            <h3 class="section-title">
+                Dagens bokningar 
+                <span class="section-title-en">/ Today's bookings</span>
+            </h3>
+            <div class="booking-list" id="cards-container">
+                <!-- Alla bokningar laddas dynamiskt här -->
+            </div>
+
+            <!-- QR-kod och text längst ner -->
+            <div class="qr-footer">
+                <div class="qr-text-group">
+                    <span class="qr-title">Se alla kommande bokningar</span>
+                    <span class="qr-subtitle">See all upcoming bookings</span>
+                </div>
+
+                <!-- Pil -->
+                <div class="arrow-container">
+                    <svg viewBox="0 0 100 40">
+                        <line x1="5" y1="20" x2="95" y2="20" />
+                        <polyline points="75 10 95 20 75 30" />
+                    </svg>
+                </div>
+
+                <img class="qr-code-img" src="https://apps.lib.kth.se/smartsigntools/api/v1/qrcode/general/generate/248" alt="QR-kod till schema">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====== URL-PARAMETRAR ======
+        // Styr skärmens visning via query-parametrar i URL:en, t.ex.:
+        //   ?image=0        -> döljer rumsbilden
+        //   ?test=1         -> visar testbokningar utöver riktiga TimeEdit-bokningar
+        //   ?todaysdate=... -> förhandsgranska ett annat datum (redan existerande funktion)
+        const urlParams = new URLSearchParams(window.location.search);
+
+        function paramBool(name, defaultValue) {
+            if (!urlParams.has(name)) return defaultValue;
+            const v = urlParams.get(name).toLowerCase();
+            return v === '1' || v === 'true' || v === 'yes';
+        }
+
+        // Bilden visas som standard om inget annat anges: ?image=0 eller ?image=false döljer den
+        const SHOW_IMAGE = paramBool('image', true);
+
+        // Testbokningar är AV som standard i skarp drift: aktivera explicit med ?test=1
+        const TEST_MODE = paramBool('test', false);
+
+        // Dölj/visa bildsektionen direkt utifrån parametern
+        document.getElementById('room-image-container').style.display = SHOW_IMAGE ? '' : 'none';
+
+        function addZero(n) {
+            return n < 10 ? '0' + n : n;
+        }
+
+        // Tolkar datum/tid oavsett om datumdelen är "20260819" eller "2026-08-19".
+        // new Date("20260819T12:41") är INTE giltigt ISO-format och ger Invalid Date
+        // i vissa webbläsare, vilket gjorde att "aktiv nu"-markeringen aldrig slog till.
+        function parseDateTime(dateTimeStr) {
+            const [datePart, timePart] = dateTimeStr.split(' ');
+            let y, mo, d;
+
+            if (datePart.includes('-')) {
+                [y, mo, d] = datePart.split('-').map(Number);
+            } else {
+                y = parseInt(datePart.substring(0, 4), 10);
+                mo = parseInt(datePart.substring(4, 6), 10);
+                d = parseInt(datePart.substring(6, 8), 10);
+            }
+
+            let h = 0, mi = 0;
+            if (timePart) {
+                [h, mi] = timePart.split(':').map(Number);
+            }
+
+            return new Date(y, mo - 1, d, h, mi);
+        }
+
+        // Bygger testbokningar relativt till nuvarande klockslag, avrundade till hel eller
+        // halvtimme, så att en bokning alltid ligger "aktiv just nu" oavsett när man
+        // förhandsgranskar skärmen.
+        function buildTestEvents(todaysdate) {
+            const now = new Date();
+            // Runda ner till närmaste halvtimme som ankarpunkt för alla testtider
+            const anchorMinutes = Math.floor((now.getHours() * 60 + now.getMinutes()) / 30) * 30;
+
+            // halfHourOffset: antal halvtimmar (kan vara negativt) från ankarpunkten
+            function timeStr(halfHourOffset) {
+                let totalMinutes = anchorMinutes + halfHourOffset * 30;
+                totalMinutes = ((totalMinutes % 1440) + 1440) % 1440; // håll inom 0-23:59
+                const h = Math.floor(totalMinutes / 60);
+                const m = totalMinutes % 60;
+                return `${addZero(h)}:${addZero(m)}`;
+            }
+
+            return [
+                {
+                    eventid: "test-1",
+                    title: "Grupparbete, TCOMK-3",
+                    start: `${todaysdate} ${timeStr(-4)}`,
+                    end: `${todaysdate} ${timeStr(-2)}`,
+                },
+                {
+                    eventid: "test-2",
+                    title: "Projektmöte, DD1349",
+                    start: `${todaysdate} ${timeStr(-2)}`,
+                    end: `${todaysdate} ${timeStr(0)}`,
+                },
+                {
+                    eventid: "test-3",
+                    title: "Studiegrupp, ME2016",
+                    start: `${todaysdate} ${timeStr(0)}`,
+                    end: `${todaysdate} ${timeStr(2)}`,
+                },
+                {
+                    eventid: "test-4",
+                    title: "Handledning, EI1120",
+                    start: `${todaysdate} ${timeStr(2)}`,
+                    end: `${todaysdate} ${timeStr(4)}`,
+                },
+                {
+                    eventid: "test-5",
+                    title: "Examinationsförberedelse",
+                    start: `${todaysdate} ${timeStr(5)}`,
+                    end: `${todaysdate} ${timeStr(8)}`,
+                },
+            ];
+        }
+
+        async function makeHttpRequest(method, url) {
+            let response = await fetch(url);
+            return await response.text();
+        }
+
+        async function loadBookings() {
+            let events = [];
+            let today;
+
+            if (urlParams.has('todaysdate')) {
+                today = new Date(urlParams.get('todaysdate'));
+            } else {
+                today = new Date();
+            }
+
+            var dd = addZero(today.getDate());
+            var mm = addZero(today.getMonth() + 1); 
+            var yyyy = today.getFullYear();
+            var todaysdate = yyyy + '' + mm + '' + dd;
+            // Separat, streckad variant (åååå-mm-dd) enbart för testbokningarna, så vi
+            // slipper förlita oss på fallback-tolkningen för det streck-lösa formatet.
+            var todaysdateISO = yyyy + '-' + mm + '-' + dd;
+
+            try {
+                let timeditresponse = await makeHttpRequest('GET', `https://cloud.timeedit.net/kth/web/public01/ri.json?h=f&sid=3&p=${todaysdate}-${todaysdate}&objects=417156.4&ox=0&types=0&fe=0&g=f&pl=f&sec=t&h2=2`);
+                let jsonbookings = JSON.parse(timeditresponse);
+                
+                if (jsonbookings.reservations && jsonbookings.reservations.length > 0) {
+                    jsonbookings.reservations.forEach(function(element) {
+                        if (element.columns[4] && element.columns[4].trim() !== "") {
+                            events.push({ 
+                                "eventid" : element.id,
+                                "location" : element.columns[4],
+                                "title" : element.columns[5] + (element.columns[6] != "" ? ', ' + element.columns[6] : ''),
+                                "start" : element.startdate + ' ' + element.starttime,
+                                "end" : element.enddate + ' ' + element.endtime,
+                            });
+                        }
+                    }); 
+                }
+
+                if (TEST_MODE) {
+                    events = events.concat(buildTestEvents(todaysdateISO));
+                }
+
+                events.sort((a, b) => {
+                    return parseDateTime(a.start) - parseDateTime(b.start);
+                });
+
+                const container = document.getElementById('cards-container');
+                container.innerHTML = '';
+
+                if (events.length > 0) {
+                    const now = new Date();
+                    let hasActiveBooking = false;
+
+                    // Först bygger vi alla items
+                    events.forEach(event => {
+                        const startTime = event.start.split(' ')[1] ? event.start.split(' ')[1].substring(0, 5) : '';
+                        const endTime = event.end.split(' ')[1] ? event.end.split(' ')[1].substring(0, 5) : '';
+
+                        const startDate = parseDateTime(event.start);
+                        const endDate = parseDateTime(event.end);
+                        const isActive = now >= startDate && now <= endDate;
+
+                        if (isActive) {
+                            hasActiveBooking = true;
+                        }
+
+                        const itemHTML = `
+                            <div class="booking-item${isActive ? ' active' : ''}">
+                                <span class="booking-title">
+                                    <span class="nu-tag">NU</span>
+                                    ${event.title || 'Bokning'}
+                                </span>
+                                <span class="booking-time">${startTime} - ${endTime}</span>
+                            </div>
+                        `;
+                        container.innerHTML += itemHTML;
+                    });
+
+                    // Sätt klassen på containern baserat på om det finns någon aktiv bokning
+                    if (!hasActiveBooking) {
+                        container.classList.add('no-active-booking');
+                    } else {
+                        container.classList.remove('no-active-booking');
+                    }
+
+                } else {
+                    container.innerHTML = `<p class="no-bookings">Inga inbokade händelser idag / No scheduled events today</p>`;
+                    // Ta bort klassen om det inte finns några bokningar alls
+                    container.classList.remove('no-active-booking');
+                }
+
+            } catch (error) {
+                console.error("Kunde inte hämta bokningar:", error);
+                document.getElementById('cards-container').innerHTML = `<p class="no-bookings">Kunde inte ladda bokningar.</p>`;
+                document.getElementById('cards-container').classList.remove('no-active-booking');
+            }
+        }
+
+        // Kör direkt vid sidladdning...
+        loadBookings();
+        lucide.createIcons();
+
+        // ...och uppdatera sedan automatiskt varje minut. Utan detta blev "NU"-markeringen
+        // och hela bokningslistan en stillbild av läget vid senaste sidladdningen, vilket
+        // inte funkar för en skärm som ska stå påslagen hela dagen.
+        //setInterval(loadBookings, 60 * 1000);
+    </script>
+</body>
+</html>

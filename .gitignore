@@ -25,4 +25,5 @@ Dockerfile-dev*
 package-dev.json
 test*.js
 test*.html
+test*.webp
 settings.json
