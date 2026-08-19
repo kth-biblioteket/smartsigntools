@@ -368,7 +368,7 @@
         const TEST_MODE = paramBool('test', false);
 
         // Dölj/visa bildsektionen direkt utifrån parametern
-        document.getElementById('room-image-container').style.display = SHOW_IMAGE ? '' : 'none';
+        document.getElementById('room-image-container').style.display = SHOW_IMAGE ? 'block' : 'none';
 
         function addZero(n) {
             return n < 10 ? '0' + n : n;
