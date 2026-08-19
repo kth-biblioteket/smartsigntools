@@ -503,42 +503,53 @@
                 if (events.length > 0) {
                     const now = new Date();
                     let hasActiveBooking = false;
+                    let hasFutureBooking = false;
 
-                    // Först bygger vi alla items
-                    events.forEach(event => {
-                        const startTime = event.start.split(' ')[1] ? event.start.split(' ')[1].substring(0, 5) : '';
-                        const endTime = event.end.split(' ')[1] ? event.end.split(' ')[1].substring(0, 5) : '';
-
-                        const startDate = parseDateTime(event.start);
+                    // Filtrera bort bokningar där sluttiden har passerat
+                    const filteredEvents = events.filter(event => {
                         const endDate = parseDateTime(event.end);
-                        const isActive = now >= startDate && now <= endDate;
-
-                        if (isActive) {
-                            hasActiveBooking = true;
-                        }
-
-                        const itemHTML = `
-                            <div class="booking-item${isActive ? ' active' : ''}">
-                                <span class="booking-title">
-                                    <span class="nu-tag">NU / NOW</span>
-                                    ${event.title || 'Bokning'}
-                                </span>
-                                <span class="booking-time">${startTime} - ${endTime}</span>
-                            </div>
-                        `;
-                        container.innerHTML += itemHTML;
+                        return now <= endDate;
                     });
 
-                    // Sätt klassen på containern baserat på om det finns någon aktiv bokning
-                    if (!hasActiveBooking) {
-                        container.classList.add('no-active-booking');
+                    if (filteredEvents.length > 0) {
+                        filteredEvents.forEach(event => {
+                            const startTime = event.start.split(' ')[1] ? event.start.split(' ')[1].substring(0, 5) : '';
+                            const endTime = event.end.split(' ')[1] ? event.end.split(' ')[1].substring(0, 5) : '';
+
+                            const startDate = parseDateTime(event.start);
+                            const endDate = parseDateTime(event.end);
+                            const isActive = now >= startDate && now <= endDate;
+
+                            if (isActive) {
+                                hasActiveBooking = true;
+                            }
+                            hasFutureBooking = true;
+
+                            const itemHTML = `
+                                <div class="booking-item${isActive ? ' active' : ''}">
+                                    <span class="booking-title">
+                                        <span class="nu-tag">NU / NOW</span>
+                                        ${event.title || 'Bokning'}
+                                    </span>
+                                    <span class="booking-time">${startTime} - ${endTime}</span>
+                                </div>
+                            `;
+                            container.innerHTML += itemHTML;
+                        });
+
+                        // Sätt klassen på containern baserat på om det finns någon aktiv bokning
+                        if (!hasActiveBooking) {
+                            container.classList.add('no-active-booking');
+                        } else {
+                            container.classList.remove('no-active-booking');
+                        }
                     } else {
+                        container.innerHTML = `<p class="no-bookings">Inga kommande bokningar idag / No upcoming bookings today</p>`;
                         container.classList.remove('no-active-booking');
                     }
 
                 } else {
-                    container.innerHTML = `<p class="no-bookings">Inga inbokade händelser idag / No scheduled events today</p>`;
-                    // Ta bort klassen om det inte finns några bokningar alls
+                    container.innerHTML = `<p class="no-bookings">Inga bokningar idag / No bookings today</p>`;
                     container.classList.remove('no-active-booking');
                 }
 
