@@ -1301,6 +1301,44 @@ apiRoutes.get('/wagner-map-json', async (req, res) => {
     }
 });
 
+// Pythagoras 
+apiRoutes.get('/workspace/:floorId', async (req, res) => {
+    try {
+        const response = await fetch(
+            `https://kth.pythagoras.se/datamanager/rest/v1/floor/${req.params.floorId}/workspace/info`,
+            {
+                headers: {
+                    'api_key': process.env.PYTHAGORAS_API_READ_KEY,
+                    'Accept': 'application/json'
+                }
+            }
+        );
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Proxy endpoint för GeoJSON
+apiRoutes.get('/geojson/:floorId', async (req, res) => {
+    try {
+        const response = await fetch(
+            `https://kth.pythagoras.se/datamanager/rest/v1/floor/${req.params.floorId}/geojson`,
+            {
+                headers: {
+                    'api_key': process.env.PYTHAGORAS_API_READ_KEY,
+                    'Accept': 'application/json'
+                }
+            }
+        );
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 /**
  * Sätt sökväg för Api

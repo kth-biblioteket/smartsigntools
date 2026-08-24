@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pythagoras GeoJSON + Rumsdata</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <style>
+        body,
+        html {
+            margin: 0;
+            height: 100%;
+            font-family: sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            background: #f8fafc;
+        }
+
+        .info-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            width: 320px;
+        }
+
+        /* Stil för knappen att visa/dölja rutan */
+        .route-toggle-btn {
+            background: #fff;
+            border: 2px solid rgba(0,0,0,0.2);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .route-toggle-btn:hover { background: #f1f5f9; }
+    </style>
+</head>
+
+<body>
+
+    <div class="info-box" id="infoBox">
+        <h3>Välj ett rum</h3>
+        <p>Klicka på en yta i kartan för att se information.</p>
+        <button class="route-toggle-btn" id="toggleRouteBtn">Visa vägbeskrivning</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <script>
+        const map = L.map('map');
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            maxNativeZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const infoBox = document.getElementById('infoBox');
+        const floorId = 65;
+        const API_BASE = window.location.origin + '/smartsigntools/api/v1'; // Eller din server-URL
+
+        let selectedLayer = null;
+        let geoLayer = null;
+
+        Promise.all([
+            fetch(`${API_BASE}/workspace/${floorId}`).then(res => res.json()),
+            fetch(`${API_BASE}/geojson/${floorId}`).then(res => res.json())
+        ])
+            .then(([workspaces, geoJsonData]) => {
+
+                const workspacesMap = new Map();
+                workspaces.forEach(ws => workspacesMap.set(ws.uid, ws));
+
+                // --- INSTÄLLNINGAR FÖR ATT FLYTTA OCH ROTERA ---
+                const latOffset = 0.00015; // Justera uppåt/nedåt
+                const lngOffset = -0.0007; // Justera åt höger/vänster
+                const rotationDegrees = -24; // Vrid i grader (t.ex. 5, -5, 12 osv.)
+                // ----------------------------------------------
+
+                if (latOffset !== 0 || lngOffset !== 0 || rotationDegrees !== 0) {
+                    // 1. Först räknar vi ut ritningens mittpunkt (bounding box center)
+                    let minLng = Infinity, maxLng = -Infinity;
+                    let minLat = Infinity, maxLat = -Infinity;
+
+                    geoJsonData.features.forEach(feature => {
+                        if (feature.geometry && feature.geometry.coordinates) {
+                            const findMinMax = (arr) => {
+                                if (typeof arr[0] === 'number') {
+                                    if (arr[0] < minLng) minLng = arr[0];
+                                    if (arr[0] > maxLng) maxLng = arr[0];
+                                    if (arr[1] < minLat) minLat = arr[1];
+                                    if (arr[1] > maxLat) maxLat = arr[1];
+                                } else {
+                                    arr.forEach(sub => findMinMax(sub));
+                                }
+                            };
+                            findMinMax(feature.geometry.coordinates);
+                        }
+                    });
+
+                    const centerLng = (minLng + maxLng) / 2;
+                    const centerLat = (minLat + maxLat) / 2;
+                    const latRad = centerLat * (Math.PI / 180); // Korrigering för att formen inte ska dras ut
+
+                    const angleRad = rotationDegrees * (Math.PI / 180);
+                    const cos = Math.cos(angleRad);
+                    const sin = Math.sin(angleRad);
+
+                    // 2. Applicera rotation kring mittpunkten och därefter offset
+                    geoJsonData.features.forEach(feature => {
+                        if (feature.geometry && feature.geometry.coordinates) {
+                            const transformCoords = (arr) => {
+                                if (typeof arr[0] === 'number') {
+                                    let lng = (arr[0] - centerLng) * Math.cos(latRad);
+                                    let lat = arr[1] - centerLat;
+
+                                    let rotLng = lng * cos - lat * sin;
+                                    let rotLat = lng * sin + lat * cos;
+
+                                    arr[0] = (rotLng / Math.cos(latRad)) + centerLng + lngOffset;
+                                    arr[1] = rotLat + centerLat + latOffset;
+                                } else {
+                                    arr.forEach(sub => transformCoords(sub));
+                                }
+                            };
+                            transformCoords(feature.geometry.coordinates);
+                        }
+                    });
+                }
+
+                geoLayer = L.geoJSON(geoJsonData, {
+                    style: function (feature) {
+                        const uid = feature.id ? feature.id.replace('Model::', '') : '';
+                        const wsData = workspacesMap.get(uid);
+                        const fillColor = (wsData && wsData.typeColor) ? wsData.typeColor : '#3388ff';
+
+                        return {
+                            color: '#666666',
+                            weight: 1,
+                            fillColor: fillColor,
+                            fillOpacity: 0.5
+                        };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        const uid = feature.id ? feature.id.replace('Model::', '') : '';
+
+                        layer.on('click', function () {
+                            const wsData = workspacesMap.get(uid);
+
+                            if (selectedLayer && selectedLayer !== layer) {
+                                geoLayer.resetStyle(selectedLayer);
+                            }
+
+                            selectedLayer = layer;
+                            layer.bringToFront();
+
+                            let html = `<h4>${wsData ? (wsData.popularName || wsData.name) : 'Okänt objekt'}</h4>`;
+                            if (wsData) {
+                                html += `<p><strong>Rumsnummer:</strong> ${wsData.name}<br>
+                                       <strong>Typ:</strong> ${wsData.typeName || 'Ej angivet'}<br>
+                                       <strong>Full typ:</strong> ${wsData.fullTypeName || 'Ej angiven'}<br>
+                                       <strong>Kategori:</strong> ${wsData.categoryName || 'Ej angivet'}<br>
+                                       <strong>Ägare:</strong> ${wsData.ownerName || 'Ej angivet'}<br>
+                                       <strong>Golv:</strong> ${wsData.flooringTypeName || 'Ej angivet'}<br>
+                                       <strong>Area (netto):</strong> ${wsData.netarea ? wsData.netarea.toFixed(2) : 0} m²</p>`;
+                            } else {
+                                html += `<p>System-ID: ${feature.id}</p>`;
+                            }
+                            infoBox.innerHTML = html;
+
+                            layer.setStyle({ fillOpacity: 0.8, color: '#ff3d00', weight: 2 });
+                        });
+                    }
+                }).addTo(map);
+
+                map.fitBounds(geoLayer.getBounds(), { maxZoom: 19 });
+
+                // --- AUTOMATISK GÅNGVÄG ---
+            const routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(59.34585, 18.07165), // Start: T-bana
+                    L.latLng(59.34793, 18.07280)  // Mål: Biblioteket
+                ],
+                router: L.Routing.osrmv1({
+                    serviceUrl: 'https://routing.openstreetmap.de/routed-foot/route/v1'
+                }),
+                lineOptions: {
+                    styles: [
+                        { color: '#ff3d00', opacity: 0.8, weight: 6 }
+                    ]
+                },
+                routeWhileDragging: false,
+                addWaypoints: false,
+                createMarker: function() { return null; }
+            }).addTo(map);
+
+                // Dölj rutt-rutan som standard när sidan laddas
+            setTimeout(() => {
+                const container = routingControl.getContainer();
+                if (container) container.style.display = 'none';
+            }, 100);
+
+            // Koppla funktionalitet till knappen
+            const toggleBtn = document.getElementById('toggleRouteBtn');
+            let routeVisible = false;
+
+            toggleBtn.addEventListener('click', function() {
+                const container = routingControl.getContainer();
+                if (container) {
+                    routeVisible = !routeVisible;
+                    container.style.display = routeVisible ? 'block' : 'none';
+                    toggleBtn.textContent = routeVisible ? 'Dölj vägbeskrivning' : 'Visa vägbeskrivning';
+                }
+            });
+            })
+            .catch(err => console.error("Fel vid laddning:", err));
+    </script>
+</body>
+
+</html>
