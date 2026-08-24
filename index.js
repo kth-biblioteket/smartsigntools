@@ -1308,7 +1308,7 @@ apiRoutes.get('/workspace/:floorId', async (req, res) => {
             `https://kth.pythagoras.se/datamanager/rest/v1/floor/${req.params.floorId}/workspace/info`,
             {
                 headers: {
-                    'api_key': process.env.PYTHAGORAS_API_READ_KEY,
+                    'api_key': process.env.PYTHAGORAS_API_KEY_READ,
                     'Accept': 'application/json'
                 }
             }
@@ -1327,7 +1327,7 @@ apiRoutes.get('/geojson/:floorId', async (req, res) => {
             `https://kth.pythagoras.se/datamanager/rest/v1/floor/${req.params.floorId}/geojson`,
             {
                 headers: {
-                    'api_key': process.env.PYTHAGORAS_API_READ_KEY,
+                    'api_key': process.env.PYTHAGORAS_API_KEY_READ,
                     'Accept': 'application/json'
                 }
             }
