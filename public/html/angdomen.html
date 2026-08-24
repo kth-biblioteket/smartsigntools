@@ -311,9 +311,58 @@
             0%, 100% { transform: translateX(0); }
             50% { transform: translateX(8px); }
         }
+
+        /* ===== IP-ADDRESS OVERLAY ===== */
+        #ip-overlay {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: rgba(0, 26, 87, 0.9);
+            color: #ffffff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            font-family: 'Figtree', sans-serif;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.5px;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        #ip-overlay.visible {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ip-label {
+            font-weight: 400;
+            opacity: 0.7;
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+
+        .ip-address {
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
+
+    <!-- IP-address overlay -->
+    <div id="ip-overlay">
+        <span class="ip-label">🖥️ IP</span>
+        <span class="ip-address" id="ip-address-display">192.168.1.100</span>
+    </div>
 
     <div class="screen">
         <!-- Övre sektion -->
@@ -586,6 +635,56 @@
                 document.getElementById('cards-container').classList.remove('no-active-booking');
             }
         }
+
+        // ====== IP-ADDRESS FUNKTIONER ======
+        let ipOverlayVisible = false;
+
+        function getIPAddress() {
+            // Försök hämta IP via ett externt API
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ip-address-display').textContent = data.ip;
+                })
+                .catch(() => {
+                    // Fallback: visa lokalt IP om extern tjänst misslyckas
+                    document.getElementById('ip-address-display').textContent = 'Kunde ej hämta IP';
+                });
+        }
+
+        function toggleIPOverlay() {
+            const overlay = document.getElementById('ip-overlay');
+            if (ipOverlayVisible) {
+                overlay.classList.remove('visible');
+                ipOverlayVisible = false;
+            } else {
+                getIPAddress();
+                overlay.classList.add('visible');
+                ipOverlayVisible = true;
+            }
+        }
+
+        // ====== TANGENTKOMBINATION ======
+        // Ctrl + Skift + I (visa/dölj IP)
+        // Kan ändras genom att modifiera villkoret nedan
+        document.addEventListener('keydown', function(event) {
+            // Ctrl + Shift + I
+            if (event.ctrlKey && event.shiftKey && event.key === 'I') {
+                event.preventDefault();
+                toggleIPOverlay();
+            }
+            
+            // Alternativ: Ctrl + Alt + I (för macOS-kompatibilitet)
+            // if (event.ctrlKey && event.altKey && event.key === 'i') {
+            //     event.preventDefault();
+            //     toggleIPOverlay();
+            // }
+            
+            // Alternativ: Endast tangenten 'I' (utan modifierare) - OBS: kan störa annan input
+            // if (event.key === 'i' && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) {
+            //     toggleIPOverlay();
+            // }
+        });
 
         // Kör direkt vid sidladdning...
         loadBookings();
