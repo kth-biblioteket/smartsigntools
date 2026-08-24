@@ -114,7 +114,7 @@
         }
 
         .room-image-container { 
-            display: none;
+            display: none; /* Dold som standard */
             width: 100%; 
             height: 320px; 
             border-radius: 24px; 
@@ -122,6 +122,10 @@
             margin-bottom: 25px; 
             border: 2px solid rgba(0, 26, 87, 0.1);
             flex-shrink: 0;
+        }
+
+        .room-image-container.visible {
+            display: block;
         }
 
         .room-image-container img {
@@ -204,7 +208,19 @@
         .booking-item.active .booking-title .nu-tag {
             display: inline-block;
         }
-        
+
+        /* "LEDIGT"-taggen för "inga bokningar" - alltid synlig när det är tomt */
+        .booking-item.no-bookings .booking-title .status-tag {
+            display: inline-block;
+            background-color: #00a859; /* Grön färg för ledigt */
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 3px 14px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
         .booking-time { 
             font-size: 1.7rem; 
             font-weight: 600; 
@@ -217,10 +233,21 @@
             color: #001a57;
         }
 
-        .no-bookings {
-            font-size: 1.5rem;
-            color: #334d75;
-            margin-top: 5px;
+        /* När det inte finns några bokningar alls */
+        .booking-item.no-bookings {
+            background-color: #b3d7ff;
+            border-bottom-color: transparent;
+            padding: 14px 20px;
+            border-radius: 14px;
+        }
+
+        .no-bookings .booking-title {
+            color: #001a57;
+        }
+
+        /* Dölj tiden helt för no-bookings */
+        .booking-item.no-bookings .booking-time {
+            display: none;
         }
 
         /* QR-kod sektion längst ner — alltid som sidfot, oavsett antal bokningar */
@@ -349,10 +376,6 @@
 
     <script>
         // ====== URL-PARAMETRAR ======
-        // Styr skärmens visning via query-parametrar i URL:en, t.ex.:
-        //   ?image=0        -> döljer rumsbilden
-        //   ?test=1         -> visar testbokningar utöver riktiga TimeEdit-bokningar
-        //   ?todaysdate=... -> förhandsgranska ett annat datum (redan existerande funktion)
         const urlParams = new URLSearchParams(window.location.search);
 
         function paramBool(name, defaultValue) {
@@ -361,22 +384,20 @@
             return v === '1' || v === 'true' || v === 'yes';
         }
 
-        // Bilden visas som standard om inget annat anges: ?image=0 eller ?image=false döljer den
-        const SHOW_IMAGE = paramBool('image', true);
-
-        // Testbokningar är AV som standard i skarp drift: aktivera explicit med ?test=1
+        // Bilden är DOLD som standard. Visa endast med ?image=1 eller ?image=true
+        const SHOW_IMAGE = paramBool('image', false);
         const TEST_MODE = paramBool('test', false);
 
-        // Dölj/visa bildsektionen direkt utifrån parametern
-        document.getElementById('room-image-container').style.display = SHOW_IMAGE ? 'block' : 'none';
+        // Hantera bildvisning
+        const imageContainer = document.getElementById('room-image-container');
+        if (SHOW_IMAGE) {
+            imageContainer.classList.add('visible');
+        }
 
         function addZero(n) {
             return n < 10 ? '0' + n : n;
         }
 
-        // Tolkar datum/tid oavsett om datumdelen är "20260819" eller "2026-08-19".
-        // new Date("20260819T12:41") är INTE giltigt ISO-format och ger Invalid Date
-        // i vissa webbläsare, vilket gjorde att "aktiv nu"-markeringen aldrig slog till.
         function parseDateTime(dateTimeStr) {
             const [datePart, timePart] = dateTimeStr.split(' ');
             let y, mo, d;
@@ -397,18 +418,13 @@
             return new Date(y, mo - 1, d, h, mi);
         }
 
-        // Bygger testbokningar relativt till nuvarande klockslag, avrundade till hel eller
-        // halvtimme, så att en bokning alltid ligger "aktiv just nu" oavsett när man
-        // förhandsgranskar skärmen.
         function buildTestEvents(todaysdate) {
             const now = new Date();
-            // Runda ner till närmaste halvtimme som ankarpunkt för alla testtider
             const anchorMinutes = Math.floor((now.getHours() * 60 + now.getMinutes()) / 30) * 30;
 
-            // halfHourOffset: antal halvtimmar (kan vara negativt) från ankarpunkten
             function timeStr(halfHourOffset) {
                 let totalMinutes = anchorMinutes + halfHourOffset * 30;
-                totalMinutes = ((totalMinutes % 1440) + 1440) % 1440; // håll inom 0-23:59
+                totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
                 const h = Math.floor(totalMinutes / 60);
                 const m = totalMinutes % 60;
                 return `${addZero(h)}:${addZero(m)}`;
@@ -453,6 +469,18 @@
             return await response.text();
         }
 
+        function createNoBookingsMessage(message) {
+            return `
+                <div class="booking-item no-bookings">
+                    <span class="booking-title">
+                        <span class="status-tag">LEDIGT / AVAILABLE</span>
+                        ${message}
+                    </span>
+                    <span class="booking-time"></span>
+                </div>
+            `;
+        }
+
         async function loadBookings() {
             let events = [];
             let today;
@@ -467,8 +495,6 @@
             var mm = addZero(today.getMonth() + 1); 
             var yyyy = today.getFullYear();
             var todaysdate = yyyy + '' + mm + '' + dd;
-            // Separat, streckad variant (åååå-mm-dd) enbart för testbokningarna, så vi
-            // slipper förlita oss på fallback-tolkningen för det streck-lösa formatet.
             var todaysdateISO = yyyy + '-' + mm + '-' + dd;
 
             try {
@@ -500,62 +526,63 @@
                 const container = document.getElementById('cards-container');
                 container.innerHTML = '';
 
-                if (events.length > 0) {
-                    const now = new Date();
-                    let hasActiveBooking = false;
-                    let hasFutureBooking = false;
+                // === SCENARIO 1: Inga bokningar alls ===
+                if (events.length === 0) {
+                    container.innerHTML = createNoBookingsMessage('Inga bokningar idag / No bookings today');
+                    container.classList.remove('no-active-booking');
+                    return;
+                }
 
-                    // Filtrera bort bokningar där sluttiden har passerat
-                    const filteredEvents = events.filter(event => {
-                        const endDate = parseDateTime(event.end);
-                        return now <= endDate;
-                    });
+                // === SCENARIO 2: Det finns bokningar, filtrera bort passerade ===
+                const now = new Date();
+                const filteredEvents = events.filter(event => {
+                    const endDate = parseDateTime(event.end);
+                    return now <= endDate;
+                });
 
-                    if (filteredEvents.length > 0) {
-                        filteredEvents.forEach(event => {
-                            const startTime = event.start.split(' ')[1] ? event.start.split(' ')[1].substring(0, 5) : '';
-                            const endTime = event.end.split(' ')[1] ? event.end.split(' ')[1].substring(0, 5) : '';
+                // === SCENARIO 3: Alla bokningar är passerade ===
+                if (filteredEvents.length === 0) {
+                    container.innerHTML = createNoBookingsMessage('Inga kommande bokningar idag / No upcoming bookings today');
+                    container.classList.remove('no-active-booking');
+                    return;
+                }
 
-                            const startDate = parseDateTime(event.start);
-                            const endDate = parseDateTime(event.end);
-                            const isActive = now >= startDate && now <= endDate;
+                // === SCENARIO 4: Det finns kommande bokningar ===
+                let hasActiveBooking = false;
 
-                            if (isActive) {
-                                hasActiveBooking = true;
-                            }
-                            hasFutureBooking = true;
+                filteredEvents.forEach(event => {
+                    const startTime = event.start.split(' ')[1] ? event.start.split(' ')[1].substring(0, 5) : '';
+                    const endTime = event.end.split(' ')[1] ? event.end.split(' ')[1].substring(0, 5) : '';
 
-                            const itemHTML = `
-                                <div class="booking-item${isActive ? ' active' : ''}">
-                                    <span class="booking-title">
-                                        <span class="nu-tag">NU / NOW</span>
-                                        ${event.title || 'Bokning'}
-                                    </span>
-                                    <span class="booking-time">${startTime} - ${endTime}</span>
-                                </div>
-                            `;
-                            container.innerHTML += itemHTML;
-                        });
+                    const startDate = parseDateTime(event.start);
+                    const endDate = parseDateTime(event.end);
+                    const isActive = now >= startDate && now <= endDate;
 
-                        // Sätt klassen på containern baserat på om det finns någon aktiv bokning
-                        if (!hasActiveBooking) {
-                            container.classList.add('no-active-booking');
-                        } else {
-                            container.classList.remove('no-active-booking');
-                        }
-                    } else {
-                        container.innerHTML = `<p class="no-bookings">Inga kommande bokningar idag / No upcoming bookings today</p>`;
-                        container.classList.remove('no-active-booking');
+                    if (isActive) {
+                        hasActiveBooking = true;
                     }
 
+                    const itemHTML = `
+                        <div class="booking-item${isActive ? ' active' : ''}">
+                            <span class="booking-title">
+                                <span class="nu-tag">NU / NOW</span>
+                                ${event.title || 'Bokning'}
+                            </span>
+                            <span class="booking-time">${startTime} - ${endTime}</span>
+                        </div>
+                    `;
+                    container.innerHTML += itemHTML;
+                });
+
+                if (!hasActiveBooking) {
+                    container.classList.add('no-active-booking');
                 } else {
-                    container.innerHTML = `<p class="no-bookings">Inga bokningar idag / No bookings today</p>`;
                     container.classList.remove('no-active-booking');
                 }
 
             } catch (error) {
                 console.error("Kunde inte hämta bokningar:", error);
-                document.getElementById('cards-container').innerHTML = `<p class="no-bookings">Kunde inte ladda bokningar.</p>`;
+                document.getElementById('cards-container').innerHTML = createNoBookingsMessage('Kunde inte ladda bokningar');
                 document.getElementById('cards-container').classList.remove('no-active-booking');
             }
         }
@@ -564,10 +591,8 @@
         loadBookings();
         lucide.createIcons();
 
-        // ...och uppdatera sedan automatiskt varje minut. Utan detta blev "NU"-markeringen
-        // och hela bokningslistan en stillbild av läget vid senaste sidladdningen, vilket
-        // inte funkar för en skärm som ska stå påslagen hela dagen.
-        //setInterval(loadBookings, 60 * 1000);
+        // ...och uppdatera sedan automatiskt varje minut.
+        setInterval(loadBookings, 60 * 1000);
     </script>
 </body>
 </html>
