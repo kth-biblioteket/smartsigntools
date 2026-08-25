@@ -1,100 +1,413 @@
 <!DOCTYPE html>
 <html lang="sv">
-
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pythagoras GeoJSON + Rumsdata</title>
+    <!-- Leaflet & Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <!-- Figtree (Google Font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest">
+    </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body,
         html {
-            margin: 0;
             height: 100%;
-            font-family: sans-serif;
+            font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
         }
 
         #map {
             height: 100vh;
             width: 100vw;
-            background: #f8fafc;
+            background: #e9edf2;
+            position: relative;
+        }
+
+        /* --- Info-kortet: glassmorfism --- */
+        .info-card {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            max-width: 340px;
+            width: auto;
+            min-width: 280px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 28px;
+            padding: 24px 26px 22px;
+            box-shadow: 0 20px 48px -16px rgba(0, 20, 40, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            transition: all 0.25s ease;
+            pointer-events: auto;
+            color: #1a2c41;
+        }
+
+        .info-card .room-title {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            margin: 0 0 2px 0;
+            color: #0b1e33;
+            line-height: 1.2;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .info-card .room-title .badge-room {
+            background: #dce6f2;
+            color: #1f3d5e;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0 14px;
+            border-radius: 40px;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .info-card .room-sub {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #3e5a78;
+            margin: 2px 0 12px 0;
+            padding-left: 0;
+            border-left: none;
+        }
+
+        .info-card .divider {
+            height: 1px;
+            background: linear-gradient(to right, rgba(60, 100, 150, 0.15), rgba(60, 100, 150, 0.04));
+            margin: 10px 0 14px 0;
+        }
+
+        .info-card .detail-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 16px;
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+
+        .info-card .detail-grid .label {
+            color: #47647f;
+            font-weight: 400;
+        }
+
+        .info-card .detail-grid .value {
+            font-weight: 500;
+            color: #0b1e33;
+        }
+
+        .info-card .detail-grid .value strong {
+            font-weight: 600;
+        }
+
+        .route-toggle-btn {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-family: 'Figtree', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #1c334b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: center;
+            letter-spacing: 0.01em;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(200, 215, 235, 0.5);
+        }
+
+        .route-toggle-btn .lucide {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .route-toggle-btn:hover {
+            background: #ffffff;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+            border-color: #b6cdff;
+            transform: scale(1.01);
+            color: #002b5a;
+        }
+
+        .route-toggle-btn:active {
+            transform: scale(0.97);
+        }
+
+        .routing-container {
+            margin-top: 12px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            display: none;
+            max-height: 320px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .routing-container.visible {
+            display: block;
+        }
+
+        /* --- Routing Machine – kompakt och anpassad för kortets bredd --- */
+        .routing-container .leaflet-routing-container {
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 16px !important;
+            font-family: 'Figtree', sans-serif !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        .routing-container .leaflet-routing-alt {
+            background: rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 16px !important;
+            padding: 10px 12px !important;
+            font-size: 0.8rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.7) !important;
+            color: #1f3a58 !important;
+            max-height: 220px;
+            overflow-y: auto;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Gör routing-tabellen smalare */
+        .routing-container .leaflet-routing-alt table {
+            width: 100% !important;
+            table-layout: fixed !important;
+        }
+
+        .routing-container .leaflet-routing-alt tr {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 2px 0 !important;
+            padding: 3px 0 !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+        }
+
+        .routing-container .leaflet-routing-alt td {
+            padding: 2px 4px !important;
+            font-size: 0.75rem !important;
+            line-height: 1.3 !important;
+            word-break: break-word !important;
+        }
+
+        .routing-container .leaflet-routing-alt td:first-child {
+            width: 28px !important;
+            min-width: 28px !important;
+            text-align: center !important;
+            font-weight: 600 !important;
+            color: #2563eb !important;
+        }
+
+        .routing-container .leaflet-routing-alt td:nth-child(2) {
+            flex: 1 !important;
+            min-width: 100px !important;
+        }
+
+        .routing-container .leaflet-routing-alt td:last-child {
+            width: 50px !important;
+            min-width: 50px !important;
+            text-align: right !important;
+            color: #4a6a8a !important;
+            font-weight: 500 !important;
+        }
+
+        /* Dölj onödig information */
+        .routing-container .leaflet-routing-alt .leaflet-routing-alt-minimized {
+            display: none !important;
+        }
+
+        /* Gör vägbeskrivningslinjen blå */
+        .leaflet-routing-line {
+            stroke: #2563eb !important;
+            stroke-width: 6 !important;
+            opacity: 0.9 !important;
+        }
+
+        .leaflet-routing-line-path {
+            stroke: #2563eb !important;
+            stroke-width: 6 !important;
+        }
+
+        .leaflet-routing-addwaypoint,
+        .leaflet-routing-removewaypoint {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .info-card {
+                bottom: 16px;
+                left: 16px;
+                right: 16px;
+                max-width: none;
+                min-width: unset;
+                padding: 18px 20px;
+                border-radius: 22px;
+            }
+            .info-card .room-title {
+                font-size: 1.3rem;
+            }
+            .routing-container .leaflet-routing-alt td {
+                font-size: 0.7rem !important;
+            }
+            .routing-container .leaflet-routing-alt td:last-child {
+                width: 40px !important;
+                min-width: 40px !important;
+            }
+        }
+
+        .leaflet-control-zoom a {
+            background: rgba(255, 255, 255, 0.7) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.7) !important;
+            color: #1f3f62 !important;
+            font-weight: 500;
+        }
+        .leaflet-control-zoom a:hover {
+            background: white !important;
         }
 
         .info-box {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            width: 320px;
+            display: none;
         }
 
-        /* Stil för knappen att visa/dölja rutan */
-        .route-toggle-btn {
-            background: #fff;
-            border: 2px solid rgba(0,0,0,0.2);
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            width: 100%;
-            text-align: center;
+        .placeholder-text {
+            color: #8aa0b8;
+            font-style: italic;
+            font-weight: 400;
         }
-        .route-toggle-btn:hover { background: #f1f5f9; }
     </style>
 </head>
-
 <body>
-
-    <div class="info-box" id="infoBox">
-        <h3>Välj ett rum</h3>
-        <p>Klicka på en yta i kartan för att se information.</p>
-        <button class="route-toggle-btn" id="toggleRouteBtn">Visa vägbeskrivning</button>
-    </div>
 
     <div id="map"></div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <!-- Info-kort med rumsdetaljer -->
+    <div class="info-card" id="infoCard">
+        <div class="room-title">
+            <span id="roomNameDisplay" class="placeholder-text">Välj ett rum</span>
+            <span class="badge-room" id="roomNumberBadge">—</span>
+        </div>
+        <div class="room-sub">
+            <span id="roomTypeDisplay" class="placeholder-text">Klicka på en yta i kartan</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="detail-grid" id="detailGrid">
+            <span class="label">Kategori</span>
+            <span class="value" id="categoryValue">—</span>
+            <span class="label">Ägare</span>
+            <span class="value" id="ownerValue">—</span>
+            <span class="label">Golv</span>
+            <span class="value" id="floorValue">—</span>
+            <span class="label">Nettoarea</span>
+            <span class="value" id="areaValue"><strong>—</strong></span>
+        </div>
+
+        <div class="routing-container" id="routingContainer"></div>
+
+        <button class="route-toggle-btn" id="toggleRouteBtn">
+            <i data-lucide="map-pin" class="lucide"></i>
+            <span id="toggleBtnText">Visa vägbeskrivning</span>
+        </button>
+    </div>
+
+    <!-- Leaflet & Routing Machine -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js">
+    </script>
+
     <script>
-        const map = L.map('map');
+        (function() {
+            const map = L.map('map', {
+                zoomControl: true,
+                fadeAnimation: true,
+                attributionControl: true
+            });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 20,
-            maxNativeZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 20,
+                maxNativeZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-        const infoBox = document.getElementById('infoBox');
-        const floorId = 65;
-        const API_BASE = window.location.origin + '/smartsigntools/api/v1'; // Eller din server-URL
+            // UI-element
+            const roomNameDisplay = document.getElementById('roomNameDisplay');
+            const roomNumberBadge = document.getElementById('roomNumberBadge');
+            const roomTypeDisplay = document.getElementById('roomTypeDisplay');
+            const categoryValue = document.getElementById('categoryValue');
+            const ownerValue = document.getElementById('ownerValue');
+            const floorValue = document.getElementById('floorValue');
+            const areaValue = document.getElementById('areaValue');
+            const toggleBtn = document.getElementById('toggleRouteBtn');
+            const toggleBtnText = document.getElementById('toggleBtnText');
+            const routingContainer = document.getElementById('routingContainer');
 
-        let selectedLayer = null;
-        let geoLayer = null;
+            const floorId = 65;
+            const API_BASE = window.location.origin + '/smartsigntools/api/v1';
 
-        Promise.all([
-            fetch(`${API_BASE}/workspace/${floorId}`).then(res => res.json()),
-            fetch(`${API_BASE}/geojson/${floorId}`).then(res => res.json())
-        ])
+            let selectedLayer = null;
+            let geoLayer = null;
+            let routingControl = null;
+            let routeVisible = false;
+
+            // --- Hämta data ---
+            Promise.all([
+                fetch(`${API_BASE}/workspace/${floorId}`).then(res => res.json()),
+                fetch(`${API_BASE}/geojson/${floorId}`).then(res => res.json())
+            ])
             .then(([workspaces, geoJsonData]) => {
 
                 const workspacesMap = new Map();
                 workspaces.forEach(ws => workspacesMap.set(ws.uid, ws));
 
-                // --- INSTÄLLNINGAR FÖR ATT FLYTTA OCH ROTERA ---
-                const latOffset = 0.00015; // Justera uppåt/nedåt
-                const lngOffset = -0.0007; // Justera åt höger/vänster
-                const rotationDegrees = -24; // Vrid i grader (t.ex. 5, -5, 12 osv.)
-                // ----------------------------------------------
+                // --- Justeringar (förflyttning & rotation) ---
+                const latOffset = 0.00015;
+                const lngOffset = -0.0007;
+                const rotationDegrees = -24;
 
                 if (latOffset !== 0 || lngOffset !== 0 || rotationDegrees !== 0) {
-                    // 1. Först räknar vi ut ritningens mittpunkt (bounding box center)
-                    let minLng = Infinity, maxLng = -Infinity;
-                    let minLat = Infinity, maxLat = -Infinity;
+                    let minLng = Infinity,
+                        maxLng = -Infinity;
+                    let minLat = Infinity,
+                        maxLat = -Infinity;
 
                     geoJsonData.features.forEach(feature => {
                         if (feature.geometry && feature.geometry.coordinates) {
@@ -114,23 +427,19 @@
 
                     const centerLng = (minLng + maxLng) / 2;
                     const centerLat = (minLat + maxLat) / 2;
-                    const latRad = centerLat * (Math.PI / 180); // Korrigering för att formen inte ska dras ut
-
+                    const latRad = centerLat * (Math.PI / 180);
                     const angleRad = rotationDegrees * (Math.PI / 180);
                     const cos = Math.cos(angleRad);
                     const sin = Math.sin(angleRad);
 
-                    // 2. Applicera rotation kring mittpunkten och därefter offset
                     geoJsonData.features.forEach(feature => {
                         if (feature.geometry && feature.geometry.coordinates) {
                             const transformCoords = (arr) => {
                                 if (typeof arr[0] === 'number') {
                                     let lng = (arr[0] - centerLng) * Math.cos(latRad);
                                     let lat = arr[1] - centerLat;
-
                                     let rotLng = lng * cos - lat * sin;
                                     let rotLat = lng * sin + lat * cos;
-
                                     arr[0] = (rotLng / Math.cos(latRad)) + centerLng + lngOffset;
                                     arr[1] = rotLat + centerLat + latOffset;
                                 } else {
@@ -142,93 +451,120 @@
                     });
                 }
 
+                // --- Skapa GeoJSON-lager ---
                 geoLayer = L.geoJSON(geoJsonData, {
-                    style: function (feature) {
+                    style: function(feature) {
                         const uid = feature.id ? feature.id.replace('Model::', '') : '';
                         const wsData = workspacesMap.get(uid);
                         const fillColor = (wsData && wsData.typeColor) ? wsData.typeColor : '#3388ff';
-
                         return {
-                            color: '#666666',
-                            weight: 1,
+                            color: '#4a5c74',
+                            weight: 1.2,
                             fillColor: fillColor,
-                            fillOpacity: 0.5
+                            fillOpacity: 0.5,
+                            opacity: 0.8,
                         };
                     },
-                    onEachFeature: function (feature, layer) {
+                    onEachFeature: function(feature, layer) {
                         const uid = feature.id ? feature.id.replace('Model::', '') : '';
 
-                        layer.on('click', function () {
+                        layer.on('click', function() {
                             const wsData = workspacesMap.get(uid);
 
                             if (selectedLayer && selectedLayer !== layer) {
                                 geoLayer.resetStyle(selectedLayer);
                             }
-
                             selectedLayer = layer;
                             layer.bringToFront();
+                            layer.setStyle({ fillOpacity: 0.85, color: '#e34c26', weight: 2.5 });
 
-                            let html = `<h4>${wsData ? (wsData.popularName || wsData.name) : 'Okänt objekt'}</h4>`;
                             if (wsData) {
-                                html += `<p><strong>Rumsnummer:</strong> ${wsData.name}<br>
-                                       <strong>Typ:</strong> ${wsData.typeName || 'Ej angivet'}<br>
-                                       <strong>Full typ:</strong> ${wsData.fullTypeName || 'Ej angiven'}<br>
-                                       <strong>Kategori:</strong> ${wsData.categoryName || 'Ej angivet'}<br>
-                                       <strong>Ägare:</strong> ${wsData.ownerName || 'Ej angivet'}<br>
-                                       <strong>Golv:</strong> ${wsData.flooringTypeName || 'Ej angivet'}<br>
-                                       <strong>Area (netto):</strong> ${wsData.netarea ? wsData.netarea.toFixed(2) : 0} m²</p>`;
-                            } else {
-                                html += `<p>System-ID: ${feature.id}</p>`;
-                            }
-                            infoBox.innerHTML = html;
+                                const name = wsData.popularName || wsData.name || 'Angdomen';
+                                const roomNum = wsData.name || 'A203';
+                                const type = wsData.typeName || 'Lokal för grupparbete';
+                                const category = wsData.categoryName || 'Ej angivet';
+                                const owner = wsData.ownerName || 'Ej angivet';
+                                const floor = wsData.flooringTypeName || 'Ej angivet';
+                                const area = wsData.netarea ? wsData.netarea.toFixed(2) : '0';
 
-                            layer.setStyle({ fillOpacity: 0.8, color: '#ff3d00', weight: 2 });
+                                roomNameDisplay.classList.remove('placeholder-text');
+                                roomTypeDisplay.classList.remove('placeholder-text');
+
+                                roomNameDisplay.textContent = name;
+                                roomNumberBadge.textContent = roomNum;
+                                roomTypeDisplay.textContent = type;
+                                categoryValue.textContent = category;
+                                ownerValue.textContent = owner;
+                                floorValue.textContent = floor;
+                                areaValue.innerHTML = `<strong>${area}</strong> m²`;
+                            } else {
+                                roomNameDisplay.textContent = 'Okänt objekt';
+                                roomNameDisplay.classList.remove('placeholder-text');
+                                roomTypeDisplay.textContent = 'Ingen data tillgänglig';
+                                roomTypeDisplay.classList.remove('placeholder-text');
+                                roomNumberBadge.textContent = '—';
+                                categoryValue.textContent = '—';
+                                ownerValue.textContent = '—';
+                                floorValue.textContent = '—';
+                                areaValue.innerHTML = '<strong>—</strong>';
+                            }
                         });
                     }
                 }).addTo(map);
 
-                map.fitBounds(geoLayer.getBounds(), { maxZoom: 19 });
+                map.fitBounds(geoLayer.getBounds(), { maxZoom: 19, padding: [40, 40] });
 
-                // --- AUTOMATISK GÅNGVÄG ---
-            const routingControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(59.34585, 18.07165), // Start: T-bana
-                    L.latLng(59.34793, 18.07280)  // Mål: Biblioteket
-                ],
-                router: L.Routing.osrmv1({
-                    serviceUrl: 'https://routing.openstreetmap.de/routed-foot/route/v1'
-                }),
-                lineOptions: {
-                    styles: [
-                        { color: '#ff3d00', opacity: 0.8, weight: 6 }
-                    ]
-                },
-                routeWhileDragging: false,
-                addWaypoints: false,
-                createMarker: function() { return null; }
-            }).addTo(map);
+                // --- Routing Control med blå linje ---
+                routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(59.34585, 18.07165),
+                        L.latLng(59.34793, 18.07280)
+                    ],
+                    router: L.Routing.osrmv1({
+                        serviceUrl: 'https://routing.openstreetmap.de/routed-foot/route/v1'
+                    }),
+                    lineOptions: {
+                        styles: [{ color: '#2563eb', opacity: 0.9, weight: 6 }]
+                    },
+                    routeWhileDragging: false,
+                    addWaypoints: false,
+                    createMarker: function() { return null; },
+                    show: false,
+                    collapsible: false,
+                }).addTo(map);
 
-                // Dölj rutt-rutan som standard när sidan laddas
-            setTimeout(() => {
-                const container = routingControl.getContainer();
-                if (container) container.style.display = 'none';
-            }, 100);
-
-            // Koppla funktionalitet till knappen
-            const toggleBtn = document.getElementById('toggleRouteBtn');
-            let routeVisible = false;
-
-            toggleBtn.addEventListener('click', function() {
-                const container = routingControl.getContainer();
-                if (container) {
-                    routeVisible = !routeVisible;
-                    container.style.display = routeVisible ? 'block' : 'none';
-                    toggleBtn.textContent = routeVisible ? 'Dölj vägbeskrivning' : 'Visa vägbeskrivning';
+                const routingNode = routingControl.getContainer();
+                if (routingNode) {
+                    routingContainer.appendChild(routingNode);
+                    routingContainer.classList.remove('visible');
                 }
-            });
+
+                // --- Toggle-knapp ---
+                toggleBtn.addEventListener('click', function() {
+                    routeVisible = !routeVisible;
+                    if (routeVisible) {
+                        routingContainer.classList.add('visible');
+                        toggleBtnText.textContent = 'Dölj vägbeskrivning';
+                        if (routingControl) routingControl.show();
+                    } else {
+                        routingContainer.classList.remove('visible');
+                        toggleBtnText.textContent = 'Visa vägbeskrivning';
+                        if (routingControl) routingControl.hide();
+                    }
+                });
+
+                if (routingControl) routingControl.hide();
+
+                // Initiera Lucide-ikoner
+                lucide.createIcons();
+
             })
-            .catch(err => console.error("Fel vid laddning:", err));
+            .catch(err => {
+                console.error("Fel vid laddning:", err);
+                roomTypeDisplay.textContent = 'Kunde inte ladda data';
+                lucide.createIcons();
+            });
+        })();
     </script>
 </body>
-
 </html>
