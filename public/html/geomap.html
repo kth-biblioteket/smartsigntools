@@ -12,8 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest">
-    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         * {
             margin: 0;
@@ -35,7 +34,72 @@
             position: relative;
         }
 
-        /* --- Info-kortet: glassmorfism --- */
+        .floor-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 16px;
+            padding: 8px 12px;
+            box-shadow: 0 8px 24px -8px rgba(0, 20, 40, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .floor-selector.secondary {
+            top: 76px;
+        }
+
+        .floor-selector label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1a2c41;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .floor-selector label .lucide {
+            width: 18px;
+            height: 18px;
+            color: #4a6a8a;
+        }
+
+        .floor-selector select {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(200, 215, 235, 0.5);
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-family: 'Figtree', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0b1e33;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            min-width: 100px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 32px;
+        }
+
+        .floor-selector select:hover {
+            border-color: #b6cdff;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .floor-selector select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
         .info-card {
             position: absolute;
             bottom: 30px;
@@ -179,7 +243,6 @@
             display: block;
         }
 
-        /* --- Routing Machine – kompakt och anpassad för kortets bredd --- */
         .routing-container .leaflet-routing-container {
             background: transparent !important;
             box-shadow: none !important;
@@ -204,7 +267,6 @@
             box-sizing: border-box !important;
         }
 
-        /* Gör routing-tabellen smalare */
         .routing-container .leaflet-routing-alt table {
             width: 100% !important;
             table-layout: fixed !important;
@@ -246,12 +308,10 @@
             font-weight: 500 !important;
         }
 
-        /* Dölj onödig information */
         .routing-container .leaflet-routing-alt .leaflet-routing-alt-minimized {
             display: none !important;
         }
 
-        /* Gör vägbeskrivningslinjen blå */
         .leaflet-routing-line {
             stroke: #2563eb !important;
             stroke-width: 6 !important;
@@ -288,6 +348,23 @@
                 width: 40px !important;
                 min-width: 40px !important;
             }
+            .floor-selector {
+                top: 12px;
+                right: 12px;
+                padding: 6px 10px;
+                border-radius: 12px;
+            }
+            .floor-selector.secondary {
+                top: 60px;
+            }
+            .floor-selector select {
+                font-size: 0.8rem;
+                min-width: 80px;
+                padding: 4px 28px 4px 8px;
+            }
+            .floor-selector label {
+                font-size: 0.75rem;
+            }
         }
 
         .leaflet-control-zoom a {
@@ -317,7 +394,34 @@
 
     <div id="map"></div>
 
-    <!-- Info-kort med rumsdetaljer -->
+    <div class="floor-selector" id="floorSelector">
+        <label>
+            <i data-lucide="layers" class="lucide"></i>
+            KTH Biblioteket
+        </label>
+        <select id="floorSelect">
+            <option value="64">Plan 1</option>
+            <option value="65" selected>Plan 2</option>
+            <option value="66">Plan 3</option>
+            <option value="67">Plan 4</option>
+        </select>
+    </div>
+
+    <div class="floor-selector secondary" id="building2FloorSelector">
+        <label>
+            <i data-lucide="building-2" class="lucide"></i>
+            D- och E-husen
+        </label>
+        <select id="building2FloorSelect">
+            <option value="45">Plan 1</option>
+            <option value="46" selected>Plan 2</option>
+            <option value="47">Plan 3</option>
+            <option value="48">Plan 4</option>
+            <option value="49">Plan 5</option>
+            <option value="50">Plan 6</option>
+        </select>
+    </div>
+
     <div class="info-card" id="infoCard">
         <div class="room-title">
             <span id="roomNameDisplay" class="placeholder-text">Välj ett rum</span>
@@ -348,11 +452,8 @@
         </button>
     </div>
 
-    <!-- Leaflet & Routing Machine -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
-    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js">
-    </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
         (function() {
@@ -368,7 +469,6 @@
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
 
-            // UI-element
             const roomNameDisplay = document.getElementById('roomNameDisplay');
             const roomNumberBadge = document.getElementById('roomNumberBadge');
             const roomTypeDisplay = document.getElementById('roomTypeDisplay');
@@ -379,84 +479,374 @@
             const toggleBtn = document.getElementById('toggleRouteBtn');
             const toggleBtnText = document.getElementById('toggleBtnText');
             const routingContainer = document.getElementById('routingContainer');
+            const floorSelect = document.getElementById('floorSelect');
+            const building2FloorSelect = document.getElementById('building2FloorSelect');
 
-            const floorId = 65;
             const API_BASE = window.location.origin + '/smartsigntools/api/v1';
+            const REFERENCE_FEATURE_ID = 'PH023';
+            const REFERENCE_FLOOR_ID = 64; // Plan 1 (huvudbyggnaden) som referens
+
+            // --- Global rotation/offset för huvudbyggnaden (samma värden som gav rätt resultat för ett enskilt plan) ---
+            const GLOBAL_LAT_OFFSET = 0.00015;
+            const GLOBAL_LNG_OFFSET = -0.0007;
+            const GLOBAL_ROTATION_DEG = -24;
+
+            // Plan som tillhör Byggnad 2 (en annan byggnad). Lägg till fler id:n här — och en <option> i
+            // #building2FloorSelect — när fler plan i den byggnaden ska visas.
+            const BUILDING2_FLOORS = [45, 46, 47, 48, 49, 50];
+
+            // Plan 47 är det plan som rotation/offset ursprungligen kalibrerades mot — mittpunkten för
+            // transformen räknas ALLTID ut från detta plan, oavsett vilket plan som visas som standard.
+            const BUILDING2_REFERENCE_FLOOR_ID = 47;
 
             let selectedLayer = null;
-            let geoLayer = null;
+            let selectedLayerGroup = null; // vilken L.geoJSON-grupp (huvud eller byggnad2) den valda ytan tillhör
+
+            let mainGeoLayer = null;
+            let building2GeoLayer = null;
+
             let routingControl = null;
             let routeVisible = false;
 
-            // --- Hämta data ---
-            Promise.all([
-                fetch(`${API_BASE}/workspace/${floorId}`).then(res => res.json()),
-                fetch(`${API_BASE}/geojson/${floorId}`).then(res => res.json())
-            ])
-            .then(([workspaces, geoJsonData]) => {
+            let currentMainFloorId = 65;
+            let currentBuilding2FloorId = 46;
 
+            // Hissen (PH023): används ENDAST för att synka huvudbyggnadens plan mot varandra
+            let referencePoint = null;
+
+            // Fast mittpunkt (bbox-mitt på plan 1, orört) för huvudbyggnadens rotation/offset
+            let transformCenter = null;
+
+            let referenceBounds = null; // huvudbyggnadens bounds (efter transform)
+            let building2Bounds = null; // byggnad 2:s bounds (efter transform)
+
+            const floorCache = {};
+
+            function findFeatureById(geoJsonData, featureId) {
+                for (const feature of geoJsonData.features) {
+                    const uid = feature.id ? feature.id.replace('Model::', '') : '';
+                    if (uid === featureId) {
+                        return feature;
+                    }
+                }
+                return null;
+            }
+
+            function getFeatureCenter(feature) {
+                if (!feature || !feature.geometry || !feature.geometry.coordinates) return null;
+
+                const coords = feature.geometry.coordinates;
+                let points = [];
+
+                const extractPoints = (arr) => {
+                    if (typeof arr[0] === 'number') {
+                        points.push({ lng: arr[0], lat: arr[1] });
+                    } else {
+                        arr.forEach(sub => extractPoints(sub));
+                    }
+                };
+                extractPoints(coords);
+
+                if (points.length === 0) return null;
+
+                let sumLng = 0,
+                    sumLat = 0;
+                points.forEach(p => { sumLng += p.lng;
+                    sumLat += p.lat; });
+                return { lng: sumLng / points.length, lat: sumLat / points.length };
+            }
+
+            function getGeoJsonBounds(geoJsonData) {
+                let minLng = Infinity,
+                    maxLng = -Infinity;
+                let minLat = Infinity,
+                    maxLat = -Infinity;
+
+                geoJsonData.features.forEach(feature => {
+                    if (feature.geometry && feature.geometry.coordinates) {
+                        const findMinMax = (arr) => {
+                            if (typeof arr[0] === 'number') {
+                                if (arr[0] < minLng) minLng = arr[0];
+                                if (arr[0] > maxLng) maxLng = arr[0];
+                                if (arr[1] < minLat) minLat = arr[1];
+                                if (arr[1] > maxLat) maxLat = arr[1];
+                            } else {
+                                arr.forEach(sub => findMinMax(sub));
+                            }
+                        };
+                        findMinMax(feature.geometry.coordinates);
+                    }
+                });
+
+                return { minLng, maxLng, minLat, maxLat };
+            }
+
+            function unionBounds(a, b) {
+                if (!a) return b;
+                if (!b) return a;
+                return {
+                    minLng: Math.min(a.minLng, b.minLng),
+                    maxLng: Math.max(a.maxLng, b.maxLng),
+                    minLat: Math.min(a.minLat, b.minLat),
+                    maxLat: Math.max(a.maxLat, b.maxLat)
+                };
+            }
+
+            // Ren förflyttning av alla koordinater (används för att synka huvudbyggnadens plan mot hissen)
+            function translateFloor(geoJsonData, deltaLng, deltaLat) {
+                const clonedData = JSON.parse(JSON.stringify(geoJsonData));
+
+                clonedData.features.forEach(feature => {
+                    if (feature.geometry && feature.geometry.coordinates) {
+                        const transformCoords = (arr) => {
+                            if (typeof arr[0] === 'number') {
+                                arr[0] += deltaLng;
+                                arr[1] += deltaLat;
+                            } else {
+                                arr.forEach(sub => transformCoords(sub));
+                            }
+                        };
+                        transformCoords(feature.geometry.coordinates);
+                    }
+                });
+
+                return clonedData;
+            }
+
+            // Generell rotation + offset kring en given mittpunkt (inkl. cos(latRad)-korrigering).
+            // Återanvänds med olika center/offset/rotation för huvudbyggnaden respektive Byggnad 2.
+            function transformWithParams(geoJsonData, center, latOffsetVal, lngOffsetVal, rotationDegVal) {
+                if (!center) return geoJsonData;
+
+                const centerLng = center.lng;
+                const centerLat = center.lat;
+                const latRad = centerLat * (Math.PI / 180);
+                const angleRad = rotationDegVal * (Math.PI / 180);
+                const cos = Math.cos(angleRad);
+                const sin = Math.sin(angleRad);
+
+                const clonedData = JSON.parse(JSON.stringify(geoJsonData));
+
+                clonedData.features.forEach(feature => {
+                    if (feature.geometry && feature.geometry.coordinates) {
+                        const transformCoords = (arr) => {
+                            if (typeof arr[0] === 'number') {
+                                let lng = (arr[0] - centerLng) * Math.cos(latRad);
+                                let lat = arr[1] - centerLat;
+                                let rotLng = lng * cos - lat * sin;
+                                let rotLat = lng * sin + lat * cos;
+                                arr[0] = (rotLng / Math.cos(latRad)) + centerLng + lngOffsetVal;
+                                arr[1] = rotLat + centerLat + latOffsetVal;
+                            } else {
+                                arr.forEach(sub => transformCoords(sub));
+                            }
+                        };
+                        transformCoords(feature.geometry.coordinates);
+                    }
+                });
+
+                return clonedData;
+            }
+
+            function applyRotationOffset(geoJsonData) {
+                return transformWithParams(geoJsonData, transformCenter, GLOBAL_LAT_OFFSET, GLOBAL_LNG_OFFSET, GLOBAL_ROTATION_DEG);
+            }
+
+            // Justerbar transform för Byggnad 2 — mittpunkt beräknas en gång (från det första plan som laddas
+            // i den byggnaden), värdena i building2Transform kan ändras live via panelen.
+            let building2TransformCenter = null;
+            const building2Transform = {
+                latOffset: 0.00004,
+                lngOffset: 0.0022,
+                rotationDeg: 248
+            };
+
+            function applyBuilding2Transform(geoJsonData) {
+                return transformWithParams(
+                    geoJsonData,
+                    building2TransformCenter,
+                    building2Transform.latOffset,
+                    building2Transform.lngOffset,
+                    building2Transform.rotationDeg
+                );
+            }
+
+            // Räknar ut Byggnad 2:s fasta rotationsmittpunkt EN gång, alltid från BUILDING2_REFERENCE_FLOOR_ID (47) —
+            // oavsett vilket plan som visas som standard. Returnerar en Promise som är klar när center är satt.
+            let building2CenterPromise = null;
+            function computeBuilding2TransformCenter() {
+                if (building2CenterPromise) return building2CenterPromise;
+
+                building2CenterPromise = fetch(`${API_BASE}/geojson/${BUILDING2_REFERENCE_FLOOR_ID}`)
+                    .then(res => res.json())
+                    .then(geoJsonData => {
+                        const bounds = getGeoJsonBounds(geoJsonData);
+                        building2TransformCenter = {
+                            lng: (bounds.minLng + bounds.maxLng) / 2,
+                            lat: (bounds.minLat + bounds.maxLat) / 2
+                        };
+                        console.log('Byggnad 2 rotationsmittpunkt (bbox-mitt plan 47):', building2TransformCenter);
+                    })
+                    .catch(err => {
+                        console.error('Kunde inte räkna ut Byggnad 2:s rotationsmittpunkt från plan 47:', err);
+                    });
+
+                return building2CenterPromise;
+            }
+
+            function prepareFloorData(floorId, workspaces, geoJsonData) {
                 const workspacesMap = new Map();
                 workspaces.forEach(ws => workspacesMap.set(ws.uid, ws));
 
-                // --- Justeringar (förflyttning & rotation) ---
-                const latOffset = 0.00015;
-                const lngOffset = -0.0007;
-                const rotationDegrees = -24;
+                let processedData;
 
-                if (latOffset !== 0 || lngOffset !== 0 || rotationDegrees !== 0) {
-                    let minLng = Infinity,
-                        maxLng = -Infinity;
-                    let minLat = Infinity,
-                        maxLat = -Infinity;
-
-                    geoJsonData.features.forEach(feature => {
-                        if (feature.geometry && feature.geometry.coordinates) {
-                            const findMinMax = (arr) => {
-                                if (typeof arr[0] === 'number') {
-                                    if (arr[0] < minLng) minLng = arr[0];
-                                    if (arr[0] > maxLng) maxLng = arr[0];
-                                    if (arr[1] < minLat) minLat = arr[1];
-                                    if (arr[1] > maxLat) maxLat = arr[1];
-                                } else {
-                                    arr.forEach(sub => findMinMax(sub));
-                                }
-                            };
-                            findMinMax(feature.geometry.coordinates);
+                if (BUILDING2_FLOORS.includes(floorId)) {
+                    // Byggnad 2: ingen hiss-synk. Mittpunkten (building2TransformCenter) sätts alltid separat
+                    // från BUILDING2_REFERENCE_FLOOR_ID (se computeBuilding2TransformCenter), inte från
+                    // vilket plan som råkar laddas här — annars flyttas hela byggnaden om standardplanet ändras.
+                    processedData = applyBuilding2Transform(geoJsonData);
+                } else {
+                    // Steg 1: synka huvudbyggnadens plan mot hissen (referenspunkten)
+                    if (referencePoint) {
+                        const refFeature = findFeatureById(geoJsonData, REFERENCE_FEATURE_ID);
+                        if (refFeature) {
+                            const currentRefPoint = getFeatureCenter(refFeature);
+                            if (currentRefPoint) {
+                                const deltaLng = referencePoint.lng - currentRefPoint.lng;
+                                const deltaLat = referencePoint.lat - currentRefPoint.lat;
+                                processedData = translateFloor(geoJsonData, deltaLng, deltaLat);
+                            } else {
+                                processedData = JSON.parse(JSON.stringify(geoJsonData));
+                            }
+                        } else {
+                            processedData = JSON.parse(JSON.stringify(geoJsonData));
                         }
-                    });
+                    } else {
+                        processedData = JSON.parse(JSON.stringify(geoJsonData));
+                    }
 
-                    const centerLng = (minLng + maxLng) / 2;
-                    const centerLat = (minLat + maxLat) / 2;
-                    const latRad = centerLat * (Math.PI / 180);
-                    const angleRad = rotationDegrees * (Math.PI / 180);
-                    const cos = Math.cos(angleRad);
-                    const sin = Math.sin(angleRad);
-
-                    geoJsonData.features.forEach(feature => {
-                        if (feature.geometry && feature.geometry.coordinates) {
-                            const transformCoords = (arr) => {
-                                if (typeof arr[0] === 'number') {
-                                    let lng = (arr[0] - centerLng) * Math.cos(latRad);
-                                    let lat = arr[1] - centerLat;
-                                    let rotLng = lng * cos - lat * sin;
-                                    let rotLat = lng * sin + lat * cos;
-                                    arr[0] = (rotLng / Math.cos(latRad)) + centerLng + lngOffset;
-                                    arr[1] = rotLat + centerLat + latOffset;
-                                } else {
-                                    arr.forEach(sub => transformCoords(sub));
-                                }
-                            };
-                            transformCoords(feature.geometry.coordinates);
-                        }
-                    });
+                    // Steg 2: rotation + offset kring huvudbyggnadens fasta mittpunkt
+                    processedData = applyRotationOffset(processedData);
                 }
 
-                // --- Skapa GeoJSON-lager ---
-                geoLayer = L.geoJSON(geoJsonData, {
+                floorCache[floorId] = {
+                    workspacesMap: workspacesMap,
+                    geoJsonData: processedData,
+                    rawGeoJsonData: geoJsonData,
+                    ready: true
+                };
+            }
+
+            // Räknar om transformen för ett redan hämtat Byggnad 2-plan (t.ex. när panelen ändras)
+            // utan att göra ett nytt API-anrop.
+            function retransformBuilding2Floor(floorId) {
+                const cached = floorCache[floorId];
+                if (!cached || !cached.rawGeoJsonData) return;
+                cached.geoJsonData = applyBuilding2Transform(cached.rawGeoJsonData);
+            }
+
+            function loadFloorInBackground(floorId) {
+                if (floorCache[floorId] && floorCache[floorId].ready) {
+                    return Promise.resolve(floorCache[floorId]);
+                }
+
+                const centerReady = BUILDING2_FLOORS.includes(floorId)
+                    ? computeBuilding2TransformCenter()
+                    : Promise.resolve();
+
+                return centerReady.then(() => Promise.all([
+                    fetch(`${API_BASE}/workspace/${floorId}`).then(res => res.json()),
+                    fetch(`${API_BASE}/geojson/${floorId}`).then(res => res.json())
+                ]))
+                .then(([workspaces, geoJsonData]) => {
+                    prepareFloorData(floorId, workspaces, geoJsonData);
+                    return floorCache[floorId];
+                })
+                .catch(err => {
+                    console.error(`Fel vid laddning av plan ${floorId}:`, err);
+                    throw err;
+                });
+            }
+
+            function clearRouting() {
+                if (routingControl) {
+                    map.removeControl(routingControl);
+                    routingControl = null;
+                    routingContainer.innerHTML = '';
+                    routingContainer.classList.remove('visible');
+                    routeVisible = false;
+                    toggleBtnText.textContent = 'Visa vägbeskrivning';
+                }
+            }
+
+            function clearMainLayer() {
+                if (mainGeoLayer) {
+                    map.removeLayer(mainGeoLayer);
+                    mainGeoLayer = null;
+                }
+                if (selectedLayerGroup === 'main') {
+                    selectedLayer = null;
+                    selectedLayerGroup = null;
+                }
+            }
+
+            function clearBuilding2Layer() {
+                if (building2GeoLayer) {
+                    map.removeLayer(building2GeoLayer);
+                    building2GeoLayer = null;
+                }
+                if (selectedLayerGroup === 'building2') {
+                    selectedLayer = null;
+                    selectedLayerGroup = null;
+                }
+            }
+
+            function resetInfoCard() {
+                roomNameDisplay.textContent = 'Välj ett rum';
+                roomNameDisplay.classList.add('placeholder-text');
+                roomTypeDisplay.textContent = 'Klicka på en yta i kartan';
+                roomTypeDisplay.classList.add('placeholder-text');
+                roomNumberBadge.textContent = '—';
+                categoryValue.textContent = '—';
+                ownerValue.textContent = '—';
+                floorValue.textContent = '—';
+                areaValue.innerHTML = '<strong>—</strong>';
+            }
+
+            // Zoomar kartan så att BÅDA byggnaderna syns samtidigt, baserat på vad som just nu är inladdat.
+            function fitCombinedBounds() {
+                const combined = unionBounds(referenceBounds, building2Bounds);
+                if (!combined) return;
+                map.fitBounds([
+                    [combined.minLat, combined.minLng],
+                    [combined.maxLat, combined.maxLng]
+                ], { maxZoom: 19, padding: [40, 40] });
+            }
+
+            // Skapar ett L.geoJSON-lager för ett plan och kopplar klick-hantering mot info-kortet.
+            // "group" ('main' eller 'building2') används för att veta vilken lagerreferens som ska
+            // användas vid resetStyle av tidigare vald yta.
+            function buildGeoLayer(floorId, group) {
+                const cached = floorCache[floorId];
+                if (!cached || !cached.ready) return null;
+
+                const { workspacesMap, geoJsonData } = cached;
+
+                const thisGeoLayer = L.geoJSON(geoJsonData, {
                     style: function(feature) {
                         const uid = feature.id ? feature.id.replace('Model::', '') : '';
                         const wsData = workspacesMap.get(uid);
                         const fillColor = (wsData && wsData.typeColor) ? wsData.typeColor : '#3388ff';
+
+                        if (uid === REFERENCE_FEATURE_ID) {
+                            return {
+                                color: '#e34c26',
+                                weight: 3,
+                                fillColor: '#ff6b35',
+                                fillOpacity: 0.7,
+                            };
+                        }
+
                         return {
                             color: '#4a5c74',
                             weight: 1.2,
@@ -471,10 +861,12 @@
                         layer.on('click', function() {
                             const wsData = workspacesMap.get(uid);
 
-                            if (selectedLayer && selectedLayer !== layer) {
-                                geoLayer.resetStyle(selectedLayer);
+                            if (selectedLayer && selectedLayer !== layer && selectedLayerGroup) {
+                                const prevGroupLayer = selectedLayerGroup === 'main' ? mainGeoLayer : building2GeoLayer;
+                                if (prevGroupLayer) prevGroupLayer.resetStyle(selectedLayer);
                             }
                             selectedLayer = layer;
+                            selectedLayerGroup = group;
                             layer.bringToFront();
                             layer.setStyle({ fillOpacity: 0.85, color: '#e34c26', weight: 2.5 });
 
@@ -498,7 +890,7 @@
                                 floorValue.textContent = floor;
                                 areaValue.innerHTML = `<strong>${area}</strong> m²`;
                             } else {
-                                roomNameDisplay.textContent = 'Okänt objekt';
+                                roomNameDisplay.textContent = uid || 'Okänt objekt';
                                 roomNameDisplay.classList.remove('placeholder-text');
                                 roomTypeDisplay.textContent = 'Ingen data tillgänglig';
                                 roomTypeDisplay.classList.remove('placeholder-text');
@@ -510,11 +902,14 @@
                             }
                         });
                     }
-                }).addTo(map);
+                });
 
-                map.fitBounds(geoLayer.getBounds(), { maxZoom: 19, padding: [40, 40] });
+                return thisGeoLayer;
+            }
 
-                // --- Routing Control med blå linje ---
+            function ensureRoutingControl() {
+                if (routingControl) return;
+
                 routingControl = L.Routing.control({
                     waypoints: [
                         L.latLng(59.34585, 18.07165),
@@ -539,31 +934,180 @@
                     routingContainer.classList.remove('visible');
                 }
 
-                // --- Toggle-knapp ---
-                toggleBtn.addEventListener('click', function() {
-                    routeVisible = !routeVisible;
-                    if (routeVisible) {
-                        routingContainer.classList.add('visible');
-                        toggleBtnText.textContent = 'Dölj vägbeskrivning';
-                        if (routingControl) routingControl.show();
-                    } else {
-                        routingContainer.classList.remove('visible');
-                        toggleBtnText.textContent = 'Visa vägbeskrivning';
-                        if (routingControl) routingControl.hide();
-                    }
+                routingControl.hide();
+            }
+
+            function renderMainFloor(floorId) {
+                const layer = buildGeoLayer(floorId, 'main');
+                if (!layer) return;
+
+                clearMainLayer();
+                mainGeoLayer = layer;
+                mainGeoLayer.addTo(map);
+
+                fitCombinedBounds();
+                ensureRoutingControl();
+                resetInfoCard();
+                lucide.createIcons();
+            }
+
+            function renderBuilding2Floor(floorId) {
+                const layer = buildGeoLayer(floorId, 'building2');
+                if (!layer) return;
+
+                clearBuilding2Layer();
+                building2GeoLayer = layer;
+                building2GeoLayer.addTo(map);
+
+                building2Bounds = getGeoJsonBounds(floorCache[floorId].geoJsonData);
+                fitCombinedBounds();
+                resetInfoCard();
+                lucide.createIcons();
+            }
+
+            function showMainFloor(floorId) {
+                if (floorCache[floorId] && floorCache[floorId].ready) {
+                    renderMainFloor(floorId);
+                } else {
+                    roomNameDisplay.textContent = 'Laddar...';
+                    roomNameDisplay.classList.remove('placeholder-text');
+                    roomTypeDisplay.textContent = 'Hämtar data...';
+                    roomTypeDisplay.classList.remove('placeholder-text');
+
+                    loadFloorInBackground(floorId)
+                        .then(() => {
+                            renderMainFloor(floorId);
+                        })
+                        .catch(() => {
+                            roomTypeDisplay.textContent = 'Kunde inte ladda data';
+                            roomTypeDisplay.classList.remove('placeholder-text');
+                        });
+                }
+            }
+
+            function showBuilding2Floor(floorId) {
+                if (floorCache[floorId] && floorCache[floorId].ready) {
+                    renderBuilding2Floor(floorId);
+                } else {
+                    loadFloorInBackground(floorId)
+                        .then(() => {
+                            renderBuilding2Floor(floorId);
+                        })
+                        .catch(err => {
+                            console.warn(`Kunde inte ladda plan ${floorId} (Byggnad 2):`, err);
+                        });
+                }
+            }
+
+            function loadInitialFloors() {
+                // 1) Kalibrera ALLTID mot huvudbyggnadens referensplan (64): hiss-synk + rotationsmittpunkt.
+                //    Detta plan hämtas oavsett vilket plan som ska VISAS som standard (currentMainFloorId).
+                const mainCalibrationPromise = fetch(`${API_BASE}/geojson/${REFERENCE_FLOOR_ID}`)
+                    .then(res => res.json())
+                    .then(geoJsonData => {
+                        const refFeature = findFeatureById(geoJsonData, REFERENCE_FEATURE_ID);
+                        if (refFeature) {
+                            const refPoint = getFeatureCenter(refFeature);
+                            if (refPoint) {
+                                referencePoint = refPoint;
+                                console.log('Referenspunkt (hiss) hittad i plan 1:', referencePoint);
+                            }
+                        }
+
+                        const rawBounds = getGeoJsonBounds(geoJsonData);
+                        transformCenter = {
+                            lng: (rawBounds.minLng + rawBounds.maxLng) / 2,
+                            lat: (rawBounds.minLat + rawBounds.maxLat) / 2
+                        };
+                        console.log('Rotationsmittpunkt (bbox-mitt plan 1):', transformCenter);
+
+                        return fetch(`${API_BASE}/workspace/${REFERENCE_FLOOR_ID}`)
+                            .then(res => res.json())
+                            .then(workspaces => {
+                                prepareFloorData(REFERENCE_FLOOR_ID, workspaces, geoJsonData);
+                                referenceBounds = getGeoJsonBounds(floorCache[REFERENCE_FLOOR_ID].geoJsonData);
+                            });
+                    })
+                    .catch(err => {
+                        console.error("Fel vid laddning av huvudbyggnadens referensplan:", err);
+                    });
+
+                // 2) Ladda det plan som faktiskt ska VISAS som standard (currentMainFloorId). Om det är
+                //    samma som referensplanet återanvänds cachen ovan, annars hämtas det separat —
+                //    kalibreringen (referencePoint/transformCenter) måste vara klar innan detta körs.
+                const mainDisplayPromise = mainCalibrationPromise.then(() => {
+                    if (currentMainFloorId === REFERENCE_FLOOR_ID) return;
+                    return loadFloorInBackground(currentMainFloorId).catch(err => {
+                        console.warn(`Kunde inte ladda huvudbyggnadens startplan ${currentMainFloorId}:`, err);
+                    });
                 });
 
-                if (routingControl) routingControl.hide();
+                // 3) Ladda Byggnad 2:s startplan parallellt, så båda byggnaderna syns från start
+                const building2Promise = loadFloorInBackground(currentBuilding2FloorId)
+                    .then(() => {
+                        building2Bounds = getGeoJsonBounds(floorCache[currentBuilding2FloorId].geoJsonData);
+                    })
+                    .catch(err => {
+                        console.warn('Kunde inte ladda Byggnad 2 vid start:', err);
+                    });
 
-                // Initiera Lucide-ikoner
-                lucide.createIcons();
+                Promise.all([mainDisplayPromise, building2Promise]).then(() => {
+                    if (floorCache[currentMainFloorId] && floorCache[currentMainFloorId].ready) {
+                        renderMainFloor(currentMainFloorId);
+                    }
+                    if (floorCache[currentBuilding2FloorId] && floorCache[currentBuilding2FloorId].ready) {
+                        renderBuilding2Floor(currentBuilding2FloorId);
+                    }
+                    fitCombinedBounds();
 
-            })
-            .catch(err => {
-                console.error("Fel vid laddning:", err);
-                roomTypeDisplay.textContent = 'Kunde inte ladda data';
-                lucide.createIcons();
+                    // Ladda resterande huvudbyggnadsplan i bakgrunden
+                    [64, 65, 66, 67].filter(id => id !== currentMainFloorId).forEach(floorId => {
+                        loadFloorInBackground(floorId)
+                            .then(() => console.log(`Plan ${floorId} laddad i bakgrunden`))
+                            .catch(err => console.warn(`Kunde inte ladda plan ${floorId}:`, err));
+                    });
+
+                    // Ladda resterande Byggnad 2-plan i bakgrunden
+                    BUILDING2_FLOORS.filter(id => id !== currentBuilding2FloorId).forEach(floorId => {
+                        loadFloorInBackground(floorId)
+                            .then(() => console.log(`Plan ${floorId} (Byggnad 2) laddad i bakgrunden`))
+                            .catch(err => console.warn(`Kunde inte ladda plan ${floorId} (Byggnad 2):`, err));
+                    });
+                });
+            }
+
+            floorSelect.addEventListener('change', function() {
+                const newFloorId = parseInt(this.value);
+                if (newFloorId !== currentMainFloorId) {
+                    currentMainFloorId = newFloorId;
+                    showMainFloor(currentMainFloorId);
+                }
             });
+
+            building2FloorSelect.addEventListener('change', function() {
+                const newFloorId = parseInt(this.value);
+                if (newFloorId !== currentBuilding2FloorId) {
+                    currentBuilding2FloorId = newFloorId;
+                    showBuilding2Floor(currentBuilding2FloorId);
+                }
+            });
+
+            toggleBtn.addEventListener('click', function() {
+                if (!routingControl) return;
+                routeVisible = !routeVisible;
+                if (routeVisible) {
+                    routingContainer.classList.add('visible');
+                    toggleBtnText.textContent = 'Dölj vägbeskrivning';
+                    routingControl.show();
+                } else {
+                    routingContainer.classList.remove('visible');
+                    toggleBtnText.textContent = 'Visa vägbeskrivning';
+                    routingControl.hide();
+                }
+            });
+
+            loadInitialFloors();
+
         })();
     </script>
 </body>
