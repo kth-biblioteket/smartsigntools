@@ -492,6 +492,32 @@ apiRoutes.post("/calendar/published/slideshow", VerifyToken, async function (req
 // Servera bildfiler direkt (cachebara, laddas parallellt) istället för base64 i HTML
 apiRoutes.use("/calendar/imagefile", express.static(path.join(__dirname, process.env.IMAGEBANKPATH), { maxAge: '7d', index: false }));
 
+// Miniatyrer (webp, 480px) skapas vid första förfrågan och cachas i imagebank/thumbs
+const THUMB_WIDTH = 480;
+const thumbsDir = path.join(__dirname, process.env.IMAGEBANKPATH, 'thumbs');
+apiRoutes.get("/calendar/imagethumb/:file", async function (req, res) {
+    try {
+        const file = path.basename(req.params.file);
+        const source = path.join(__dirname, process.env.IMAGEBANKPATH, file);
+        if (file !== req.params.file || !fs.existsSync(source)) {
+            return res.sendStatus(404);
+        }
+        const thumb = path.join(thumbsDir, file.replace(/\.[^.]+$/, '') + '_' + THUMB_WIDTH + '.webp');
+        if (!fs.existsSync(thumb)) {
+            await fsp.mkdir(thumbsDir, { recursive: true });
+            //Skriv till tempfil och döp om så att samtidiga anrop inte läser en halvskriven fil
+            const tmp = thumb + '.' + randomUUID() + '.tmp';
+            await sharp(source).rotate().resize({ width: THUMB_WIDTH, withoutEnlargement: true }).webp({ quality: 75 }).toFile(tmp);
+            await fsp.rename(tmp, thumb);
+        }
+        res.set('Cache-Control', 'public, max-age=604800');
+        res.sendFile(thumb);
+    } catch(err) {
+        console.log("imagethumb: " + err.message)
+        res.sendStatus(500);
+    }
+});
+
 const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 apiRoutes.get("/calendar/images", async function (req, res) {
@@ -504,7 +530,13 @@ apiRoutes.get("/calendar/images", async function (req, res) {
         const page = Math.min(Math.max(parseInt(req.query.page) || 1, 1), totalpages);
         const pageimages = imagebank.slice((page - 1) * size, page * size);
 
-        let html = `<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="images">`
+        const pagination = totalpages > 1 ? `<div style="display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:10px">
+                        <button type="button" class="btn btn-outline-secondary" onclick="getImages(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Föregående</button>
+                        <span>Sida ${page} av ${totalpages} (${imagebank.length} bilder)</span>
+                        <button type="button" class="btn btn-outline-secondary" onclick="getImages(${page + 1})" ${page >= totalpages ? 'disabled' : ''}>Nästa</button>
+                    </div>` : ''
+
+        let html = pagination + `<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="images">`
 
         pageimages.forEach(image => {
             html += `<div style="margin-bottom:10px" class="card">
@@ -514,7 +546,9 @@ apiRoutes.get("/calendar/images", async function (req, res) {
                                         <label for="imageName_${image.id}">Namn</label>
                                         <input id="imageName_${image.id}" style="margin-bottom:10px" class="form-control" type="text" value="${escapeHtml(image.name)}">
                                         <label for="image_${image.id}">Bild</label>
-                                        <img id="image_${image.id}" style="flex:2;width:100%" loading="lazy" src="${process.env.APP_PATH}/api/v1/calendar/imagefile/${encodeURIComponent(image.fullpath)}"/>
+                                        <a href="${process.env.APP_PATH}/api/v1/calendar/imagefile/${encodeURIComponent(image.fullpath)}" target="_blank" title="Öppna originalbilden">
+                                            <img id="image_${image.id}" style="flex:2;width:100%" loading="lazy" src="${process.env.APP_PATH}/api/v1/calendar/imagethumb/${encodeURIComponent(image.fullpath)}"/>
+                                        </a>
                                     </div>
                                     <div style="flex:1;display:flex;flex-direction:column;justify-content: flex-end;">
                                         <div style="display:flex;justify-content: flex-end;">
@@ -530,15 +564,8 @@ apiRoutes.get("/calendar/images", async function (req, res) {
                             </div>
                         </div>`
         });
-        html += `</div>`
+        html += `</div>` + pagination
 
-        if (totalpages > 1) {
-            html += `<div style="display:flex;justify-content:center;align-items:center;gap:10px">
-                        <button type="button" class="btn btn-outline-secondary" onclick="getImages(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Föregående</button>
-                        <span>Sida ${page} av ${totalpages} (${imagebank.length} bilder)</span>
-                        <button type="button" class="btn btn-outline-secondary" onclick="getImages(${page + 1})" ${page >= totalpages ? 'disabled' : ''}>Nästa</button>
-                    </div>`
-        }
         res.send(html)
     } catch(err) {
         res.send(escapeHtml(err.message))

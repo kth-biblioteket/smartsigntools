@@ -912,6 +912,8 @@ async function deleteImage(id) {
         let result = await eventModel.deleteImage(id)
         //Ta bort bildfilen
         fs.unlinkSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + image[0].fullpath))
+        //Ta bort cachad miniatyr
+        fs.rmSync(path.join(__dirname, process.env.IMAGEBANKPATH, 'thumbs', image[0].fullpath.replace(/\.[^.]+$/, '') + '_480.webp'), { force: true })
         return result
     } catch (err) {
         console.log(err.message)
