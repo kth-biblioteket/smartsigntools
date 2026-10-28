@@ -1,6 +1,6 @@
-FROM node:21-bullseye
+FROM node:21-bookworm
 
-## Updated Puppeteer dependencies for Debian Bullseye
+## Updated Puppeteer dependencies for Debian Bookworm
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -15,7 +15,7 @@ RUN apt-get update && \
     libexpat1 \
     libfontconfig1 \
     libgbm1 \
-    libgcc1 \
+    libgcc-s1 \
     libglib2.0-0 \
     libgtk-3-0 \
     libnspr4 \

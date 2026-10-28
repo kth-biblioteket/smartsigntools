@@ -946,12 +946,9 @@
                     $(".flexbox1_2").addClass("flexnone")
                 }
                 var iframe = document.getElementById(frameid);
-                iframe.contentDocument.open();
-                iframe.contentDocument.write(response);
-                iframe.contentDocument.close();
-                iframe.onload = function() {
-                    iframe.style.display = 'block';
-                };
+                // srcdoc istället för document.write: undviker att iframens initiala about:blank-laddning skriver över innehållet
+                iframe.srcdoc = response;
+                iframe.style.display = 'block';
             }
 
             // Funktion för api-anrop
