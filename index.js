@@ -545,7 +545,7 @@ apiRoutes.get("/calendar/images", async function (req, res) {
                                     <div style="flex:1;display:flex;flex-direction:column">
                                         <label for="imageName_${image.id}">Namn</label>
                                         <input id="imageName_${image.id}" style="margin-bottom:10px" class="form-control" type="text" value="${escapeHtml(image.name)}">
-                                        <label for="image_${image.id}">Bild</label>
+                                        <div class="form-label">Bild</div>
                                         <a href="${process.env.APP_PATH}/api/v1/calendar/imagefile/${encodeURIComponent(image.fullpath)}" target="_blank" title="Öppna originalbilden">
                                             <img id="image_${image.id}" style="flex:2;width:100%" loading="lazy" src="${process.env.APP_PATH}/api/v1/calendar/imagethumb/${encodeURIComponent(image.fullpath)}"/>
                                         </a>
