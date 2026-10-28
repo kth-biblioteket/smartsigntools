@@ -489,26 +489,33 @@ apiRoutes.post("/calendar/published/slideshow", VerifyToken, async function (req
 /**
  * Hämtar bilder från bildbanken
  */
+// Servera bildfiler direkt (cachebara, laddas parallellt) istället för base64 i HTML
+apiRoutes.use("/calendar/imagefile", express.static(path.join(__dirname, process.env.IMAGEBANKPATH), { maxAge: '7d', index: false }));
+
+const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
 apiRoutes.get("/calendar/images", async function (req, res) {
     try {
-        res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="images">`)
+        const size = Math.min(Math.max(parseInt(req.query.size) || 12, 1), 100);
 
-        //Hämta alla bilder
+        //Hämta alla bilder (metadata) och visa bara en sida i taget
         let imagebank = await eventController.readImages()
+        const totalpages = Math.max(Math.ceil(imagebank.length / size), 1);
+        const page = Math.min(Math.max(parseInt(req.query.page) || 1, 1), totalpages);
+        const pageimages = imagebank.slice((page - 1) * size, page * size);
 
-        imagebank.forEach(image => {
-            const content = fs.readFileSync(path.join(__dirname, process.env.IMAGEBANKPATH + '/' + image.fullpath))
-            res.write(`<div style="margin-bottom:10px" class="card">
+        let html = `<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="images">`
+
+        pageimages.forEach(image => {
+            html += `<div style="margin-bottom:10px" class="card">
                             <div class="card-body">
                                 <div style="display:flex;flex-direction:row;padding-bottom:10px">
                                     <div style="flex:1;display:flex;flex-direction:column">
                                         <label for="imageName_${image.id}">Namn</label>
-                                        <input id="imageName_${image.id}" style="margin-bottom:10px" class="form-control" type="text" value="${image.name}"">
+                                        <input id="imageName_${image.id}" style="margin-bottom:10px" class="form-control" type="text" value="${escapeHtml(image.name)}">
                                         <label for="image_${image.id}">Bild</label>
-                                        <img id="image_${image.id}" style="flex:2;width:100%" src="data:image/jpeg;base64,`)
-                                        res.write(Buffer.from(content).toString('base64'));
-                                        res.write('"/>');
-                        res.write(`</div>
+                                        <img id="image_${image.id}" style="flex:2;width:100%" loading="lazy" src="${process.env.APP_PATH}/api/v1/calendar/imagefile/${encodeURIComponent(image.fullpath)}"/>
+                                    </div>
                                     <div style="flex:1;display:flex;flex-direction:column;justify-content: flex-end;">
                                         <div style="display:flex;justify-content: flex-end;">
                                             <button id="updateImage_${image.id}" onclick="updateImage('${image.id}', 'imageName_${image.id}');" type="button" class="btn btn-success" style="margin-right:10px">
@@ -521,13 +528,20 @@ apiRoutes.get("/calendar/images", async function (req, res) {
                                     </div>
                                 </div>
                             </div>
-                        </div>`)
+                        </div>`
         });
-        res.write(`</div>`)
-        res.end();
+        html += `</div>`
+
+        if (totalpages > 1) {
+            html += `<div style="display:flex;justify-content:center;align-items:center;gap:10px">
+                        <button type="button" class="btn btn-outline-secondary" onclick="getImages(${page - 1})" ${page <= 1 ? 'disabled' : ''}>Föregående</button>
+                        <span>Sida ${page} av ${totalpages} (${imagebank.length} bilder)</span>
+                        <button type="button" class="btn btn-outline-secondary" onclick="getImages(${page + 1})" ${page >= totalpages ? 'disabled' : ''}>Nästa</button>
+                    </div>`
+        }
+        res.send(html)
     } catch(err) {
-        res.write(err.message + `</div>`)
-        res.end();
+        res.send(escapeHtml(err.message))
     }
 });
 

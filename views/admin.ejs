@@ -55,7 +55,7 @@
             </div>
             <div class="">
                 <form class="topbuttons">
-                    <button type="button" onclick="getImages()" class="btn btn-primary" data-bs-toggle="modal"
+                    <button type="button" onclick="getImages(1)" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
                         Hantera bilder
                     </button>
@@ -1091,9 +1091,12 @@
                 }
             }
 
-            async function getImages() {
+            // Aktuell sida i bildbanken (behålls vid spara/ta bort)
+            let currentImagePage = 1;
+            async function getImages(page) {
+                if (page) currentImagePage = page;
                 $('.imagebankmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
-                const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/calendar/images")
+                const response = await makeHttpRequest("GET", "/smartsigntools/api/v1/calendar/images?page=" + currentImagePage)
                 $('.imagebankmodal-body').html(response)
             }
 
