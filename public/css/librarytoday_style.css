@@ -178,3 +178,25 @@ body {
     height: 380px;
     margin-bottom: 30px;
 }
+
+/* Smalare skärmar än skyltens 1080 px (t.ex. kiosken, 1024 px): sidan följer fönstrets bredd i stället för en fast yta på 1080x1920 */
+@media (max-width: 1079px) {
+  html, body { margin: 0; }
+  .App { width: 100%; height: auto; min-height: 100vh; overflow: visible; }
+  .kthlogo { padding-top: 48px; }
+  .rubrik { font-size: 84px; padding: 48px 40px 0; }
+  .content-top .openinghours { font-size: 76px; padding: 32px 40px; }
+  .bookingheader { font-size: 28px; padding: 36px 40px; height: auto; }
+  .bookingrow { font-size: 32px; padding: 0 40px 28px; }
+  .eventtitle { width: auto; flex: 1 1 0; min-width: 0; padding-right: 16px; }
+  .eventtime { width: 150px; flex: none; }
+  .eventobject { width: 240px; flex: none; }
+  .bookingheader > *:nth-child(1) { flex: 1 1 0; min-width: 0; }
+  .bookingheader > *:nth-child(2) { width: 150px; flex: none; }
+  .bookingheader > *:nth-child(3) { width: 240px; flex: none; }
+}
+
+/* Centrera logotyp, rubrik och öppettider när fönstret inte är skyltens 1080 px */
+@media (max-width: 1079px), (min-width: 1081px) {
+  .rubrik, .content-top .openinghours { text-align: center; }
+}
