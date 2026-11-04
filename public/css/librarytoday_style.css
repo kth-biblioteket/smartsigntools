@@ -196,8 +196,8 @@ body {
   .bookingheader > *:nth-child(3) { width: 240px; flex: none; }
 }
 
-/* Centrera rubrik och öppettider och halvera logotypen när fönstret inte är skyltens 1080 px */
-@media (max-width: 1079px), (min-width: 1081px) {
+/* Kiosken (1024x1280): centrera rubrik och öppettider och halvera logotypen */
+@media (max-width: 1079px) {
   .rubrik, .content-top .openinghours { text-align: center; }
   .kthlogo img { width: 125px; }
 }
