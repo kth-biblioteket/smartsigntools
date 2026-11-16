@@ -30,6 +30,12 @@ $(document).ready(async function() {
         librarymorecode = urlParams.get('librarymorecode');
     }
 
+    // Vilka källor som används: sources=timeedit,outlook,kthcalendar (standard: timeedit och outlook)
+    const sources = urlParams.has('sources')
+        ? urlParams.get('sources').split(',').map(source => source.trim().toLowerCase())
+        : ['timeedit', 'outlook'];
+    const useSource = (name) => sources.includes(name);
+
     let dd = addZero(today.getDate());
     let mm = addZero(today.getMonth()+1); //January is 0!
     let yyyy = today.getFullYear();
@@ -47,6 +53,7 @@ $(document).ready(async function() {
         }
     } 
     //TimeEdit
+    if (useSource('timeedit')) {
     todaysdate = yyyy + '' + mm + '' + dd;
     timeditresponse = await makeHttpRequest('GET', `https://cloud.timeedit.net/kth/web/public01/ri.json?h=f&sid=3&p=${todaysdate}-${todaysdate}&objects=420804.4%2C421314.4%2C417157.4%2C420802.4%2C417154.4%2C353552.4%2C420801.4%2C392851.4%2C417156.4&ox=0&types=0&fe=0&g=f&pl=f&sec=t&h2=2`)
     jsonbookings = JSON.parse(timeditresponse);
@@ -64,8 +71,10 @@ $(document).ready(async function() {
             })
         }); 
     } 
+    }
 
     //Outlook
+    if (useSource('outlook')) {
     todaysdate = yyyy + '-' + mm + '-' + dd;
     outlookresponse = await makeHttpRequest('GET', `/smartsigntools/api/v1/outlook/calendaritems/emailaddress/gvs-kthb-sydostragalleriet@ug.kth.se?&startdate=${todaysdate} 00:00:00&enddate=${todaysdate} 23:59:00`)
     jsonbookings = JSON.parse(outlookresponse);
@@ -89,13 +98,51 @@ $(document).ready(async function() {
             }
         }); 
     } 
+    }
+    //Bibliotekets kalender (RSS). Hoppa över händelser som redan finns från TimeEdit/Outlook eller som är online
+    if (useSource('kthcalendar')) {
+    try {
+        const calresponse = await makeHttpRequest('GET', `/smartsigntools/api/v1/librarytoday/calendar?date=${yyyy}-${mm}-${dd}&language=${language}`)
+        JSON.parse(calresponse).forEach(function(calevent) {
+            if (isOnlineLocation(calevent.location) || isDuplicateEvent(calevent, events)) {
+                return;
+            }
+            events.push({
+                "type": "kthcalendar",
+                "eventid" : "",
+                "location" : placeSegments(calevent.location)[0] || '',
+                "title" : calevent.title,
+                "isalldayevent" : "",
+                "start" : calevent.start,
+                "end" : calevent.end,
+                "categories" : []
+            })
+        });
+    } catch (err) {
+        //Kalendern är ett tillägg, sidan ska fungera även om den inte går att hämta
+        console.log("Kunde inte hämta bibliotekets kalender: " + err)
+    }
+    }
+
     events.sort((a, b) => {
         return new Date(a.start) - new Date(b.start);
     });
 
-    let start
-    nobookingstoshow = true;
-    html = '<div class="bookingheader"><div class="eventtitle">Event</div><div class="eventtime">Time</div><div class="eventobject">Location</div></div>';
+    // Tiden som händelser jämförs mot. Utan todaysdate: nu. Med todaysdate=YYYY-MM-DD: nu om det är dagens datum, annars
+    // början av den dagen (visar hela dagen). Med tid (todaysdate=YYYY-MM-DDTHH:MM): exakt den tiden.
+    function currentFilterTime() {
+        if (!urlParams.has('todaysdate')) return new Date();
+        const param = urlParams.get('todaysdate');
+        const given = new Date(param);
+        if (/\d[T ]\d/.test(param)) return given;
+        return given.toDateString() == new Date().toDateString() ? new Date() : given;
+    }
+
+    // Visa bara händelser som inte redan är slut
+    function renderBookings() {
+    const now = currentFilterTime();
+    let nobookingstoshow = true;
+    let html = '<div class="bookingheader"><div class="eventtitle">Event</div><div class="eventtime">Time</div><div class="eventobject">Location</div></div>';
     html += '<div class="divider"></div>';
             if(events.length > 0) {
                 events.forEach(function(element) {
@@ -103,12 +150,16 @@ $(document).ready(async function() {
                     let currentdate = new Date();
                     let eventenddate = new Date(element.end);
                     //visa inte om sluttiden för eventet har passerats. Lokal får inte vara tom!
-                    if (eventenddate > today && element.type == "timeedit" && element.location != "") {
+                    if (eventenddate > now && element.type == "timeedit" && element.location != "") {
                         element.location = element.location.replace(/[§-]/g, '')
                         html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + (element.start.substr(14,2) != "00" ? element.start.substr(11,5) : element.start.substr(11,2)) + '–' + (element.end.substr(14,2) != "00" ? element.end.substr(11,5) : element.end.substr(11,2)) + '</div><div class="eventobject">' + element.location + '</div></div>';
                         nobookingstoshow = false;
                     }
-                    if (eventenddate > today && element.type == "outlook") {
+                    if (eventenddate > now && element.type == "kthcalendar") {
+                        html += '<div class="bookingrow"><div class="eventtitle"> ' + escapeHtml(element.title) + '</div><div class="eventtime">' + (element.start.substr(14,2) != "00" ? element.start.substr(11,5) : element.start.substr(11,2)) + '–' + (element.end.substr(14,2) != "00" ? element.end.substr(11,5) : element.end.substr(11,2)) + '</div><div class="eventobject">' + escapeHtml(element.location) + '</div></div>';
+                        nobookingstoshow = false;
+                    }
+                    if (eventenddate > now && element.type == "outlook") {
                         html += '<div class="bookingrow"><div class="eventtitle"> ' + element.title + '</div><div class="eventtime">' + (element.start.substr(14,2) != "00" ? element.start.substr(11,5) : element.start.substr(11,2)) + '–' + (element.end.substr(14,2) != "00" ? element.end.substr(11,5) : element.end.substr(11,2)) + '</div><div class="eventobject">' + element.categories[0] + '</div></div>';
                         nobookingstoshow = false;
                     }
@@ -121,6 +172,8 @@ $(document).ready(async function() {
                 html = '<div class="bookingheader">No bookings</div>';
             }
             $("#lokalbokningar").html(html);
+    }
+    renderBookings();
     //Visa Dagens datum
     //document.getElementById('todaysdate').innerHTML = todaysdate();
     //Starta en digital klocka att visa på sidan
@@ -128,6 +181,68 @@ $(document).ready(async function() {
     //Starta en "analog" klocka att visa på sidan
     //drawClock();
 });
+
+function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Delar upp en plats i delar: "Hjärne, Lallerstedt" -> ["Hjärne","Lallerstedt"], "Ångdomen - anmälan krävs" -> ["Ångdomen"],
+// "§Salongen" -> ["Salongen"]
+function placeSegments(place) {
+    return (place || '')
+        .split(/[,;]|\s[-–]\s/)
+        .map(part => part.replace(/^[§\-\s]+/, '').trim())
+        .filter(part => part != '');
+}
+
+function normalizePlaces(place) {
+    return placeSegments(place).map(part => part.toLowerCase());
+}
+
+function normalizeTitle(title) {
+    return (title || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+}
+
+function toDate(str) {
+    return new Date(String(str).replace(' ', 'T'));
+}
+
+// Online-evenemang (t.ex. Zoom) har ingen plats i biblioteket och visas inte
+function isOnlineLocation(place) {
+    return !place || /zoom|online|teams|webinar|distans/i.test(place);
+}
+
+/**
+ * Finns händelsen från kalendern redan bland TimeEdit/Outlook-händelserna?
+ * Titlarna skiljer sig ofta (t.ex. "Evenemang, Akademisk frihet seminarium" i TimeEdit mot
+ * "När demokratin utmanas..." i kalendern), så en dubblett är en händelse som överlappar i tid
+ * och antingen har samma plats eller samma titel. Heldagshändelser jämförs bara på titel.
+ */
+function isDuplicateEvent(calevent, events) {
+    const calstart = toDate(calevent.start);
+    const calend = toDate(calevent.end);
+    const calplaces = normalizePlaces(calevent.location);
+    const caltitle = normalizeTitle(calevent.title);
+
+    return events.some(function(e) {
+        const sametitle = (function() {
+            const t = normalizeTitle(e.title);
+            if (!t || !caltitle) return false;
+            return t == caltitle || (Math.min(t.length, caltitle.length) >= 8 && (t.includes(caltitle) || caltitle.includes(t)));
+        })();
+
+        if (e.isalldayevent) {
+            return sametitle;
+        }
+
+        const overlaps = toDate(e.start) < calend && calstart < toDate(e.end);
+        if (!overlaps) return false;
+
+        const eplaces = normalizePlaces(e.location).concat((e.categories || []).map(c => c.toLowerCase()));
+        const sameplace = eplaces.some(p => p.length >= 3 && calplaces.includes(p));
+        return sameplace || sametitle;
+    });
+}
 
 function addZero(i) {
     if (i < 10) {

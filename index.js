@@ -17,6 +17,7 @@ const fileUpload = require('express-fileupload');
 const { randomUUID } = require('crypto');
 const cookieParser = require("cookie-parser");
 const sharp = require("sharp");
+const RssParser = require('rss-parser');
 
 const app = express();
 
@@ -1233,6 +1234,50 @@ apiRoutes.get("/librarytoday/smartsignpage", async function (req, res) {
         res.send(err.message)
     }
 
+});
+
+/**
+ * Händelser från bibliotekets kalender (RSS) för ett visst datum, till librarytoday.
+ * Hämtas på servern (inga CORS-problem) och cachas en kort stund.
+ * Svarar med [{ title, location, start, end }] där start/end har formatet "YYYY-MM-DD HH:MM:00"
+ */
+const librarycalendarcache = {};
+apiRoutes.get("/librarytoday/calendar", async function (req, res) {
+    try {
+        const date = req.query.date;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) {
+            return res.status(400).json({ error: "date (YYYY-MM-DD) krävs" });
+        }
+        const lang = req.query.language == 'sv' ? 'sv' : 'en';
+        const feedurl = lang == 'sv' ? process.env.RSSFEED_SV : process.env.RSSFEED;
+
+        let cached = librarycalendarcache[lang];
+        if (!cached || Date.now() - cached.time > 5 * 60 * 1000) {
+            const feed = await new RssParser().parseURL(feedurl);
+            cached = librarycalendarcache[lang] = { time: Date.now(), items: feed.items };
+        }
+
+        const events = [];
+        for (const item of cached.items) {
+            const text = item.contentSnippet || '';
+            // "Time: Thu 2026-11-19  11.00 - 12.00" / "Tid: To 2026-11-19 kl 11.00 - 12.00"
+            const t = text.match(/(\d{4}-\d{2}-\d{2})\s+(?:kl\s+)?(\d{1,2})[.:](\d{2})\s*[-–]\s*(\d{1,2})[.:](\d{2})/);
+            if (!t || t[1] != date) continue;
+            const l = text.match(/(?:Location|Plats):[ \t]*(.*)/);
+            const location = l ? l[1].trim() : '';
+            const hhmm = (h, m) => String(h).padStart(2, '0') + ':' + m + ':00';
+            events.push({
+                title: item.title,
+                location: location,
+                start: t[1] + ' ' + hhmm(t[2], t[3]),
+                end: t[1] + ' ' + hhmm(t[4], t[5])
+            });
+        }
+        res.json(events);
+    } catch(err) {
+        console.log("librarytoday/calendar: " + err.message)
+        res.status(500).json({ error: err.message });
+    }
 });
 
 /**

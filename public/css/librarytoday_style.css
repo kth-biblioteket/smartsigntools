@@ -124,6 +124,7 @@ body {
 .eventtime {
     /*flex:3;*/
     width: 240px;
+    white-space: nowrap;
 }
 
 .eventqrcode {
@@ -189,10 +190,10 @@ body {
   .bookingheader { font-size: 28px; padding: 36px 40px; height: auto; }
   .bookingrow { font-size: 32px; padding: 0 40px 28px; }
   .eventtitle { width: auto; flex: 1 1 0; min-width: 0; padding-right: 16px; }
-  .eventtime { width: 150px; flex: none; }
+  .eventtime { width: 210px; flex: none; white-space: nowrap; }
   .eventobject { width: 240px; flex: none; }
   .bookingheader > *:nth-child(1) { flex: 1 1 0; min-width: 0; }
-  .bookingheader > *:nth-child(2) { width: 150px; flex: none; }
+  .bookingheader > *:nth-child(2) { width: 210px; flex: none; }
   .bookingheader > *:nth-child(3) { width: 240px; flex: none; }
 }
 
