@@ -219,9 +219,16 @@
                                                 <div id="qrcode<%=event.id%>" class="collapse" aria-labelledby="headingExampleTwo">
                                                     <div class="card-body">
                                                         <div style="padding-bottom:10px" id="qrcodeimage_<%=event.id%>"><img style="width:200px;height:200px" src="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image"></div>
-                                                        <a href="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image" download="downloaded-image.jpg">
-                                                            <button class="btn btn-primary" style="margin-left:5px"><i class="bi bi-download"></i> Ladda ner</button>
-                                                        </a>
+                                                        <div class="btn-group" style="margin-left:5px">
+                                                            <a class="btn btn-primary" href="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image" download="downloaded-image.jpg"><i class="bi bi-download"></i> Ladda ner</a>
+                                                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" title="Välj format">
+                                                                <span class="visually-hidden">Välj format</span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item" href="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=image" download="qrcode.png">PNG</a></li>
+                                                                <li><a class="dropdown-item" href="/smartsigntools/api/v1/calendar/event/qrcode/<%=event.id%>?format=svg" download="qrcode.svg">SVG (vektor)</a></li>
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -978,9 +985,10 @@
                 });
             }
 
-            function getQrCodeGeneral(id, imageid, button) {
+            function getQrCodeGeneral(id, imageid, button, format = "png") {
+                var restorehtml = $(button).html();
                 $(button).prop("disabled", true);
-                $(button).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar QR Kod...');
+                $(button).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
                 
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
@@ -989,16 +997,15 @@
                     var blob = xhttp.response;
                     var link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.download = "qrcode.png";
+                    link.download = "qrcode." + format;
                     link.click();
                     $(button).prop("disabled", false);
-                    $(button).html('Hämta QR Kod');
+                    $(button).html(restorehtml);
 
 
                 };
-                xhttp.open("GET", "/smartsigntools/api/v1/qrcode/general/generate/" + id, true);
+                xhttp.open("GET", "/smartsigntools/api/v1/qrcode/general/generate/" + id + "?format=" + format, true);
                 xhttp.responseType = "blob";
-                xhttp.setRequestHeader('Content-Type', 'image/png');
                 xhttp.send();
             }
 

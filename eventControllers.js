@@ -1485,12 +1485,50 @@ async function getPublishedPageAsImage(req, res) {
     }
 }
 
+/**
+ * Skapar en QR-kod som SVG (vektor) med KTH-loggan i mitten.
+ * Loggan bäddas in som vektor så att filen är helt fristående och skalbar.
+ */
+async function generateQrCodeSvg(url) {
+    const qrsvg = await QRCode.toString(url, {
+        type: 'svg',
+        margin: 1,
+        errorCorrectionLevel: 'H',
+        color: {
+            dark: "#212121",
+            light: "#ffffff",
+        }
+    });
+    const size = Number(qrsvg.match(/viewBox="0 0 (\d+) \d+"/)[1]);
+
+    const logosvg = fs.readFileSync(path.join(__dirname, "public/images/kthlogo_marinbla_qr.svg"), 'utf8')
+        .replace(/<\?xml[^>]*\?>\s*/, '');
+    const [logowidth, logoheight] = logosvg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/).slice(1).map(Number);
+
+    //Loggan tar ca 20% av bredden (som i png-versionen) med en smal vit kant
+    const boxwidth = size * 0.2;
+    const pad = boxwidth * 0.04;
+    const w = boxwidth - 2 * pad;
+    const h = w * logoheight / logowidth;
+    const boxheight = h + 2 * pad;
+    const boxx = (size - boxwidth) / 2;
+    const boxy = (size - boxheight) / 2;
+    const f = (n) => n.toFixed(3);
+
+    const overlay = `<rect x="${f(boxx)}" y="${f(boxy)}" width="${f(boxwidth)}" height="${f(boxheight)}" fill="#ffffff"/>`
+        + logosvg.replace('<svg ', `<svg x="${f(boxx + pad)}" y="${f(boxy + pad)}" width="${f(w)}" height="${f(h)}" `);
+    return qrsvg.replace('</svg>', overlay + '</svg>');
+}
+
 async function generateQrCode(id, eventbgcolor="", format="string") {
     let returnimage;
     try {
         let event = await readEventId(id)
         //MySQL kräver index [0]
         event = event[0]
+        if(format == "svg") {
+            return await generateQrCodeSvg(process.env.QRCODELINK + event.id);
+        }
         const file = "kthlogo_marinbla_qr.svg"
 
         const logo = await sharp(path.join(__dirname, "public/images/" + file))
@@ -1536,8 +1574,11 @@ async function generateQrCode(id, eventbgcolor="", format="string") {
     }
 }
 
-async function generateQrCodeGeneral(id) {
+async function generateQrCodeGeneral(id, format="png") {
     try {
+        if(format == "svg") {
+            return await generateQrCodeSvg(process.env.QRCODELINK + 'general/' + id);
+        }
         //const file = "kthlogo.jpg"
         const file = "kthlogo_marinbla_qr.svg"
         //const logo = fs.readFileSync(path.join(__dirname, "public/images/" + file))

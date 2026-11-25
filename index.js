@@ -426,6 +426,9 @@ apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
             if(format == "image") {
                 res.setHeader('Content-Type', 'image/jpeg');
             }
+            if(format == "svg") {
+                res.setHeader('Content-Type', 'image/svg+xml');
+            }
             res.send(qrcode)
             
         }
@@ -671,9 +674,18 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
                                         <td><input class="form-control" type="text" id="row-${row.id}-desc" name="row-${row.id}-desc" value="${row.description}"> </td>
                                         
                                         <td>
-                                            <button id="qrcodebtn_${row.id}" onclick="getQrCodeGeneral('${row.id}', '', this);" type="button" class="btn btn-primary" style="margin-right:10px" data-toggle="tooltip" title="Ladda ner QR-code i PNG-format" data-placement="top">
-                                                Hämta QR Kod
-                                            </button>
+                                            <div class="btn-group" style="margin-right:10px">
+                                                <button id="qrcodebtn_${row.id}" onclick="getQrCodeGeneral('${row.id}', '', this);" type="button" class="btn btn-primary" data-toggle="tooltip" title="Ladda ner QR-code i PNG-format" data-placement="top">
+                                                    Hämta QR Kod
+                                                </button>
+                                                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" title="Välj format">
+                                                    <span class="visually-hidden">Välj format</span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><button type="button" class="dropdown-item" onclick="getQrCodeGeneral('${row.id}', '', document.getElementById('qrcodebtn_${row.id}'), 'png');">PNG</button></li>
+                                                    <li><button type="button" class="dropdown-item" onclick="getQrCodeGeneral('${row.id}', '', document.getElementById('qrcodebtn_${row.id}'), 'svg');">SVG (vektor)</button></li>
+                                                </ul>
+                                            </div>
                                         </td>
                                         <td>
                                             <button id="updateQrCodeGeneral_${row.id}" onclick="updateQrCodeGeneral('${row.id}', 'row-${row.id}-url', 'row-${row.id}-desc');" type="button" class="btn btn-success" style="margin-right:10px">
@@ -761,6 +773,11 @@ apiRoutes.delete("/qrcode/general", async function (req, res, next) {
 apiRoutes.get("/qrcode/general/generate/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
+            if (req.query.format == "svg") {
+                const svg = await eventController.generateQrCodeGeneral(req.params.id, "svg");
+                res.setHeader('Content-Type', 'image/svg+xml');
+                return res.send(svg);
+            }
             let qrcode = await eventController.generateQrCodeGeneral(req.params.id);
             const im = qrcode.split(",")[1];
             const img = Buffer.from(im, 'base64');
